@@ -1,0 +1,80 @@
+// ============================================================================
+// Computer result menu
+// Saves a readable target passwd file locally and offers follow-up actions.
+// This source is included by scan_lib.txt with Grey Hack import_code.
+// ============================================================================
+
+// Inspect a computer object, save its readable passwd file locally, and offer actions.
+handle_computer_result = function(computer)
+	// Confirm the remote file exists, is readable, and has content before proceeding.
+	passwd_file = computer.File("/etc/passwd")
+	if not passwd_file then
+		print("The target has no /etc/passwd file.")
+		return
+	end if
+	if not passwd_file.has_permission("r") then
+		print("Unable to read /etc/passwd with the permissions returned by this exploit.")
+		return
+	end if
+	if passwd_file.content == null or passwd_file.content == "" then
+		print("The target password file is empty.")
+		return
+	end if
+
+	// Resolve the active user's local home directory as the save destination.
+	local_computer = get_shell.host_computer
+	home_path = "/home/" + active_user
+	local_home = local_computer.File(home_path)
+	if not local_home then
+		print("Your local home folder could not be found: " + home_path)
+		return
+	end if
+
+	// Ask before replacing an existing copy, then create and populate the local file.
+	local_path = home_path + "/receivedPaswd.txt"
+	local_file = local_computer.File(local_path)
+	if local_file then
+		answer = user_input("Overwrite " + local_path + "? (y/n): ")
+		if answer.lower() != "y" then
+			print("Keeping the existing local file.")
+			return
+		end if
+		local_file.delete
+	end if
+
+	local_computer.touch(home_path, "receivedPaswd.txt")
+	local_file = local_computer.File(local_path)
+	if not local_file then
+		print("Could not create " + local_path)
+		return
+	end if
+	local_file.set_content(passwd_file.content)
+	print("Password file saved to " + local_path)
+
+	// Keep the saved file available until the user chooses to remove it or return.
+	while true
+		// This submenu only manages the file just written to the local home folder.
+		print("1. Open decipher")
+		print("2. Remove the saved file")
+		print("0. Return")
+		choice = user_input("Option: ")
+		if choice == "0" then
+			return
+		else if choice == "1" then
+			// Run the local decipher tool on the freshly saved password file.
+			decipher = local_computer.File("/bin/decipher")
+			if not decipher then
+				print("Could not find /bin/decipher on your computer.")
+			else
+				get_shell.launch("/bin/decipher", local_path)
+			end if
+		else if choice == "2" then
+			// Deleting the file also closes this submenu.
+			local_file.delete
+			print("Removed " + local_path)
+			return
+		else
+			print("Choose 0, 1, or 2.")
+		end if
+	end while
+end function

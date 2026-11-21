@@ -1,0 +1,243 @@
+// ============================================================================
+// Shell result menu
+// Contains remote shell actions, upload helpers, mail handling, and trace tool setup.
+// This source is included by scan_lib.txt with Grey Hack import_code.
+// ============================================================================
+
+// Return readable folders in the remote shell's /home directory, or null on failure.
+get_shell_home_users = function(shell)
+	// Every guard below must pass before the folder list is usable by the menus.
+	computer = shell.host_computer
+	if not computer then return null
+	home_folder = computer.File("/home")
+	if not home_folder then return null
+	if not home_folder.is_folder then return null
+	if not home_folder.has_permission("r") then return null
+	return home_folder.get_folders
+end function
+
+// Delete only the paths this session recorded as uploaded by scan_lib.
+clear_uploaded_files = function(shell, uploaded_files)
+	computer = shell.host_computer
+	if not computer then
+		print("Could not access the remote computer to remove uploaded files.")
+		return
+	end if
+	if uploaded_files.len() == 0 then
+		return
+	end if
+	// Delete each recorded upload and verify it is actually gone afterwards.
+	for uploaded_path in uploaded_files
+		remote_file = computer.File(uploaded_path)
+		if remote_file then
+			remote_file.delete
+			if computer.File(uploaded_path) then
+				print("Could not permanently remove " + uploaded_path)
+			else
+				print("Permanently removed " + uploaded_path)
+			end if
+		end if
+	end for
+end function
+
+// Find a log utility remotely or upload a readable local copy into a staging folder.
+prepare_log_tool = function(shell, app_name, uploaded_files)
+	remote_computer = shell.host_computer
+	if not remote_computer then
+		print("Could not access the remote computer while checking for " + app_name + ".")
+		return null
+	end if
+	remote_path = "/usr/bin/" + app_name
+	// Reuse the target's own copy when the log tool is already installed there.
+	if remote_computer.File(remote_path) then
+		print(app_name + " is already available on the target.")
+		return remote_path
+	end if
+
+	local_computer = get_shell.host_computer
+	if not local_computer then
+		print("Could not access the local computer to find " + app_name + ".")
+		return null
+	end if
+	local_path = "/usr/bin/" + app_name
+	local_app = local_computer.File(local_path)
+	if not local_app then
+		// Fall back to the app's bundled tools folder beside the local script.
+		local_path = current_path + "/tools/" + app_name
+		local_app = local_computer.File(local_path)
+	end if
+	if not local_app then
+		print("Could not find a local copy of " + app_name + " in /usr/bin or " + current_path + "/tools/.")
+		return null
+	end if
+	if not local_app.has_permission("r") then
+		print("Unable to read the local copy of " + app_name + " at " + local_path)
+		return null
+	end if
+
+	remote_tools_path = "/home/guest/scan_lib_tools"
+	print("Preparing remote app folder " + remote_tools_path + "...")
+	// /bin/mkdir here takes a single path and ignores an already-existing folder.
+	shell.launch("/bin/mkdir", remote_tools_path + "/")
+	remote_app_path = remote_tools_path + "/" + app_name
+	uploaded_files.push(remote_app_path)
+	print("Uploading " + app_name + "...")
+	// scp treats the destination as a directory, so the basename is retained.
+	upload_result = get_shell.scp(local_path, remote_tools_path, shell, false)
+	if upload_result != true then
+		print("Could not upload " + app_name + ": " + upload_result)
+		return null
+	end if
+	return remote_app_path
+end function
+
+handle_shell_result = function(shell)
+	// Track session uploads so option 4 can remove these files after use.
+	uploaded_files = []
+	while true
+		// The shell menu stays open until b or closed input returns to the exploit list.
+		print("\nActive shell")
+		print("1. Show users in /home")
+		print("2. Print /home/<user>/Config/Mail.txt contents")
+		print("3. Upload decipher and decipher Mail.txt")
+		print("4. Remove uploaded files and clear traces")
+		print("b. Back to exploit menu")
+		choice = user_input("Shell option: ")
+		if choice == null then
+			return
+		else if choice.lower() == "b" then
+			return
+		// Options 1 and 2 share user discovery; option 2 then prints the chosen mail file.
+		else if choice == "1" or choice == "2" then
+			home_users = get_shell_home_users(shell)
+			if home_users == null then
+				print("Could not read the /home folder from this shell.")
+			else if home_users.len() == 0 then
+				print("No user folders were found in /home.")
+			else
+				print("\nUsers in /home:")
+				index = 0
+				for home_user in home_users
+					print("(" + index + ") " + home_user.name)
+					index = index + 1
+				end for
+				if choice == "2" then
+					user_choice = select_index("Choose a user to read Mail.txt (q to cancel): ", home_users.len(), false)
+					if user_choice >= 0 then
+						mail_path = "/home/" + home_users[user_choice].name + "/Config/Mail.txt"
+						print("Launching cat for " + mail_path + ":")
+						shell.launch("/bin/cat", mail_path)
+					end if
+				end if
+			end if
+		// Option 3 uploads both decipher and its library before launching on remote mail.
+		else if choice == "3" then
+			home_users = get_shell_home_users(shell)
+			if home_users == null then
+				print("Could not read the /home folder from this shell.")
+			else if home_users.len() == 0 then
+				print("No user folders were found in /home.")
+			else
+				print("\nUsers in /home:")
+				index = 0
+				for home_user in home_users
+					print("(" + index + ") " + home_user.name)
+					index = index + 1
+				end for
+				user_choice = select_index("Choose a user to decipher Mail.txt (q to cancel): ", home_users.len(), false)
+				if user_choice >= 0 then
+					// The chosen user's mail file is the path decipher will be run on.
+					user_name = home_users[user_choice].name
+					mail_path = "/home/" + user_name + "/Config/Mail.txt"
+					// decipher and its shared library live together in the local tools folder.
+					local_path = current_path + "/tools/"
+					local_decipher_path = local_path + "decipher"
+					local_crypto_path = local_path + "crypto.so"
+					local_decipher = get_shell.host_computer.File(local_decipher_path)
+					if not local_decipher then
+						print("Could not find the local decipher app at " + local_decipher_path)
+					else if not local_decipher.has_permission("r") then
+						print("Unable to read the local decipher app at " + local_decipher_path)
+					else
+							// Both files must be readable locally before any upload is attempted.
+						local_crypto = get_shell.host_computer.File(local_crypto_path)
+						if not local_crypto then
+							print("Could not find the decipher dependency at " + local_crypto_path)
+						else if not local_crypto.has_permission("r") then
+							print("Unable to read the decipher dependency at " + local_crypto_path)
+						else
+							// Stage both files in one remote folder keyed by the target user.
+							remote_tools_path = "/home/guest/scan_lib_" + user_name + "/"
+							print("Preparing upload folder " + remote_tools_path + "...")
+							shell.launch("/bin/mkdir", "/home/guest/scan_lib_" + user_name+"/")
+							remote_decipher_path = remote_tools_path + "decipher"
+							remote_crypto_path = remote_tools_path + "crypto.so"
+							uploaded_files.push(remote_decipher_path)
+							uploaded_files.push(remote_crypto_path)
+							print("Uploading decipher and crypto.so...")
+							// Check each transfer independently; partial uploads can remain on error.
+							upload_decipher_result = get_shell.scp(local_decipher_path, remote_tools_path, shell, false)
+							upload_crypto_result = get_shell.scp(local_crypto_path, remote_tools_path, shell, false)
+							if upload_decipher_result == true and upload_crypto_result == true then
+								print("Decipher uploaded. Running it on " + mail_path + "...")
+								launch_result = shell.launch(remote_decipher_path, mail_path)
+								if launch_result == null then
+									print("Decipher launched successfully.")
+								else if launch_result == 0 then
+									print("Could not launch decipher on the target.")
+								else
+									print("Decipher launch result: " + launch_result)
+								end if
+							else
+								if upload_decipher_result != true then
+									print("Could not upload decipher: " + upload_decipher_result)
+								end if
+								if upload_crypto_result != true then
+									print("Could not upload crypto.so: " + upload_crypto_result)
+								end if
+							end if
+						end if
+					end if
+				end if
+			end if
+		// Option 4 opens trace tools and then removes any temporary uploads.
+		else if choice == "4" then
+				// Clear earlier session uploads before staging the log tools.
+			clear_uploaded_files(shell, uploaded_files)
+			file_explorer_result = 0
+			log_viewer_result = 0
+			log_viewer_path = prepare_log_tool(shell, "LogViewer.exe", uploaded_files)
+			file_explorer_path = prepare_log_tool(shell, "FileExplorer.exe", uploaded_files)
+				// FileExplorer opens first; LogViewer is spaced out by two seconds.
+			if file_explorer_path then
+				print("Opening FileExplorer...")
+				file_explorer_result = shell.launch(file_explorer_path)
+				if file_explorer_result == 0 then
+					print("Could not launch FileExplorer.")
+				end if
+			end if
+			if log_viewer_path then
+				if file_explorer_path then
+					wait(2)
+				end if
+				print("Opening LogViewer...")
+				log_viewer_result = shell.launch(log_viewer_path)
+				if log_viewer_result == 0 then
+					print("Could not launch LogViewer.")
+				end if
+			end if
+				// Remove the staged tool copies once both launch attempts are done.
+			clear_uploaded_files(shell, uploaded_files)
+				// Only print the cleanup walkthrough when both tools were available.
+			if file_explorer_path and log_viewer_path and file_explorer_result != 0 and log_viewer_result != 0 then
+				print("In FileExplorer, open /var/system.log with LogViewer.")
+				print("Refresh the log after cleanup, then remove shell obtained or file deleted entries that include your IP address.")
+				print("Do not delete the whole log. If an active trace is running, clear the indicated entries and disconnect before its countdown ends.")
+			else
+				print("Could not prepare or launch both log applications. Review the errors above and try again.")
+			end if
+		else
+			print("Choose 1, 2, 3, 4, or b.")
+		end if
+	end while
+end function

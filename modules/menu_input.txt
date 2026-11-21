@@ -1,0 +1,28 @@
+// ============================================================================
+// Shared menu input
+// Validates numbered choices and preserves the quit/back return codes.
+// This source is included by scan_lib.txt with Grey Hack import_code.
+// ============================================================================
+
+// Return a zero-based choice, -1 for quit/cancel, or -2 for an allowed back action.
+select_index = function(prompt, item_count, allow_back)
+	while true
+		answer = user_input(prompt)
+		// Treat closed input and q as cancellation for every caller.
+		if answer == null then return -1
+		if answer.lower() == "q" then return -1
+		if allow_back and answer.lower() == "b" then return -2
+		// Compare against valid indices as text to reject malformed values safely.
+		index = item_count - 1
+		while index >= 0
+			if answer == index + "" then return index
+			index = index - 1
+		end while
+		// Explain the accepted controls and reprompt without leaving the menu.
+		if allow_back then
+			print("Invalid selection. Enter a listed number, b to go back, or q to quit.")
+		else
+			print("Invalid selection. Enter a listed number or q to quit.")
+		end if
+	end while
+end function

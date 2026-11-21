@@ -1,0 +1,60 @@
+// ============================================================================
+// Scan output parsing
+// Cleans metaxploit output and builds exploit records with precomputed results.
+// This source is included by scan_lib.txt with Grey Hack import_code.
+// ============================================================================
+
+// Remove known metaxploit scan decoration and normalize blank lines before parsing.
+clean_result = function(text)
+	if text == null then
+		return ""
+	end if
+	replace_text = ["decompiling source...\nsearching unsecure values...\n", "Unsafe check: string copy in ", "Unsafe check: loop in array ", "<b>", "</b>", ". Buffer overflow."]
+	for value in replace_text
+		text = text.replace(value, "")
+	end for
+	text.replace("\n\n\n\n", "\n")
+	text.replace("\n\n\n", "\n")
+	text.replace("\n\n", "\n")
+	return text
+end function
+
+parse_scan_result = function(text, memory, meta_lib, new_password)
+	// Build a list of exploit records from the cleaned, line-oriented scan output.
+	exploits = []
+	current_exploit = null
+	for line in clean_result(text).split("\n")
+		line = line.trim()
+		// Empty lines are ignored; condition lines belong to the most recent exploit.
+		if line == "" then
+			continue
+		else if line[:2] == "* " then
+			if current_exploit then
+				current_exploit.conditions.push(line)
+			end if
+		else
+			if current_exploit then
+				exploits.push(current_exploit)
+			end if
+			current_exploit = {"keyword": line, "conditions": []}
+		end if
+	end for
+	// Flush the final record, which has no following exploit line to close it.
+	if current_exploit then exploits.push(current_exploit)
+	// Precompute each payload result once; menus later reuse these stored results.
+	for exploit in exploits
+		if new_password != null then
+			exploit_result = meta_lib.overflow(memory, exploit.keyword, new_password)
+		else
+			exploit_result = meta_lib.overflow(memory, exploit.keyword)
+		end if
+		// Store both the object and a display-friendly type for the exploit menu.
+		exploit_result_type = "null"
+		if exploit_result != null then
+			exploit_result_type = typeof(exploit_result)
+		end if
+		exploit["result"] = exploit_result
+		exploit["result_type"] = exploit_result_type
+	end for
+	return exploits
+end function
