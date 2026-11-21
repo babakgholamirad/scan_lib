@@ -4,7 +4,7 @@
 
 This repository contains GreyScript programs for Grey Hack, a hacking simulation. The main program, `scan_lib.txt`, connects to a target network service, inspects its remote library, discovers exploit options, lets the player choose an option, and handles the returned object. `community_exploiter.txt` is a separate, simpler example that runs an exploit specified directly as command-line arguments. `scan_lib_backup.txt` is an older snapshot of the scanner and can help explain how the current version evolved; treat `scan_lib.txt` as the active implementation.
 
-GreyScript is the game's customized MiniScript language. Its control blocks use `if ... then ... end if`, `for ... end for`, and `while ... end while`; functions are assigned with `name = function(...) ... end function`. The project files use the `.txt` extension because they are intended to run in the game, not as ordinary Python or shell scripts.
+GreyScript is the game's customized MiniScript language. Its control blocks use `if ... then ... end if`, `for ... end for`, and `while ... end while`; functions are assigned with `name = function(...) ... end function`. The main program files use the `.txt` extension because they are intended to run in the game, not as ordinary Python or shell scripts. Imported module sources under `modules/` use `.src`, matching the absolute paths in `scan_lib.txt`.
 
 ## Main scanner flow
 

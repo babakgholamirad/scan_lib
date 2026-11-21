@@ -5,10 +5,10 @@ separate source files into that program, so the modules must be installed at
 the absolute paths used by the imports:
 
 ```text
-/bin/scan_lib_modules/scan_parsing.txt
-/bin/scan_lib_modules/menu_input.txt
-/bin/scan_lib_modules/computer_result.txt
-/bin/scan_lib_modules/shell_result.txt
+/bin/scan_lib_modules/scan_parsing.src
+/bin/scan_lib_modules/menu_input.src
+/bin/scan_lib_modules/computer_result.src
+/bin/scan_lib_modules/shell_result.src
 ```
 
 Copy the entry source to `/bin/scan_lib` (or edit the four import paths if you
@@ -22,10 +22,10 @@ to be launched separately.
 
 ## Module responsibilities
 
-- `scan_parsing.txt`: scan-output cleanup, parsing, and overflow precomputation.
-- `menu_input.txt`: shared selection validation and back/quit behavior.
-- `computer_result.txt`: handling computer objects and local passwd-file flow.
-- `shell_result.txt`: shell menu, remote mail/decipher workflow, uploads, and log tools.
+- `scan_parsing.src`: scan-output cleanup, parsing, and overflow precomputation.
+- `menu_input.src`: shared selection validation and back/quit behavior.
+- `computer_result.src`: handling computer objects and local passwd-file flow.
+- `shell_result.src`: shell menu, remote mail/decipher workflow, uploads, and log tools.
 - `scan_lib.txt`: app startup, scanning, memory-address and exploit menus, and result dispatch.
 
 Grey Hack runtime behavior cannot be checked from the host checkout. Review the
@@ -43,14 +43,14 @@ installing the files.
                                       │ │ │ │
                                       │ │ │ │
 ┌───────────────────────────────┐     │ │ │ │
-│ scan_parsing.txt              │     │ │ │ │
+│ scan_parsing.src              │     │ │ │ │
 │ clean + parse + precompute    │     │ │ │ │
 │                               ├◄────┘ │ │ │
 └───────────────────────────────┘       │ │ │
                                         │ │ │
                                         │ │ │
 ┌───────────────────────────────┐       │ │ │
-│ menu_input.txt                │       │ │ │
+│ menu_input.src                │       │ │ │
 │ select_index                  │       │ │ │
 │                               ├◄──────┘ │ │
 │                               ├◄────────╪─╪─┐
@@ -59,7 +59,7 @@ installing the files.
                                           │ │ │ │
                                           │ │ │ │
 ┌───────────────────────────────┐         │ │ │ │
-│ computer_result.txt           │         │ │ │ │
+│ computer_result.src           │         │ │ │ │
 │ handle_computer_result        │         │ │ │ │
 │                               ├◄────────┘ │ │ │
 │                               ├───────────╪─┘ │
@@ -67,7 +67,7 @@ installing the files.
                                             │   │
                                             │   │
 ┌───────────────────────────────┐           │   │
-│ shell_result.txt              │           │   │
+│ shell_result.src              │           │   │
 │ handle_shell_result + helpers │           │   │
 │                               ├◄──────────┘   │
 │                               ├───────────────┘
