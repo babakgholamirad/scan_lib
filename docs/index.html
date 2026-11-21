@@ -19,6 +19,7 @@ pre { padding: .8rem; overflow-x: auto; }
 .search-bar input:focus { outline: 2px solid #66a; border-color: #66a; }
 .search-status { color: #666; font-size: .9rem; margin: .4rem 0 0; }
 article[hidden] { display: none; }
+article mark.hl { background: #ffec3d; color: inherit; border-radius: 2px; padding: 0 .05em; }
 </style>
 </head>
 <body>
@@ -7906,6 +7907,46 @@ The change in the store page about the macOS support will be reflected when vers
   var total = index.length;
   var timer = null;
 
+  function clearHighlights(article) {
+    var marks = article.querySelectorAll('mark.hl');
+    for (var i = 0; i < marks.length; i++) {
+      var mark = marks[i];
+      var parent = mark.parentNode;
+      parent.replaceChild(document.createTextNode(mark.textContent), mark);
+      parent.normalize();
+    }
+  }
+
+  function highlightNode(node, needle) {
+    var text = node.nodeValue;
+    var lower = text.toLowerCase();
+    var at = lower.indexOf(needle);
+    if (at === -1) return;
+    var fragment = document.createDocumentFragment();
+    var pos = 0;
+    while (at !== -1) {
+      if (at > pos) fragment.appendChild(document.createTextNode(text.slice(pos, at)));
+      var mark = document.createElement('mark');
+      mark.className = 'hl';
+      mark.textContent = text.slice(at, at + needle.length);
+      fragment.appendChild(mark);
+      pos = at + needle.length;
+      at = lower.indexOf(needle, pos);
+    }
+    if (pos < text.length) fragment.appendChild(document.createTextNode(text.slice(pos)));
+    node.parentNode.replaceChild(fragment, node);
+  }
+
+  function highlightArticle(article, needle) {
+    var walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while (walker.nextNode()) {
+      var parentTag = walker.currentNode.parentNode.nodeName;
+      if (parentTag !== 'SCRIPT' && parentTag !== 'STYLE') nodes.push(walker.currentNode);
+    }
+    for (var i = 0; i < nodes.length; i++) highlightNode(nodes[i], needle);
+  }
+
   function applyFilter(raw) {
     var query = raw.trim();
     var needle = query.toLowerCase();
@@ -7913,6 +7954,8 @@ The change in the store page about the macOS support will be reflected when vers
     for (var i = 0; i < index.length; i++) {
       var match = needle === '' || index[i].text.indexOf(needle) !== -1;
       index[i].el.hidden = !match;
+      clearHighlights(index[i].el);
+      if (match && needle !== '') highlightArticle(index[i].el, needle);
       if (match) shown++;
     }
     if (query === '') {
