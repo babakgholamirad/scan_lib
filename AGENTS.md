@@ -10,9 +10,9 @@ GreyScript is the game's customized MiniScript language. Its control blocks use 
 
 `scan_lib.txt` runs in this order:
 
-1. Validate command-line `params`: IP address, port, and an optional new password. `-h` and `--help` print usage.
+1. Validate command-line `params`: IP address and an optional new password. `-h` and `--help` print usage.
 2. Load `metaxploit.so`, preferring `/lib/metaxploit.so` and then `current_path + "/tools/metaxploit.so"`.
-3. Open a `net_session` with `metaxploit.net_use`, print target/network details, and fetch the target library with `net_session.dump_lib`.
+3. Discover ports with `scan_ports`, which uses `get_router` and reads `used_ports` for public addresses or `device_ports` for LAN addresses. Print the indexed port list and let the player choose a port. Then open a `net_session` with `metaxploit.net_use(address, chosen_port)`, print target/network details, and fetch the target library with `net_session.dump_lib`.
 4. Scan the library with `metaxploit.scan`. For each returned memory address, call `metaxploit.scan_address`, clean and parse its text output, and keep addresses that have parsed exploit entries.
 5. While building `exploit_array`, parse each memory address and call `meta_lib.overflow` for every parsed exploit. Store the returned object and its type on the exploit map.
 6. Display the discovered memory-address menu. Selecting an address displays its exploit keywords, result types, and conditions. `b` at the exploit prompt returns to the address menu; `q` exits.
@@ -20,6 +20,7 @@ GreyScript is the game's customized MiniScript language. Its control blocks use 
 
 ## Important functions and data
 
+- `scan_ports(address)` returns `{"router": router, "ports": ports, "is_public": is_public}` for the target. Public addresses use `router.used_ports`; LAN addresses use `router.device_ports(address)`. The entry point prints each port with a zero-based index and passes the chosen `port_number` to `metaxploit.net_use`.
 - `clean_result(text)` removes known scan-output noise and HTML bold tags, compresses repeated blank lines, and returns an empty string for null input. If scan output changes, review this cleanup list alongside the parser.
 - `parse_scan_result(text, memory, meta_lib, new_password)` turns cleaned scan output into exploit maps and precomputes each exploit's result. Each map has `keyword`, `conditions`, `result`, and `result_type`. A normal nonempty line starts an exploit; lines beginning with `* ` are attached as conditions to the current exploit. It is called once for each scanned memory address.
 - `select_index(prompt, item_count, allow_back)` validates a user-entered zero-based index. It returns `-1` for `q` or null input and `-2` for `b` when `allow_back` is true. The menu loop handles `-2` by continuing to its top, which redraws the memory-address list.

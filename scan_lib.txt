@@ -15,17 +15,36 @@ import_code("/bin/scan_lib_modules/computer_result.src")
 import_code("/bin/scan_lib_modules/shell_result.src")
 
 // ============================================================================
+// Port discovery
+// ============================================================================
+// Build the same port list nmap reads, because launch() cannot return nmap output.
+scan_ports = function(address)
+	router = get_router(address)
+	if not router then return null
+	// Public addresses expose forwarded ports; LAN addresses expose device ports.
+	ports = null
+	is_public = address == router.public_ip
+	if is_public then
+		ports = router.used_ports
+	else
+		ports = router.device_ports(address)
+	end if
+	if not ports then ports = []
+	return {"router": router, "ports": ports, "is_public": is_public}
+end function
+
+// ============================================================================
 // Command-line validation and dependency loading
 // ============================================================================
-// Accept an address, port, and optional password; help is handled below.
+// Accept an address and optional password; the port is chosen from the scan.
 
-if params.len < 2 or params.len > 3 then
+if params.len < 1 or params.len > 2 then
 	// Show usage for missing or extra command-line arguments.
-	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] [port] (new_password)</b>\nScans the remote library, lets you choose a discovered exploit, and runs it.")
+	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] (new_password)</b>\nScans the target ports, lets you choose a service, then scans its remote library.")
 end if
 if params[0] == "-h" or params[0] == "--help" then
 	// Support the standard short and long help flags.
-	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] [port] (new_password)</b>\nScans the remote library, lets you choose a discovered exploit, and runs it.")
+	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] (new_password)</b>\nScans the target ports, lets you choose a service, then scans its remote library.")
 end if
 
 // Load the exploit library from the system location, then the app tools folder.
@@ -38,15 +57,38 @@ if not metaxploit then exit("<color=#ff0000>Error: Unable to find metaxploit.so.
 
 // Convert command-line values into the scan configuration.
 address = params[0]
-port = params[1].to_int
 new_password = null
-if params.len == 3 then
-	if params[2] != "" then
-		new_password = params[2]
+if params.len == 2 then
+	if params[1] != "" then
+		new_password = params[1]
 	end if
 end if
 
+// Run the port scan and present every discovered service with a zero-based index.
+scan = scan_ports(address)
+if scan == null then exit("<color=#ff0000>Error: Unable to reach the target router.</color>")
+router = scan.router
+ports = scan.ports
+if ports.len() == 0 then exit("No ports were found for " + address + ".")
+
+print("\nNmap scan results for " + address + ":")
+index = 0
+for port in ports
+	// Closed forwarding records are shown so the list matches the scan.
+	state = "open"
+	if scan.is_public and port.is_closed then state = "closed"
+	service = router.port_info(port)
+	if service == null or service == "" then service = "unknown"
+	print("(" + index + ") " + port.port_number + "/tcp " + state + " " + service)
+	index = index + 1
+end for
+
+port_choice = select_index("Choose a port (q to quit): ", ports.len(), false)
+if port_choice < 0 then exit("Scan cancelled.")
+port = ports[port_choice].port_number
+
 // Connect to the requested service and report its exposed network details.
+print("\nConnecting to " + address + ":" + port + "...")
 net_session = metaxploit.net_use(address, port)
 if not net_session then exit("<color=#ff0000>Error: Unable to connect.</color>")
 
