@@ -5,29 +5,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Grey Hack Developer Announcements (2019-2026)</title>
 <style>
-body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: #222; }
-h1 { border-bottom: 2px solid #ccc; padding-bottom: .4rem; }
-article { border-bottom: 1px solid #ddd; padding: 1.2rem 0; }
+:root {
+  color-scheme: light;
+  --bg: #fff;
+  --fg: #222;
+  --muted: #666;
+  --border: #ddd;
+  --border-strong: #ccc;
+  --code-bg: #f4f4f4;
+  --blockquote-fg: #444;
+  --mark-bg: #ffec3d;
+  --mark-fg: #222;
+  --accent: #66a;
+}
+html.dark {
+  color-scheme: dark;
+  --bg: #16181c;
+  --fg: #e6e6e6;
+  --muted: #9aa0a6;
+  --border: #2c2f36;
+  --border-strong: #3a3e46;
+  --code-bg: #23262c;
+  --blockquote-fg: #c2c6cc;
+  --mark-bg: #b8860b;
+  --mark-fg: #111;
+  --accent: #8ab4f8;
+}
+html { background: var(--bg); }
+body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: var(--fg); background: var(--bg); }
+h1 { border-bottom: 2px solid var(--border-strong); padding-bottom: .4rem; }
+article { border-bottom: 1px solid var(--border); padding: 1.2rem 0; }
 article h2 { margin-bottom: .2rem; }
-.meta { color: #666; font-size: .9rem; margin-top: 0; }
+.meta { color: var(--muted); font-size: .9rem; margin-top: 0; }
 .contents img { max-width: 100%; height: auto; }
-blockquote { border-left: 4px solid #ccc; margin-left: 0; padding-left: 1rem; color: #444; }
-code, pre { background: #f4f4f4; }
+blockquote { border-left: 4px solid var(--border-strong); margin-left: 0; padding-left: 1rem; color: var(--blockquote-fg); }
+code, pre { background: var(--code-bg); }
 pre { padding: .8rem; overflow-x: auto; }
-.search-bar { position: sticky; top: 0; z-index: 10; background: #fff; padding: .8rem 0; margin-bottom: .4rem; border-bottom: 1px solid #eee; }
-.search-bar input { width: 100%; box-sizing: border-box; font: inherit; padding: .6rem .8rem; border: 1px solid #bbb; border-radius: 6px; }
-.search-bar input:focus { outline: 2px solid #66a; border-color: #66a; }
-.search-status { color: #666; font-size: .9rem; margin: .4rem 0 0; }
+.search-bar { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: .8rem 0; margin-bottom: .4rem; border-bottom: 1px solid var(--border); }
+.search-row { display: flex; gap: .5rem; }
+.search-bar input { flex: 1; min-width: 0; box-sizing: border-box; font: inherit; padding: .6rem .8rem; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--bg); color: var(--fg); }
+.search-bar input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+.theme-toggle { font: inherit; padding: .6rem .9rem; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--code-bg); color: var(--fg); cursor: pointer; white-space: nowrap; }
+.theme-toggle:hover { border-color: var(--accent); }
+.search-status { color: var(--muted); font-size: .9rem; margin: .4rem 0 0; }
 article[hidden] { display: none; }
-article mark.hl { background: #ffec3d; color: inherit; border-radius: 2px; padding: 0 .05em; }
+article mark.hl { background: var(--mark-bg); color: var(--mark-fg); border-radius: 2px; padding: 0 .05em; }
 </style>
+<script>
+(function () {
+  var dark = false;
+  try {
+    var m = document.cookie.match(/(?:^|;\s*)theme=(dark|light)/);
+    dark = m ? m[1] === 'dark' : false;
+  } catch (e) {}
+  if (!dark) {
+    try { dark = localStorage.getItem('theme') === 'dark'; } catch (e) {}
+  }
+  if (dark) document.documentElement.classList.add('dark');
+})();
+</script>
 </head>
 <body>
 <h1>Grey Hack Developer Announcements</h1>
 <p>Raw announcement archive for Grey Hack (Steam app 605230), covering August 6, 2019 through November 16, 2026. This file was rebuilt from Steam's public news API on 2026-11-21 after the original local export was lost. It contains the same announcement text and links, with Steam BBCode converted to HTML for local reading and searching.</p>
 <p>Announcement cards: 384</p>
 <div class="search-bar">
+<div class="search-row">
 <input id="search" type="search" placeholder="Search all patch notes&hellip;" aria-label="Search patch notes" autocomplete="off">
+<button id="theme-toggle" type="button" class="theme-toggle" aria-pressed="false">&#127769; Dark</button>
+</div>
 <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
 </div>
 <article id="gid-1849458702691406">
@@ -7901,11 +7947,28 @@ The change in the store page about the macOS support will be reflected when vers
 (function () {
   var input = document.getElementById('search');
   var status = document.getElementById('search-status');
+  var toggle = document.getElementById('theme-toggle');
   var index = Array.prototype.map.call(document.querySelectorAll('article'), function (article) {
     return { el: article, text: (article.textContent || '').toLowerCase() };
   });
   var total = index.length;
   var timer = null;
+
+  function applyTheme(dark, persist) {
+    document.documentElement.classList.toggle('dark', dark);
+    toggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    toggle.textContent = dark ? '\u2600\uFE0F Light' : '\uD83C\uDF19 Dark';
+    if (!persist) return;
+    var value = dark ? 'dark' : 'light';
+    document.cookie = 'theme=' + value + '; path=/; max-age=31536000; SameSite=Lax';
+    try { localStorage.setItem('theme', value); } catch (e) {}
+  }
+
+  toggle.addEventListener('click', function () {
+    applyTheme(!document.documentElement.classList.contains('dark'), true);
+  });
+
+  applyTheme(document.documentElement.classList.contains('dark'), false);
 
   function clearHighlights(article) {
     var marks = article.querySelectorAll('mark.hl');
