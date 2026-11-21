@@ -5,14 +5,14 @@
 // ============================================================================
 
 // Scan parsing and exploit record construction.
-import_code("/bin/scan_lib_modules/scan_parsing.txt")
+import_code("/bin/scan_lib_modules/scan_parsing.src")
 
 // Shared numbered menu input used by all menus.
-import_code("/bin/scan_lib_modules/menu_input.txt")
+import_code("/bin/scan_lib_modules/menu_input.src")
 
 // Result handlers are kept separate from scanning and menu navigation.
-import_code("/bin/scan_lib_modules/computer_result.txt")
-import_code("/bin/scan_lib_modules/shell_result.txt")
+import_code("/bin/scan_lib_modules/computer_result.src")
+import_code("/bin/scan_lib_modules/shell_result.src")
 
 // ============================================================================
 // Command-line validation and dependency loading
