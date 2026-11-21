@@ -133,7 +133,28 @@ prepare_log_tool = function(shell, app_name, uploaded_files)
 	return remote_app_path
 end function
 
-// Try a router bounce exploit, then fall back to an SSH connection from this shell.
+// List the ports the target router reports for one LAN address.
+discover_lan_ports = function(address)
+	router = get_router(address)
+	if not router then return null
+	ports = router.device_ports(address)
+	if typeof(ports) != "list" then return null
+	records = []
+	for port in ports
+		service = "unknown"
+		version = "-"
+		info = router.port_info(port)
+		if info then
+			parts = info.split(" ")
+			if parts.len > 0 and parts[0] != "" then service = parts[0]
+			if parts.len > 1 then version = parts[1]
+		end if
+		records.push({"port": port.port_number, "service": service, "version": version})
+	end for
+	return records
+end function
+
+// Try a router bounce exploit, then fall back to a service connection from this shell.
 bounce_to_internal_ip = function(shell, meta_lib, exploit_array)
 	// The internal address is the only value a bounce exploit needs.
 	answer = user_input("Internal IP to bounce to (b to cancel): ")
@@ -146,6 +167,45 @@ bounce_to_internal_ip = function(shell, meta_lib, exploit_array)
 	end if
 	if not is_lan_ip(answer) then
 		print("Warning: " + answer + " is not a LAN address. Bounce exploits expect an internal IP.")
+	end if
+
+	// Discover the target's real services instead of assuming SSH is on port 22.
+	records = discover_lan_ports(answer)
+	if records != null and records.len() > 0 then
+		print("\nPorts reported for " + answer + ":")
+		index = 0
+		for record in records
+			print("(" + index + ") " + record.port + " " + record.service + " " + record.version)
+			index = index + 1
+		end for
+		port_choice = select_index("Choose a port to bounce through (q to skip): ", records.len(), false)
+		if port_choice >= 0 then
+			chosen = records[port_choice]
+			if chosen.service == "ssh" or chosen.service == "ftp" or chosen.port == 22 or chosen.port == 21 then
+				ssh_user = user_input("Username: ")
+				if ssh_user == null or ssh_user.trim() == "" then return
+				ssh_password = user_input("Password: ")
+				if ssh_password == null then return
+				service = chosen.service
+				if service != "ssh" and service != "ftp" then
+					// Fall back to the conventional service for the selected port.
+					if chosen.port == 21 then service = "ftp" else service = "ssh"
+				end if
+				remote = shell.connect_service(answer, chosen.port, ssh_user.trim(), ssh_password, service)
+				if typeof(remote) == "shell" or typeof(remote) == "ftpshell" then
+					print("Bounce succeeded on port " + chosen.port + ".")
+					handle_shell_result(remote)
+				else
+					print("Bounce failed on port " + chosen.port + ": " + remote)
+				end if
+				return
+			else
+				print("Port " + chosen.port + " is " + chosen.service + ", not an SSH/FTP shell service.")
+				print("Use the terminal or Browser for it, or scan that service library with scan_lib.")
+			end if
+		end if
+	else
+		print("Could not discover open ports on " + answer + ".")
 	end if
 
 	// A bounce exploit runs against a router library and receives a LAN IP as its extra value.
@@ -182,18 +242,27 @@ bounce_to_internal_ip = function(shell, meta_lib, exploit_array)
 		end if
 	end if
 
-	// Fall back to an SSH shell from the current machine so the connection still leaves from here.
-	print("Falling back to an SSH bounce from this shell...")
+	// Fall back to a manually supplied service port from the current machine.
+	print("Falling back to a service connection from this shell...")
 	ssh_user = user_input("SSH username (blank to cancel): ")
 	if ssh_user == null or ssh_user.trim() == "" then return
 	ssh_password = user_input("SSH password: ")
 	if ssh_password == null then return
-	remote = shell.connect_service(answer, 22, ssh_user.trim(), ssh_password)
+	port_answer = user_input("SSH port (default 22): ")
+	port = 22
+	if port_answer != null and port_answer.trim() != "" then
+		port = port_answer.trim().to_int
+		if typeof(port) != "number" or port < 1 or port > 65535 then
+			print("Invalid port: " + port_answer)
+			return
+		end if
+	end if
+	remote = shell.connect_service(answer, port, ssh_user.trim(), ssh_password)
 	if typeof(remote) == "shell" or typeof(remote) == "ftpshell" then
-		print("SSH bounce succeeded.")
+		print("Service bounce succeeded on port " + port + ".")
 		handle_shell_result(remote)
 	else
-		print("SSH bounce failed: " + remote)
+		print("Service bounce failed on port " + port + ": " + remote)
 	end if
 end function
 
