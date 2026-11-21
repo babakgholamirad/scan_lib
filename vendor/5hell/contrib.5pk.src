@@ -1,0 +1,1519 @@
+if DEBUG then print("<size=75%>loading contrib.5pk for 5hell v 4.5.0...(87.923)")
+  
+ //////////////////////contrubutions start here///////////
+  /// this is stuff that was not made entirely by Plu70
+  /// most of this will contain additions or adjustments by Plu70
+  //// cotributed commands ////////////////////
+  command.pwgen = function(arg1, arg2=0, arg3=0, arg4=0)
+	if arg1 == "help" or arg1 == "-h" then return "Usage:<b> pwgen</b> -- generate a large list of the game's passwords using Markov Generation"+char(10)+
+  colorGold+"Usage: pwgen -- generate the <u>tables/tp/</u> folder and populate it with"+char(10)+
+  "-- dictionary files containing one [password] per line"+char(10)+char(10)+
+  colorGold+"Usage: pwgen hash -- generate the <u>tables/t5</u> folder and populate it with"+char(10)+
+  "-- dictionary files container one [md5_hash]=[password] pair per line"+char(10)+
+  "NOTE: At launch, 5hell will import the onboard dictionary from one of these folders"+char(10)+
+  "-- if at least one exists"+char(10)+
+  "-- otherwise, use cerebrum to expand the onboard dictionary at runtime"+char(10)+
+  "NOTE: the tables folder does not need to be in rkit to be used"+char(10)+
+  "-- including it in rkit allows you to upload it with your rkit to targets"+char(10)+
+  "---- this is normally not neccessary since the dictionary is loaded to the custom_object"+char(10)+
+  "N.B.: You may define the write location of the tables folder in your HOME settings in 5hell.src"+char(10)+
+  "-- or in your do.rc file"
+
+	// pwgen v0.4 by usespython, modifications by Plu70
+	//PASSWORDSB="I2n4Kh3Kd8,belagio,balencia,ibiza,3k4l23ll,4567adee,bees,Bee123,hobo,heebeejeebee,geronimo69,Es1,day,abcd,abc1,baby,mayday,today,yesterday,fifteen,abgDw32fhGu58k,69696969,sfuzzer,111,1111,222,2222,3333,333,00000,000,4444,444,5555,555,55555555,4fb426abgDw32fHG,666,6666,thx1138,7777,777,8888,888,9999,999,0000,oicu812,1337,8008,4hpu79htgbr,80085,007007,43110,69696969,t23t49k21af3,evkfdhgbv78ery,6h057,h4ck,h4ckg4m3,g01ng,p0st4l,g01ngp0st4l,81rd,7074g,35sk1m0,pr0n,n00b,nu8,suxor,hazorz,5uxzorz,owned,pwnd,0wnd,p0wn3d,w00t,woo7,woot,w007,10100111001,teh,meh,lol,brb,afk,wyd,gtfo,lmao,lmfao,gitgud,lawl,troll,bawl,epic,54321,987654321,88888888,555555,1234567890,1973,147147,151515,1515,101010,202020,21122112,12341234,74lk,dir7y,53nP4I,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,1,2,3,4,5,6,7,8,9,0,le375p34k,420420,11111111,112233,h4f4jf53fk74,123abc,1234qwer,123321,5y4hpu79htgbrub,ncc1701e,7777777,51505150,000000,5150,222222,999999,252525,77777777,98765432,poop,polyamorous,zelda,password,6gtr43,123456,12345678,1234,qwerty,12345,dragon,baseball,football,letmein,monkey,696969,abc123,mustang,michael,shadow,master,jennifer,111111,2000,jordan,superman,harley,1234567,hunter,trustno1,ranger,buster,thomas,tigger,robert,soccer,batman,test,pass,hockey,george,charlie,andrew,michelle,love,sunshine,jessica,6969,pepper,daniel,access,123456789,654321,joshua,maggie,starwars,silver,william,dallas,yankees,123123,ashley,666666,hello,amanda,orange,biteme,freedom,computer,sexy,thunder,nicole,ginger,heather,hammer,summer,corvette,taylor,swift,austin,1111,merlin,matthew,121212,golfer,cheese,princess,martin,chelsea,patrick,richard,diamond,yellow,bigdog,secret,asdfgh,sparky,cowboy,camaro,anthony,matrix,falcon,iloveyou,bailey,guitar,jackson,purple,scooter,phoenix,aaaaaa,morgan,tigers,porsche,mickey,maverick,cookie,nascar,peanut,justin,131313,money,horny,samantha,panties,steelers,joseph,snoopy,boomer,whatever,iceman,smokey,gateway,dakota,cowboys,eagles,chicken,black,zxcvbn,please,pharoa,andrea,ferrari,knight,hardcore,porn,ass,love,sex,hooker,blow,coke,melissa,compaq,coffee,booboo,bitch,johnny,bulldog,xxxxxx,welcome,james,player,ncc1701,wizard,scooby,charles,junior,internet,mike,brandy,tennis,banana,monster,spider,lakers,miller,rabbit,enter,mercedes,brandon,steven,fender,john,yamaha,diablo,chris,boston,tiger,marine,chicago,rangers,gandalf,winter,bigtits,barney,edward,raiders,porn,badboy,blowme,spanky,bigdaddy,johnson,chester,london,midnight,blue,fishing,hannah,slayer,rachel,sexsex,redsox,asdf,marlboro,panther,zxcvbnm,arsenal,oliver,qazwsx,mother,victoria,jasper,angel,david,winner,crystal,golden,butthead,viking,jack,iwantu,shannon,murphy,angels,prince,cameron,girls,madison,wilson,carlos,hooters,willie,startrek,captain,maddog,jasmine,butter,booger,angela,golf,lauren,rocket,tiffany,theman,dennis,liverpoo,flower,forever,green,jackie,muffin,turtle,sophie,danielle,redskins,toyota,jason,sierra,winston,debbie,giants,packers,newyork,jeremy,casper,bubba,dracula,sandra,lovers,mountain,united,cooper,driver,tucker,helpme,pookie,lucky,maxwell,8675309,bear,suckit,gators,shithead,jaguar,monica,fred,happy,hotdog,tits,gemini,lover,xxxxxxxx,777777,canada,nathan,victor,florida,nicholas,rosebud,metallic,doctor,trouble,success,stupid,tomcat,warrior,peaches,apples,fish,qwertyui,magic,buddy,dolphins,rainbow,gunner,987654,freddy,alexis,braves,2112,1212,xavier,dolphin,testing,bond007,member,calvin,voodoo,7777,samson,alex,apollo,fire,tester,chess,walter,beavis,voyager,peter,porno,bonnie,rush2112,beer,apple,scorpio,jonathan,skippy,sydney,scott,red123,power,gordon,travis,beaver,star,flyers,232323,zzzzzz,steve,rebecca,scorpion,doggie,legend,ou812,yankee,blazer,bill,runner,birdie,bitches,parker,topgun,asdfasdf,heaven,viper,animal,bigboy,arthur,baby,private,godzilla,donald,williams,lifehack,phantom,dave,rock,august,sammy,cool,brian,platinum,jake,bronco,paul,mark,frank,heka6w2,copper,billy,cumshot,garfield,willow,cunt,little,carter,slut,albert,kitten,super,jordan23,eagle1,shelby,america,11111,jessie,house,free,chevy,bullshit,white,broncos,horney,surfer,nissan,saturn,airborne,elephant,marvin,shit,action,adidas,qwert,kevin,1313,explorer,walker,police,christin,december,benjamin,wolf,sweet,therock,king,online,brooklyn,teresa,cricket,sharon,dexter,racing,penis,gregory,0000,teens,redwings,dreams,michigan,hentai,magnum,87654321,nothing,donkey,trinity,digital,333333,ramsesii,stella,cartman,guinness,speedy,buffalo,kitty,pimpin,eagle,einstein,kelly,nelson,nirvana,vampire,xxxx,playboy,louise,pumpkin,snowball,test123,girl,sucker,mexico,beatles,fantasy,ford,gibson,celtic,marcus,cherry,cassie,888888,natasha,sniper,chance,genesis,hotrod,reddog,alexande,college,jester,passw0rd,smith,lasvegas,carmen,slipknot,death,kimberly,1q2w3e,eclipse,1q2w3e4r,stanley,samuel,drummer,homer,montana,music,aaaa,spencer,jimmy,carolina,colorado,creative,hello1,rocky,goober,friday,AceofSpades,bollocks,scotty,abcdef,bubbles,hawaii,asakista,fluffy,mine,stephen,horses,thumper,darkness,asdfghjk,pamela,boobies,buddha,vanessa,sandman,naughty,douglas,honda,matt,azerty,6666,shorty,money1,beach,loveme,4321,simple,poohbear,444444,badass,destiny,sarah,denise,vikings,lizard,melanie,assman,sabrina,nintendo,water,good,howard,time,123qwe,november,xxxxx,october,zxcv,shamrock,atlantis,warren,wordpass,julian,mariah,rommel,1010,harris,predator,sylvia,massive,cats,sammy1,mister,stud,marathon,rubber,ding,trunks,desire,montreal,justme,faster,kathleen,irish,1999,bertha,jessica1,alpine,sammie,diamonds,tristan,swinger,shan,stallion,pitbull,letmein2,roberto,ready,april,palmer,ming,shadow1,audrey,chong,clitoris,wang,shirley,jackoff,bluesky,sundance,negated,renegade,renegades,hollywoo,hollywood,bernard,wolfman,soldier,picture,pierre,ling,goddess,manager,nikita,76hj93DB3wsa2,sweety,titans,hang,fang,ficken,niners,bottom,bubble,hello123,ibanez,webster,sweetpea,stocking,freeman,french,mongoose,speed,dddddd,hong,henry,hungry,yang,catdog,cheng,ghost,gogogo,randy,tottenha,curious,butterfl,mission,january,singer,sherman,shark,techno,lancer,lalala,autumn,chichi,orion,trixie,clifford,delta,bobbob,bomber,holden,kang,kiss,1968,spunky,liquid,mary,beagle,granny,network,bond,kkkkkk,millie,biggie,genius,dream,dang,bush,nyx".split(",")
+	//PASSWORDSA="operator,699696,321966,966235,feral,323232,blonde,lond,osint,msfconsole,Bd5gHie89YA,tornado,lindsey,content,bruce,buck,duke,aragorn,griffin,chen,campbell,trojan,christop,newman,wayne,tina,rockstar,father,geronimo,pascal,crimson,brooks,hector,penny,anna,camera,chandler,fatcat,lovelove,cody,cunts,waters,stimpy,finger,cindy,wheels,viper1,latin,robin,greenday,creampie,brendan,hiphop,willy,snapper,funtime,duck,trombone,adult,cotton,cookies,kaiser,mulder,westham,latino,jeep,ravens,aurora,drizzt,madness,hermit,energy,kinky,314159,leather,bastard,young,,extreme,hard,password1,vincent,lacrosse,hotmail,spooky,amateur,alaska,badger,paradise,maryjane,soup,crazy,mozart,video,russell,vagina,spitfire,anderson,norman,otaku,eric,cherokee,cougar,barbara,long,family,horse,enigma,allison,raider,brazil,blonde,jones,55555,dude,drowssap,jeff,school,marshall,lovely,1qaz2wsx,jeffrey,caroline,franklin,booty,molly,snickers,leslie,nipples,courtney,diesel,rocks,eminem,westside,suzuki,daddy,passion,hummer,ladies,Azachary,frankie,elvis,reggie,alpha,suckme,simpson,patricia,pirate,tommy,semperfi,jupiter,redrum,freeuser,wanker,stinky,ducati,paris,natalie,babygirl,bishop,windows,spirit,tiktok,thot,pantera,monday,patches,brutus,houston,smooth,penguin,marley,forest,cream,212121,flash,maximus,nipple,bobby,bradley,vision,pokemon,champion,fireman,indian,softball,picard,system,clinton,cobra,enjoy,lucky1,claire,claudia,boogie,timothy,marines,security,dirty,admin,wildcats,pimp,dancer,hardon,veronica,abcd1234,abcdefg,ironman,wolverin,remember,great,freepass,bigred,squirt,justice,francis,hobbes,kermit,pearljam,mercury,domino,9999,denver,brooke,rascal,hitman,mistress,simon,tony,bbbbbb,friend,peekaboo,naked,budlight,electric,sluts,stargate,saints,bondage,brittany,bigman,zombie,swimming,duke,qwerty1,babes,scotland,disney,rooster,brenda,mookie,swordfis,candy,duncan,olivia,hunting,blink182,alicia,8888,samsung,bubba1,whore,virginia,general,passport,aaaaaaaa,erotic,liberty,arizona,jesus,abcd,newport,skipper,rolltide,balls,happy1,galore,christ,weasel,242424,wombat,digger,classic,bulldogs,poopoo,accord,popcorn,turkey,jenny,amber,bunny,mouse,titanic,liverpool,dreamer,everton,friends,chevelle,carrie,gabriel,psycho,nemesis,burton,pontiac,connor,eatme,lickme,roland,cumming,mitchell,ireland,lincoln,arnold,spiderma,patriots,goblue,devils,eugene,empire,asdfg,cardinal,brown,shaggy,froggy,qwer,kawasaki,kodiak,people,phpbb,light,kramer,chopper,hooker,honey,whynot,lisa,baxter,adam,snake,ncc1701d,qqqqqq,airplane,britney,avalon,sandy,sugar,sublime,stewart,wildcat,raven,scarface,elizabet,123654,trucks,wolfpack,lawrence,raymond,american,alyssa,bambam,movie,woody,shaved,snowman,tiger1,chicks,raptor,1969,stingray,shooter,france,stars,madmax,kristen,sports,jerry,789456,garcia,simpsons,lights,ryan,looking,chronic,alison,hahaha,packard,hendrix,perfect,service,spring,srinivas,spike,katie,oscar,brother,bigmac,suck,single,cannon,georgia,popeye,tattoo,texas,party,bullet,taurus,sailor,wolves,panthers,japan,strike,flowers,pussycat,chris1,loverboy,berlin,sticky,marina,tarheels,fisher,russia,connie,wolfgang,testtest,mature,bass,catch22,juice,michael1,159753,women,alpha1,trooper,hawkeye,head,freaky,dodgers,pakistan,machine,pyramid,vegeta,katana,moose,tinker,coyote,infinity,inside,letmein1,bang,control,hercules,morris,james1,tickle,outlaw,browns,billybob,pickle,test1,michele,antonio,sucks,pavilion,changeme,caesar,prelude,tanner,adrian,darkside,bowling,wutang,sunset,robbie,alabama,danger,zeppelin,juan,rusty,pppppp,nick,2001,ping,darkstar,madonna,qwe123,bigone,casino,cheryl,charlie1,mmmmmm,lakota,akota,integra,wrangler,apache,tweety,qwerty12,bobafett,simone,none,business,sterling,trevor,transam,dustin,harvey,england,2323,seattle,ssssss,rose,harry,openup,pandora,trucker,wallace,indigo,storm,malibu,weed,review,babydoll,doggy,dilbert,pegasus,pegade,joker,catfish,flipper,valerie,herman,detroit,kenneth,cheyenne,bruins,stacey,smoke,joey,seven,marino,fetish,xfiles,wonder,stinger,pizza,babe,pretty,stealth,manutd,gracie,gundam,cessna,longhorn,presario,mnbvcxz,wicked,mustang1,victory,shelly,awesome,athena,q1w2e3r4,help,holiday,knicks,street,redneck,casey,gizmo,scully,dragon1,devildog,triumph,eddie,bluebird,shotgun,peewee,hubris,ronnie,angel1,daisy,special,metallica,madman,country,impala,lennon,roscoe,omega,access14,enterpri,miranda,search,smitty,blizzard,unicorn,tight,rick,ronald,asdf1234,harrison,trigger,truck,danny,home,winnie,beauty,thailand,cadillac,castle,tyler,bobcat,buddy1,sunny,stones,asian,freddie,chuck,butt,loveyou,norton,hellfire,hotsex,indiana,short,panzer,lonewolf,trumpet,colors,blaster,12121212,fireball,logan,precious,aaron,elaine,jungle,masamune,atlanta,gold,corona,curtis,nikki,polaris,timber,theone,baller,chipper,orlando,island,skyline,dragons,dogs,benson,licker,goldie,engineer,kong,pencil,basketba,open,hornet,world,linda,barbie,chan,farmer,valentin,indians,larry,redman,foobar,travel,morpheus,bernie,target,141414,hotstuff,photos,laura,savage,holly,rocky1,dollar,turbo,design,newton,hottie,moon,blondes,4128,lestat,avatar,future,goforit,random,abgrtyu,jjjjjj,q1w2e3,smiley,goldberg,express,zipper,wrinkle1,stone,andy,babylon,dong,powers,consumer,dudley,Aster,monkey1,serenity,samurai,99999999,skeeter,lindsay,joejoe,master1,aaaaa,chocolat,christia,birthday,stephani,tang,alfred,ball,maria,sexual,maxima,sampson,buckeye,highland,kristin,seminole,reaper,bassman,nugget,lucifer,airforce,nasty,watson,warlock,2121,philip,always,dodge,chrissy,burger,bird,snatch,missy,pink,gang,maddie,holmes,huskers,piglet,photo,joanne,hamilton,dodger,paladin,christy,chubby,buckeyes,hamlet,abcdefgh,bigfoot,sunday,manson,goldfish,garden,deftones,icecream,blondie,spartan,julie,harold,charger,brandi,stormy,sherry,pleasure,juventus,rodney,galaxy,holland,escort,zxcvb,planet,jerome,wesley,blues,song,peace,david1,1966,cavalier,gambit,karen,sidney,ripper,jamie,sister,marie,martha,nylons,aardvark,nadine,minnie,whiskey,bing,plastic,anal,babylon5,chang,savannah,loser,racecar,insane,yankees1,mememe,hansolo,chiefs,fredfred,freak,frog,salmon,concrete,yvonne,sophia,stefan,8a1n80w,slick,rocker,opensesame,ones,snapbeetle,beatles,teacher,susan,toronto,anakin,".split(",")
+	PASSWORDSC="apple,banana,123456789098765,012345678909876,abgDw32fhGu58k,Bd5gHie89YA,HG54h49lklj4G53,Bd5gHie89YA,59038qyghq340fg,tgby2hnr4fv9ujm,abcplm123098tg6,3dsvi2psdfn34,a03nf93nf8,3edv45gb8ub202n,afdiounwrnnfsa,234086531230324,111111111111111,222222222222222,333333333333333,444444444444444,55555555555555,666666666666666,777777777777777,888888888888888,999999999999999,000000000000000,efh368jhr08712,asdfghjkl102938,ghfjdkslatywoec,bogu2847mshd02,1357924680aoejd,g35gk5k63l10,d0emgh4m43la,ae51wc3g7d9c,GHEITHEKA102938,HHHHHHHHHHHHH,AAAAAAAAAAAAAAAA,RRRRRRRRRRRRRRRR,sssssssssssssss,ttttttttttttttt,llllllllllllll,eeeeeeeeeeeee,uuuuuuuuuuuu,oooooooooo,aaaaaaaa,1234,123,987,567,654,56432,12345,55555,99999,34567,jhgfd,uiopl,mnbvc,ytrewq,iuhhfd,sadregh,01010101010101,1010101010101010,000111000111000,einagearghaaer,235gdfa5yhgea,aletgadfgraerga,0k9j8h7g6f5f4ed2,afdsawe4togfido,butyrhdncbuh,39n8nf93fk59,adfsafawefgaag,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,1,2,3,4,5,6,7,8,9,0".split(",")
+	//PASSWORDS = PASSWORDSA + PASSWORDSB
+  PASSWORDS = ["password","123456","12345678","1234","qwerty","12345","dragon","baseball","football","letmein","monkey","696969","abc123","mustang","michael","shadow","master","jennifer","111111","2000","jordan","superman","harley","1234567","hunter","trustno1","ranger","buster","thomas","tigger","robert","soccer","batman","test","pass","hockey","george","charlie","andrew","michelle","love","sunshine","jessica","6969","pepper","daniel","access","123456789","654321","joshua","maggie","starwars","silver","william","dallas","yankees","123123","ashley","666666","hello","amanda","orange","biteme","freedom","computer","sexy","thunder","nicole","ginger","heather","hammer","summer","corvette","taylor","austin","1111","merlin","matthew","121212","golfer","cheese","princess","martin","chelsea","patrick","richard","diamond","yellow","bigdog","secret","asdfgh","sparky","cowboy","camaro","anthony","matrix","falcon","iloveyou","bailey","guitar","jackson","purple","scooter","phoenix","aaaaaa","morgan","tigers","porsche","mickey","maverick","cookie","nascar","peanut","justin","131313","money","horny","samantha","panties","steelers","joseph","snoopy","boomer","whatever","iceman","smokey","gateway","dakota","cowboys","eagles","chicken","black","zxcvbn","please","andrea","ferrari","knight","hardcore","melissa","compaq","coffee","booboo","johnny","bulldog","xxxxxx","welcome","james","player","ncc1701","wizard","scooby","charles","junior","internet","mike","brandy","tennis","banana","monster","spider","lakers","miller","rabbit","enter","mercedes","brandon","steven","fender","john","yamaha","diablo","chris","boston","tiger","marine","chicago","rangers","gandalf","winter","bigtits","barney","edward","raiders","porn","badboy","blowme","spanky","bigdaddy","johnson","chester","london","midnight","blue","fishing","000000","hannah","slayer","11111111","rachel","sexsex","redsox","thx1138","asdf","marlboro","panther","zxcvbnm","arsenal","oliver","qazwsx","mother","victoria","7777777","jasper","angel","david","winner","crystal","golden","butthead","viking","jack","iwantu","shannon","murphy","angels","prince","cameron","girls","madison","wilson","carlos","hooters","willie","startrek","captain","maddog","jasmine","butter","booger","angela","golf","lauren","rocket","tiffany","theman","dennis","liverpoo","flower","forever","green","jackie","muffin","turtle","sophie","danielle","redskins","toyota","jason","sierra","winston","debbie","giants","packers","newyork","jeremy","casper","bubba","112233","sandra","lovers","mountain","united","cooper","driver","tucker","helpme","pookie","lucky","maxwell","8675309","bear","suckit","gators","5150","222222","shithead","jaguar","monica","fred","happy","hotdog","tits","gemini","lover","xxxxxxxx","777777","canada","nathan","victor","florida","88888888","nicholas","rosebud","metallic","doctor","trouble","success","stupid","tomcat","warrior","peaches","apples","fish","qwertyui","magic","buddy","dolphins","rainbow","gunner","987654","freddy","alexis","braves","2112","1212","xavier","dolphin","testing","bond007","member","calvin","voodoo","7777","samson","alex","apollo","fire","tester","walter","beavis","voyager","peter","porno","bonnie","rush2112","beer","apple","scorpio","jonathan","skippy","sydney","scott","red123","power","gordon","travis","beaver","star","flyers","232323","zzzzzz","steve","rebecca","scorpion","doggie","legend","ou812","yankee","blazer","bill","runner","birdie","555555","parker","topgun","asdfasdf","heaven","viper","animal","2222","bigboy","4444","arthur","baby","private","godzilla","donald","williams","lifehack","phantom","dave","rock","august","sammy","cool","brian","platinum","jake","bronco","paul","mark","frank","heka6w2","copper","billy","garfield","willow","cunt","little","carter","slut","albert","69696969","kitten","super","jordan23","eagle1","shelby","america","11111","jessie","house","free","123321","chevy","bullshit","white","broncos","horney","surfer","nissan","999999","saturn","airborne","elephant","marvin","shit","action","adidas","qwert","kevin","1313","explorer","walker","police","christin","december","benjamin","wolf","sweet","therock","king","online","brooklyn","teresa","cricket","sharon","dexter","racing","penis","gregory","0000","teens","redwings","dreams","michigan","hentai","magnum","87654321","nothing","donkey","trinity","digital","333333","stella","cartman","guinness","123abc","speedy","buffalo","kitty","pimpin","eagle","einstein","kelly","nelson","nirvana","vampire","xxxx","playboy","louise","pumpkin","snowball","test123","girl","sucker","mexico","beatles","fantasy","ford","gibson","celtic","marcus","cherry","cassie","888888","natasha","sniper","chance","genesis","hotrod","reddog","alexande","college","jester","passw0rd","smith","lasvegas","carmen","slipknot","3333","death","kimberly","1q2w3e","eclipse","1q2w3e4r","stanley","samuel","drummer","homer","montana","music","aaaa","spencer","jimmy","carolina","colorado","creative","hello1","rocky","goober","friday","bollocks","scotty","abcdef","bubbles","hawaii","fluffy","mine","stephen","horses","thumper","5555","darkness","asdfghjk","pamela","boobies","buddha","vanessa","sandman","naughty","douglas","honda","matt","azerty","6666","shorty","money1","beach","loveme","4321","simple","poohbear","444444","badass","destiny","sarah","denise","vikings","lizard","melanie","assman","sabrina","nintendo","water","good","howard","time","123qwe","november","xxxxx","october","leather","bastard","young","101010","extreme","hard","password1","vincent","lacrosse","hotmail","spooky","amateur","alaska","badger","paradise","maryjane","poop","crazy","mozart","video","russell","vagina","spitfire","anderson","norman","eric","cherokee","cougar","barbara","long","420420","family","horse","enigma","allison","raider","brazil","blonde","jones","55555","dude","drowssap","jeff","school","marshall","lovely","1qaz2wsx","jeffrey","caroline","franklin","booty","molly","snickers","leslie","nipples","courtney","diesel","rocks","eminem","westside","suzuki","daddy","passion","hummer","ladies","zachary","frankie","elvis","reggie","alpha","suckme","simpson","patricia","147147","pirate","tommy","semperfi","jupiter","redrum","freeuser","wanker","stinky","ducati","paris","natalie","babygirl","bishop","windows","spirit","pantera","monday","patches","brutus","houston","smooth","penguin","marley","forest","cream","212121","flash","maximus","nipple","bobby","bradley","vision","pokemon","champion","fireman","indian","softball","picard","system","clinton","cobra","enjoy","lucky1","claire","claudia","boogie","timothy","marines","security","dirty","admin","wildcats","pimp","dancer","hardon","veronica","abcd1234","abcdefg","ironman","wolverin","remember","great","freepass","bigred","squirt","justice","francis","hobbes","kermit","pearljam","mercury","domino","9999","denver","brooke","rascal","hitman","mistress","simon","tony","bbbbbb","friend","peekaboo","naked","budlight","electric","sluts","stargate","saints","bondage","brittany","bigman","zombie","swimming","duke","qwerty1","babes","scotland","disney","rooster","brenda","mookie","swordfis","candy","duncan","olivia","hunting","blink182","alicia","8888","samsung","bubba1","whore","virginia","general","passport","aaaaaaaa","erotic","liberty","arizona","jesus","abcd","newport","skipper","rolltide","balls","happy1","galore","christ","weasel","242424","wombat","digger","classic","bulldogs","poopoo","accord","popcorn","turkey","jenny","amber","bunny","mouse","007007","titanic","liverpool","dreamer","everton","friends","chevelle","carrie","gabriel","psycho","nemesis","burton","pontiac","connor","eatme","lickme","roland","mitchell","ireland","lincoln","arnold","spiderma","patriots","goblue","devils","eugene","empire","asdfg","cardinal","brown","shaggy","froggy","qwer","kawasaki","kodiak","people","phpbb","light","54321","kramer","chopper","hooker","honey","whynot","lisa","baxter","adam","snake","ncc1701d","qqqqqq","airplane","britney","avalon","sandy","sugar","sublime","stewart","wildcat","raven","scarface","elizabet","123654","trucks","wolfpack","lawrence","raymond","american","alyssa","bambam","movie","woody","shaved","snowman","tiger1","chicks","raptor","1969","stingray","shooter","france","stars","madmax","kristen","sports","jerry","789456","garcia","simpsons","lights","ryan","looking","chronic","alison","hahaha","packard","hendrix","perfect","service","spring","srinivas","spike","katie","252525","oscar","brother","bigmac","suck","single","cannon","georgia","popeye","tattoo","texas","party","bullet","taurus","sailor","wolves","panthers","japan","strike","flowers","pussycat","chris1","loverboy","berlin","sticky","marina","tarheels","fisher","russia","connie","wolfgang","testtest","mature","bass","catch22","juice","michael1","159753","women","alpha1","trooper","hawkeye","head","freaky","dodgers","pakistan","machine","pyramid","vegeta","katana","moose","tinker","coyote","infinity","inside","letmein1","bang","control","hercules","morris","james1","tickle","outlaw","browns","billybob","pickle","test1","michele","antonio","sucks","pavilion","changeme","caesar","prelude","tanner","adrian","darkside","bowling","wutang","sunset","robbie","alabama","danger","zeppelin","juan","rusty","pppppp","nick","2001","ping","darkstar","madonna","qwe123","bigone","casino","cheryl","charlie1","mmmmmm","integra","wrangler","apache","tweety","qwerty12","bobafett","simone","none","business","sterling","trevor","transam","dustin","harvey","england","2323","seattle","ssssss","rose","harry","openup","pandora","trucker","wallace","indigo","storm","malibu","weed","review","babydoll","doggy","dilbert","pegasus","joker","catfish","flipper","valerie","herman","detroit","kenneth","cheyenne","bruins","stacey","smoke","joey","seven","marino","fetish","xfiles","wonder","stinger","pizza","babe","pretty","stealth","manutd","gracie","gundam","cessna","longhorn","presario","mnbvcxz","wicked","mustang1","victory","21122112","shelly","awesome","athena","q1w2e3r4","help","holiday","knicks","street","redneck","12341234","casey","gizmo","scully","dragon1","devildog","triumph","eddie","bluebird","shotgun","peewee","ronnie","angel1","daisy","special","metallica","madman","country","impala","lennon","roscoe","omega","access14","enterpri","miranda","search","smitty","blizzard","unicorn","tight","rick","ronald","asdf1234","harrison","trigger","truck","danny","home","winnie","beauty","thailand","1234567890","cadillac","castle","tyler","bobcat","buddy1","sunny","stones","asian","freddie","chuck","butt","loveyou","norton","hellfire","indiana","short","panzer","lonewolf","colors","blaster","12121212","fireball","logan","precious","aaron","elaine","jungle","atlanta","gold","corona","curtis","nikki","polaris","timber","theone","baller","chipper","orlando","island","skyline","dragons","dogs","benson","licker","goldie","engineer","kong","pencil","basketba","open","hornet","world","linda","barbie","chan","farmer","valentin","indians","larry","redman","foobar","travel","morpheus","bernie","target","141414","hotstuff","photos","laura","savage","holly","rocky1","dollar","turbo","design","newton","hottie","moon","202020","blondes","4128","lestat","avatar","future","goforit","random","abgrtyu","jjjjjj","q1w2e3","smiley","goldberg","express","zipper","wrinkle1","stone","andy","babylon","dong","powers","consumer","dudley","monkey1","serenity","samurai","99999999","skeeter","lindsay","joejoe","master1","aaaaa","chocolat","christia","birthday","stephani","tang","1234qwer","alfred","ball","98765432","maria","sexual","maxima","77777777","sampson","buckeye","highland","kristin","seminole","reaper","bassman","nugget","lucifer","airforce","nasty","watson","warlock","2121","philip","always","dodge","chrissy","burger","bird","snatch","missy","pink","gang","maddie","holmes","huskers","piglet","photo","joanne","hamilton","dodger","paladin","christy","chubby","buckeyes","hamlet","abcdefgh","bigfoot","sunday","manson","goldfish","garden","deftones","icecream","blondie","spartan","julie","harold","charger","brandi","stormy","sherry","pleasure","juventus","rodney","galaxy","holland","escort","zxcvb","planet","jerome","wesley","blues","song","peace","david1","ncc1701e","1966","51505150","cavalier","gambit","karen","sidney","ripper","oicu812","jamie","sister","marie","martha","nylons","aardvark","nadine","minnie","whiskey","bing","plastic","anal","babylon5","chang","savannah","loser","racecar","insane","yankees1","mememe","hansolo","chiefs","fredfred","freak","frog","salmon","concrete","yvonne","zxcv","shamrock","atlantis","warren","wordpass","julian","mariah","rommel","1010","harris","predator","sylvia","massive","cats","sammy1","mister","stud","marathon","rubber","ding","trunks","desire","montreal","justme","faster","kathleen","irish","1999","bertha","jessica1","alpine","sammie","diamonds","tristan","00000","swinger","shan","stallion","pitbull","letmein2","roberto","ready","april","palmer","ming","shadow1","audrey","chong","clitoris","wang","shirley","jackoff","bluesky","sundance","renegade","hollywoo","151515","bernard","wolfman","soldier","picture","pierre","ling","goddess","manager","nikita","sweety","titans","hang","fang","ficken","niners","bottom","bubble","hello123","ibanez","webster","sweetpea","stocking","323232","tornado","lindsey","content","bruce","buck","aragorn","griffin","chen","campbell","trojan","christop","newman","wayne","tina","rockstar","father","geronimo","pascal","crimson","brooks","hector","penny","anna","camera","chandler","fatcat","lovelove","cody","cunts","waters","stimpy","finger","cindy","wheels","viper1","latin","robin","greenday","987654321","creampie","brendan","hiphop","willy","snapper","funtime","duck","trombone","adult","cotton","cookies","kaiser","mulder","westham","latino","jeep","ravens","aurora","drizzt","madness","energy","kinky","314159","sophia","stefan","slick","rocker","55555555","freeman","french","mongoose","speed","dddddd","hong","henry","hungry","yang","catdog","cheng","ghost","gogogo","randy","tottenha","curious","butterfl","mission","january","singer","sherman","shark","techno","lancer","lalala","autumn","chichi","orion","trixie","clifford","delta","bobbob","bomber","holden","kang","kiss","1968","spunky","liquid","mary","beagle","granny","network","bond","kkkkkk","millie","1973","biggie","beetle","teacher","susan","toronto","anakin","genius","dream","dang","bush"]
+	if arg2 == "-p" then PASSWORDS = PASSWORDSC
+	String={}
+	String.capitalize=function(s)
+	if s.len<2 then return s.upper
+	return s[0].upper+s[1:].lower
+	end function
+	String.strip=function(t,s)
+	if not t then return ""
+	for b in range(0,t.len-1)
+		if s.indexOf(t[b])==null then break
+	end for
+	if s.indexOf(t[b])>=0 then return ""
+	for e in range(-1,-1*t.len)
+		if s.indexOf(t[e])==null then break
+	end for
+	if e==-1 then return t[b:]
+	return t[b:e+1]
+	end function
+	PasswordGenerator={}
+	PasswordGenerator.init=function(samples)
+	self.s=[]
+	self.c={}
+	for s in samples
+		s=s.trim.upper
+		if s.len>3 then self.s.push(s) // length limiter here
+	end for
+	if DEBUG then print "pwgen: debug: self.s.len: "+self.s.len
+	for s in self.s
+		for i in range(0,s.len-4)
+		k=s[i:i+3] // limiter
+		if self.c.hasIndex(k) then
+			if self.c[k].indexOf(s[i+3])==null then self.c[k].push(s[i+3]) // limiter
+		else
+			self.c[k]=[s[i+3]] // limiter
+		end if
+		end for
+		//wait(.1)
+	end for
+	end function
+	PasswordGenerator.AllPasswords=function()
+	r={}
+	for s in self.s
+		for i in range(0,s.len-4)
+		self.r(s.len,s[i:i+3],r) // limiter
+		//wait(.01)
+		end for
+	end for
+		print(colorGold+"50%"+CT+" -- loading hash_table...")
+		print("<align=center>"+char(171)+char(187)+"</align>")
+	o={}
+	for s in r.indexes
+		if s.indexOf(" ")>=0 then
+		n=s.split(" ")
+		i=n.indexOf("")
+		while i>=0
+			n.remove(i)
+			i=n.indexOf("",i-1)
+		end while
+		if n then
+			for i in range(0,n.len-1)
+			n[i]=String.capitalize(n[i])
+			end for
+		end if
+		s=n.join(" ")
+		else
+		s=String.capitalize(s)
+		end if
+		if s.len<5 then continue
+		a=s[0]
+		b=s[1]
+		if a.lower==b or "hrl'aeiou".indexOf(b)==null and "AEIOUS".indexOf(a)==null and ["Ch","Mc"].indexOf(a+b)==null then s=String.capitalize(s[1:])
+		s=String.strip(s,"'-")
+		o[s]=1
+		o[s.lower]=1
+		//wait(.01)
+	end for
+	r={}
+	print(colorGold+"75%"+CT+" -- loading hash_table...")
+	print("<align=center>"+char(171)+char(187)+"</align>")
+	for p in o.indexes
+		if p.len > 3 then 
+			o[p[:4]] = 1
+			o[String.capitalize( p[:4] ) ] = 1
+			o[p[:3]] = 1
+			o[String.capitalize( p[:3] ) ] = 1
+		end if
+		if p.len > 4 then
+			o[p[-3:]] = 1
+			o[String.capitalize( p[-3:] )] = 1
+			o[p[-4:]] = 1
+			o[String.capitalize( p[-4:] )] = 1
+		end if
+	end for
+	for w in PASSWORDS
+		o[w] = 1
+	end for
+	if arg1 == "false" then return o.indexes
+	for i in o.indexes
+		r[md5(i)]=i
+	end for
+	return r
+	end function
+	PasswordGenerator.r=function(l,s,o)
+	c=s[s.len-3:]
+	if self.c.hasIndex(c) and s.len<l then
+		for c in self.c[c]
+		self.r(l,s+c,o)
+		//wait(.01)
+		end for
+	else
+		o[s]=1
+	end if
+	end function
+	if globals.BIGBRAIN and arg1 == "false" then 
+		//if arg1 == "false" then
+			return "Dictionary already expanded."
+		//end if
+		// print(colorGold+"0% -- loading hash_table, please wait..."+CT) // custom hash_tables currently disabled
+		// HASH_TABLE = {}
+		// for pw in globals.dict_a
+		// 	HASH_TABLE[md5(pw)] = pw
+		// 	//wait(.01)
+		// end for
+		// print(colorGold+"100%"+CT+" -- hash_table loaded...")
+	else
+		print(colorGold+"0% -- loading hash_table, please wait..."+CT)
+		if arg1 == "-t" or arg2 == "-t" then 
+			PasswordGenerator.init(PASSWORDSC)	
+		else 
+			PasswordGenerator.init(PASSWORDS)
+		end if
+		//PasswordGenerator.init(globals.dict_a)
+		//PasswordGenerator.init(globals.dict_a+PASSWORDS)
+		//PasswordGenerator.init(PASSWORDS[0:arg2])
+		//
+		print(colorGold+"10%"+CT+" -- loading hash_table...")
+		print("<align=center>"+char(171)+char(187)+"</align>")
+    HASH_TABLE = {}
+		HASH_TABLE=PasswordGenerator.AllPasswords
+    //if HASH_TABLE.len <= 1 then globals.HASH_TABLE = PasswordGenerator.AllPasswords else print "pwgen: HASH_TABLE already loaded; bypassing Markov"// trying this out, might be a bad idea
+		print(colorGold+"100%"+CT+" -- hash_table loaded...")
+		print("<b>Magnum Cerebrum: expanding onboard dictionary...</b>")
+		// globals.dict_a = HASH_TABLE.values
+		if arg2 == "-p" then globals.dict_a(HASH_TABLE.values + PASSWORDSA + PASSWORDSB + PASSWORDSC) else globals.dict_a(HASH_TABLE.values+PASSWORDS)
+		globals.BIGBRAIN = true
+		if arg1 == "false" then
+			return "Dictionary expaneded."
+		end if
+	end if
+	table = "tp"
+	if arg1 == "hash" then table = "t5"
+  table_path = get_custom_object.HOME[table]
+  t_par_path = table_path.remove("/tables/"+table)
+  t_par = globals.get_file(t_par_path) // usually /root/rkit
+  if not t_par then
+    print "pwgen: "+t_par_path+" not found;"+char(10)+"-- defaulting to currentPath"
+    t_par_path = globals.currentPath 
+    t_par = globals.get_file(t_par_path)
+    table_path = t_par_path+"/tables/"+table
+  end if
+  
+  print colorGold+"Writing tables to: "+table_path
+  command.mkdir(t_par_path+"/tables")
+  command.mkdir(table_path)
+  if not globals.get_file(table_path) then return "pwgen: write error; check permissions"
+  
+
+
+	//table_path = get_custom_object.HOME[table]//.split("/tables/t5")[0]
+	//print colorGold+"Writing tables to: "+table_path//+"/tables/"+table
+  //print command.mkdir(table_path)
+  // t_par = globals.get_file(table_path)
+  // if typeof(t_par) != "file" then 
+  //   print command.mkdir(currentPath+"/"+"tables")
+  //   t_par = globals.get_file(currentPath+"/"+table)
+  //   if typeof(t_par) != "file" then return colorWarning+"pwgen: write error; check permissions"
+  //   table_path = t_par.path
+  // end if
+  // t_par = tpar.parent
+  // command.mkdir(t_par.path)
+  //
+
+
+
+	print(colorGold+"Hash Table: ["+colorWhite+HASH_TABLE.len+"</color>]")
+	print("<align=center>"+char(171)+char(187)+"</align>")
+	out=[]
+	count=0
+	lol=1
+	for i in HASH_TABLE
+		count=count+1
+		if arg1 == "hash" then
+			//out=out+char(10)+i["key"]+"="+i["value"]
+			out.push(i["key"]+"="+i["value"])
+		else
+			//out=out+char(10)+i["value"]
+			out.push(i["value"])
+		end if
+		output = out.join(char(10))
+		if output.len > 159900 then
+			print(lol+" "+out.len+" "+output.len)
+			//localmachine.touch(home_dir+"/rkit/tables/"+table,lol+"")
+			//file=localmachine.File(home_dir+"/rkit/tables/"+table+"/"+lol)
+			localmachine.touch(table_path,lol+"")
+			file=globals.get_file(table_path+"/"+lol+"")
+      if not file then return colorWarning+"pwgen: write error; check tables path/permissions"
+			file.set_content(output)
+			command.perms("o-rwx",file)
+			out=[]
+			lol=lol + 1
+		end if
+		//wait(.01)
+	end for
+
+	if out.len > 0 then
+		lol = lol + 1
+		print(lol+" "+HASH_TABLE.len+" "+out.len)
+		localmachine.touch(table_path,lol+"")
+		file=globals.get_file(table_path+"/"+lol+"")
+    if not file then return colorWarning+"pwgen: write error; check tables path/permissions"
+		file.set_content(out.join(char(10)))
+		command.perms("o-rwx",file)
+	end if
+
+	return file.path
+end function
+if DEBUG then print("<size=75%>loaded ...pwgen.5pk...(20.912kb)")
+
+// glosure by maho_citrus
+command.glosure = function(arg1, arg2=0, arg3=0, arg4=0)
+    Error = function(msg) //This is up to implementation to decide.
+      return print("<color=red><noparse>" + @msg + "</noparse></color>") //reference implementation simply panics. 
+    end function
+    reader = function(codeStr) //code string to s-expression
+        newline = char(10)
+        whitespaces = " ," + char(9) + newline + char(13)
+        delimiters = " ,.'();" + char(9) + newline + char(13)
+        numbers = "0123456789."
+        len = codeStr.len
+        pos = 0
+        stack = [[]]
+        while pos < len
+            c = codeStr[pos]
+            pos = pos + 1
+            if whitespaces.indexOf(c) != null then continue //ignore whitespace
+            if c == "(" then //parse a new list
+                stack.push([])
+            else if c == ")" then //end a list
+                if stack.len < 2 then return Error("Glosure: Error: Unbalanced parenthesis.")
+                top = stack.pop
+                stack[-1].push(top)
+            else if numbers.indexOf(c) != null or (c == "-" and pos < len and numbers.indexOf(codeStr[pos]) != null) then //tokenize number
+                start = pos - 1
+                while pos < len and numbers.indexOf(codeStr[pos]) != null
+                    pos = pos + 1
+                end while
+                stack[-1].push(val(codeStr[start:pos]))
+            else if c == "'" then //tokenize string
+                token = ["'"]
+                while pos < len and codeStr[pos] != "'"
+                    if pos < len - 1 and codeStr[pos] == "\" then //"
+                        pos = pos + 1
+                        if codeStr[pos] == "t" then
+                            token.push(char(9))
+                        else if codeStr[pos] == "n" then
+                            token.push(char(10))
+                        else if codeStr[pos] == "r" then
+                            token.push(char(13))
+                        else
+                            token.push(codeStr[pos])
+                        end if
+                    else
+                        token.push(codeStr[pos])
+                    end if
+                    pos = pos + 1
+                end while
+                if pos >= len then return Error("Glosure: Error: Unbalanced quotes.")
+                token.push("'")
+                pos = pos + 1
+                stack[-1].push(token.join(""))
+            else if c == ";" then //ignore comment
+                if pos < len and codeStr[pos] == "|" then //multiline comment ;| ... |;
+                    pos = pos + 1
+                    while pos < len - 1
+                        if codeStr[pos] == "|" and codeStr[pos + 1] == ";" then
+                            pos = pos + 2
+                            break
+                        end if
+                        pos = pos + 1
+                    end while
+                else //single-line comment
+                    while pos < len and codeStr[pos] != newline
+                        pos = pos + 1
+                    end while
+                    if pos < len and codeStr[pos] == newline then pos = pos + 1
+                end if
+            else //tokenize symbol
+                start = pos - 1
+                while pos < len and delimiters.indexOf(codeStr[pos]) == null
+                    pos = pos + 1
+                end while
+                stack[-1].push(codeStr[start:pos])
+            end if
+        end while
+        if stack.len != 1 then return Error("Glosure: Error: Unbalanced parenthesis.")
+        return ["begin"] + stack[0]
+    end function
+    Env = function(__outer) //environment for Glosure, only build new environment when calling lambda.
+        Error = @Error
+        env = {"classID": "env", "__outer": __outer, "__local": {}}
+        if __outer then env.__outest = __outer.__outest else env.__outest = env
+        env.contains = function(self, symbol)
+            return hasIndex(self.__local, @symbol)
+        end function
+        env.def = function(self, symbol, value)
+            self.__local[@symbol] = @value
+            return @value
+        end function
+        env.set = function(self, symbol, value)
+            if self.contains(@symbol) then return @self.def(@symbol, @value)
+            if self.__outer then return @self.__outer.set(@symbol, @value) else return Error("Glosure: Runtime Error: Unknown symbol '" + @symbol + "'.")
+        end function
+        env.get = function(self, symbol)
+            if self.contains(@symbol) then return @self.__local[@symbol]
+            if self.__outer then return @self.__outer.get(symbol) else return Error("Glosure: Runtime Error: Unknown symbol '" + @symbol + "'.")
+        end function
+        return env
+    end function
+    eval = function(expr, env) //evaluate Glosure s-expression
+        if not @expr isa list then
+            if not @expr isa string then return @expr
+            if expr[0] == "'" then return expr[1:-1] else return env.get(expr)
+        end if
+        if not len(expr) then return null
+        first = @expr[0]
+        if @first == "def" then //bind value to symbol
+            if len(@expr) < 3 then return Error("Glosure: Runtime Error: def keyword requires 2 arguments.") else return env.def(@expr[1], eval(@expr[2], env))
+        else if @first == "=" then
+            if len(@expr) < 3 then return Error("Glosure: Runtime Error: = keyword requires 2 arguments.") else return env.set(@expr[1], eval(@expr[2], env))
+        else if @first == "quote" then
+            if len(@expr) != 2 then return Error("Glosure: Runtime Error: quote keyword requires 2 arguments.") else return @expr[1]
+        else if @first == "if" then //if statement
+            if len(@expr) < 3 then return Error("Glosure: Runtime Error: if keyword requires 2 or 3 arguments.")
+            if eval(@expr[1], env) then return eval(@expr[2], env)
+            if len(@expr) > 3 then return eval(@expr[3], env) else return null
+        else if @first == "loop" then //loop if the last argument evaluate to true.
+            result = 1 //(loop) halts the program forever.
+            while @result
+                for stmt in @expr[1:]
+                    result = eval(@stmt, env)
+                end for
+            end while
+            return @result
+        else if @first == "lambda" then //lambda statement
+            if len(@expr) < 3 then return Error("Glosure: Runtime Error: lambda keyword requires 2 or more arguments.")
+            if not @expr[1] isa list then return Error("Glosure: Runtime Error: lambda requires a list as params.") else return {"classID": "lambda", "params": @expr[1], "body": expr[2:], "env": @env}
+        else if @first == "begin" then //evaluate each argument and return the last one.
+            result = null
+            for stmt in expr[1:]
+                result = eval(@stmt, env)
+            end for
+            return @result
+        else if @first == "exec" then //interpret a string as Glosure code.
+            if len(@expr) != 2 then return Error("Glosure: Runtime Error: exec keyword requires 1 argument.") else return execute(eval(@expr[1], env), env)
+        else if @first == "eval" then //evaluate a list as Glosure code.
+            if len(@expr) != 2 then return Error("Glosure: Runtime Error: eval keyword requires 1 argument.") else return eval(eval(@expr[1], env), env)
+        else if @first == "glosure" then //build a "glosure"(host function), advanced feature, extremely dangerous
+            if len(@expr) < 3 then return Error("Glosure: Runtime Error: glosure keyword requires 2 or more arguments.")
+            if not @expr[1] isa list then return Error("Glosure: Runtime Error: glosure requires a list as params.")
+            if len(@expr[1]) > 5 then return Error("Glosure: Runtime Error: glosure can only take 5 or less params.")
+            __eval = @eval
+            buildGlosure = function
+                __eval = @outer.__eval
+                lambda = {"classID": "glosure", "params": @expr[1], "body": expr[2:], "env": @env}
+                glosure0 = function()
+                    return __eval([lambda], lambda.env)
+                end function
+                glosure1 = function(arg0)
+                    return __eval([lambda, @arg0], lambda.env)
+                end function
+                glosure2 = function(arg0, arg1)
+                    return __eval([lambda, @arg0, @arg1], lambda.env)
+                end function
+                glosure3 = function(arg0, arg1, arg2)
+                    return __eval([lambda, @arg0, @arg1, @arg2], lambda.env)
+                end function
+                glosure4 = function(arg0, arg1, arg2, arg3)
+                    return __eval([lambda, @arg0, @arg1, @arg2, @arg3], lambda.env)
+                end function
+                glosure5 = function(arg0, arg1, arg2, arg3, arg4)
+                    return __eval([lambda, @arg0, @arg1, @arg2, @arg3, @arg4], lambda.env)
+                end function
+                if len(lambda.params) == 0 then return @glosure0
+                if len(lambda.params) == 1 then return @glosure1
+                if len(lambda.params) == 2 then return @glosure2
+                if len(lambda.params) == 3 then return @glosure3
+                if len(lambda.params) == 4 then return @glosure4 else return @glosure5
+            end function
+            return buildGlosure
+        else if @first == "dot" then //invoke host method. Warning: more arguments than a method can take will result in crash and the Glosure interpreter cannot catch this error!
+            if len(expr) < 3 then return Error("Glosure: Runtime Error: dot keyword requires at least 2 arguments.")
+            if len(expr) > 8 then return Error("Glosure: Runtime Error: dot keyword take at most 7 params but received " + (len(expr) - 1) + " arguments.")
+            args = []
+            for arg in expr[1:]
+                args.push(eval(@arg, env))
+            end for
+            object = @args[0]
+            method = @object[@args[1]]
+            args = args[2:]
+            if len(args) == 0 then return method(@object)
+            if len(args) == 1 then return method(@object, @args[0])
+            if len(args) == 2 then return method(@object, @args[0], @args[1])
+            if len(args) == 3 then return method(@object, @args[0], @args[1], @args[2])
+            if len(args) == 4 then return method(@object, @args[0], @args[1], @args[2], @args[3]) else return method(@object, @args[0], @args[1], @args[2], @args[3], @args[4])
+        else if @first == "array" then
+            args = []
+            for arg in expr[1:]
+                args.push(eval(@arg, env))
+            end for
+            return args
+        else if @first == "dict" then
+            args = []
+            for arg in expr[1:]
+                args.push(eval(@arg, env))
+            end for
+            if len(args) % 2 != 0 then args.push(null) //append a null if the last one does not have a pair.
+            ret = {}
+            for i in range(0, len(args) - 1, 2)
+                ret[@args[i]] = @args[i + 1]
+            end for
+            return @ret
+        else if @first == "context" then
+            return env.__local
+        else
+            func = eval(@first, env)
+            args = expr[1:]
+            evaluatedArgs = []
+            if @func isa map and hasIndex(func, "classID") and (func.classID == "lambda" or func.classID == "glosure") then
+                for arg in args
+                    if func.classID == "lambda" then evaluatedArgs.push(eval(@arg, env)) else evaluatedArgs.push(@arg)
+                end for
+                while len(evaluatedArgs) < len(func.params)
+                    evaluatedArgs.push(null) //append null for not enough arguments
+                end while
+                newEnv = Env(func.env)
+                newEnv.def("_rem", evaluatedArgs[len(func.params):]) // A special symbol that catches extra arguments and store as a list.
+                for i in indexes(func.params)
+                    newEnv.def(@func.params[i], @evaluatedArgs[i])
+                end for
+                result = null
+                for bodyExpr in func.body
+                    result = eval(@bodyExpr, newEnv)
+                end for
+                return @result
+            else if @func isa funcRef then
+                if len(args) > 5 then return Error("Glosure: Runtime Error: glosure takes at most 5 params but received " + len(args) + " arguments.")
+                for arg in args
+                    evaluatedArgs.push(eval(@arg, env))
+                end for
+                if len(evaluatedArgs) == 0 then return func()
+                if len(evaluatedArgs) == 1 then return func(@evaluatedArgs[0])
+                if len(evaluatedArgs) == 2 then return func(@evaluatedArgs[0], @evaluatedArgs[1])
+                if len(evaluatedArgs) == 3 then return func(@evaluatedArgs[0], @evaluatedArgs[1], @evaluatedArgs[2])
+                if len(evaluatedArgs) == 4 then return func(@evaluatedArgs[0], @evaluatedArgs[1], @evaluatedArgs[2], @evaluatedArgs[3])
+                return func(@evaluatedArgs[0], @evaluatedArgs[1], @evaluatedArgs[2], @evaluatedArgs[3], @evaluatedArgs[4])
+            else
+                return Error("Glosure: Runtime Error: '" + @func + "' is not a callable value.")
+            end if
+        end if
+    end function
+    GlobalEnv = function
+        globalEnv = Env(null) //global and general methods do not have access to environment. those are for keywords.
+        globalEnv.__local["&"] = function(a, b)
+            return @a and @b
+        end function
+        globalEnv.__local["|"] = function(a, b)
+            return @a or @b
+        end function
+        globalEnv.__local["!"] = function(a)
+            return not @a
+        end function
+        globalEnv.__local["=="] = function(a, b)
+            return @a == @b
+        end function
+        globalEnv.__local["!="] = function(a, b)
+            return @a != @b
+        end function
+        globalEnv.__local[">="] = function(a, b)
+            return @a >= @b
+        end function
+        globalEnv.__local["<="] = function(a, b)
+            return @a <= @b
+        end function
+        globalEnv.__local[">"] = function(a, b)
+            return @a > @b
+        end function
+        globalEnv.__local["<"] = function(a, b)
+            return @a < @b
+        end function
+        globalEnv.__local["+"] = function(a, b)
+            return @a + @b
+        end function
+        globalEnv.__local["-"] = function(a, b)
+            return @a - @b
+        end function
+        globalEnv.__local["*"] = function(a, b)
+            return @a * @b
+        end function
+        globalEnv.__local["/"] = function(a, b)
+            return @a / @b
+        end function
+        globalEnv.__local["^"] = function(a, b)
+            return @a ^ (@b)
+        end function
+        globalEnv.__local["%"] = function(a, b)
+            return @a % @b
+        end function
+        globalEnv.__local["isa"] = function(a, b)
+            return @a isa @b
+        end function
+        globalEnv.__local.at = function(a, b)
+            return @a[@b]
+        end function
+        globalEnv.__local.set = function(a, b, c)
+            (@a)[@b] = @c
+            return @c
+        end function
+        general = {"active_user": @active_user, "bitwise": @bitwise, "clear_screen": @clear_screen, "command_info": @command_info, "current_date": @current_date, "current_path": @current_path, "exit": @exit, "format_columns": @format_columns, "get_ctf": @get_ctf, "get_custom_object": @get_custom_object, "get_router": @get_router, "get_shell": @get_shell, "get_switch": @get_switch, "home_dir": @home_dir, "include_lib": @include_lib, "is_lan_ip": @is_lan_ip, "is_valid_ip": @is_valid_ip, "launch_path": @launch_path, "mail_login": @mail_login, "nslookup": @nslookup, "parent_path": @parent_path, "print": @print, "program_path": @program_path, "reset_ctf_password": @reset_ctf_password, "typeof": @typeof, "user_bank_number": @user_bank_number, "user_input": @user_input, "user_mail_address": @user_mail_address, "wait": @wait, "whois": @whois, "to_int": @to_int, "time": @time, "abs": @abs, "acos": @acos, "asin": @asin, "atan": @atan, "ceil": @ceil, "char": @char, "cos": @cos, "floor": @floor, "log": @log, "pi": @pi, "range": @range, "round": @round, "rnd": @rnd, "sign": @sign, "sin": @sin, "sqrt": @sqrt, "str": @str, "tan": @tan, "yield": @yield, "slice": @slice, "number": @number, "string": @string, "list": @list, "map": @map, "funcRef": @funcRef, "globals": @globals, "true": true, "false": false, "null": null}
+        if not hasIndex(globals, "IS_GREYBEL") then // Greybel compatibility
+            general["get_abs_path"] = @get_abs_path
+            general["cd"] = @cd
+        end if
+        for method in general + string + list + map
+            globalEnv.def(@method.key, @method.value)
+        end for
+        globalEnv.def("Error", @Error) // Since different implementation can have different error handling, we need this Error glosure.
+        return globalEnv
+    end function
+    preprocess = function(expr, env) // Preprocesses macros and stuff
+        if not env.__outest.hasIndex("__macros") then env.__outest.__macros = {}
+        if not env.__outest.hasIndex("__gensymCounter") then env.__outest.__gensymCounter = 0
+        __macros = env.__outest.__macros
+        fmap = function(f, expr, env) // Maps f(x) to s-expression with env
+            expr = expr[0:]
+            i = 0
+            len = expr.len
+            while i < len
+                expr[i] = f(@expr[i], env)
+                i = i + 1
+            end while
+            return expr
+        end function
+        deepreplace = function(expr, a, b) // Replaces an occurence of @a to @b in s-expression
+            result = []
+            for e in expr
+                if e isa list then
+                    result.push(deepreplace(e, a, b))
+                else if e == a then
+                    result.push(b)
+                else
+                    result.push(e)
+                end if
+            end for
+            return result
+        end function
+        gensym = function(env) // Generates a unique symbol via counter.
+            env.__outest.__gensymCounter = env.__outest.__gensymCounter + 1
+            return "#:G" + env.__outest.__gensymCounter
+        end function
+        _preprocess = function(expr, env)
+            if not expr isa list then return expr
+            if expr.len == 0 then return expr[0:]
+            keyword = expr[0]
+            if keyword == "defmacro" then // Macro definition
+                if expr.len != 5 then return Error("Glosure: Preprocessing Error: defmacro keyword requires 4 arguments.")
+                name = expr[1]
+                if not name isa string then return Error("Glosure: Preprocessing Error: defmacro keyword requires name to be a symbol.")
+                args = expr[2]
+                if not args isa list then return Error("Glosure: Preprocessing Error: defmacro keyword requires args to be an s-expression.")
+                for arg in args
+                    if not arg isa string then return Error("Glosure: Preprocessing Error: defmacro keyword requires each macro argument to be a symbol.")
+                end for
+                syms = expr[3]
+                if not syms isa list then return Error("Glosure: Preprocessing Error: defmacro keyword requires macro gensym symbols to be an s-expression.")
+                for sym in syms
+                    if not sym isa string then return Error("Glosure: Preprocessing Error: defmacro keyword requires each macro gensym symbol to be a symbol.")
+                end for
+                body = expr[4]
+                if not body isa string and not body isa list then return Error("Glosure: Preprocessing Error: defmacro keyword requires body to be either a symbol or an s-expression.")
+                if body isa list then
+                    for sym in syms
+                        body = deepreplace(body, sym, gensym(env))
+                    end for
+                end if
+                __macros[name] = [args, body]
+                return ["begin"] // special form that does nothing.
+            else if __macros.hasIndex(keyword) then // Macro expansion
+                macroname = keyword
+                macroargs = __macros[macroname][0]
+                macrobody = __macros[macroname][1]
+                args = expr[1:]
+                if macroargs.len == 0 then
+                    if args.len == 0 then return _preprocess(macrobody, env)
+                    expr = expr[0:]
+                    expr[0] = _preprocess(macrobody, env)
+                    return _preprocess(expr, env)
+                else if macroargs.len != args.len then
+                    return Error("Glosure: Preprocessing Error: " + macroname + " macro requires " + macroargs.len + " arguments.")
+                else
+                    body = macrobody[0:]
+                    for i in args.indexes
+                        macroarg = macroargs[i]
+                        arg = args[i]
+                        body = deepreplace(body, macroarg, arg)
+                    end for
+                    return _preprocess(body, env)
+                end if
+            else
+                return fmap(@_preprocess, expr, env)
+            end if
+        end function
+        return _preprocess(expr, env)
+    end function
+
+    execute = function(codeStr, env)
+        return eval(preprocess(reader(codeStr), env), env)
+    end function
+
+    tree = function(anyObject, depth = 5) //basically str() with custom depth limit, this walk the tree with recursion until everything is consumed.
+      if depth == 0 then return "..."
+      if @anyObject isa map then
+        if hasIndex(anyObject, "classID") then return @anyObject.classID //doesnt unfold Grey Hack object anymore
+        ret = []
+        for pair in anyObject
+          ret.push(tree(@pair.key, depth - 1) + ": " + tree(@pair.value, depth - 1))
+        end for
+        return "{" + ret.join(", ") + "}"
+      else
+        if @anyObject isa funcRef or anyObject isa number then return "" + @anyObject
+        if anyObject isa string then return """" + anyObject + """"
+        if anyObject isa list then
+          ret = []
+          for item in anyObject
+            ret.push(tree(@item, depth - 1))
+          end for
+          return "[" + ret.join(", ") + "]"
+        end if
+        if anyObject == null then return "null"
+        return "" + anyObject 
+      end if
+    end function
+    repl = function(env)
+      while true
+        //codeStr = user_input("</> ")
+        codeStr = user_input("</> ",0,0,1)
+        if codeStr == ";quit" then break
+        result = execute(codeStr, env)
+        if @result isa string then print(result) else print(tree(@result))
+      end while
+    end function
+  
+    if not hasIndex(globals, "glosureEnv") then
+      prepareCode = ";; Standard Glosure Library"+char(10)+
+        "(defmacro defun (name arguments body) () (def name (lambda arguments body)))"+char(10)+
+        "(defmacro defunction (name arguments body) () (def name (glosure arguments body)))"+char(10)+
+        "(defmacro while (condition body) (!result)"+char(10)+
+        "    (if condition (begin"+char(10)+
+        "        (loop (def !result body) condition)"+char(10)+
+        "        !result)))"+char(10)+
+        char(10)+
+        "(defmacro do-while (condition body) (!result) (begin"+char(10)+
+        "    (loop (def !result body) condition)"+char(10)+
+        "    !result))"+char(10)+
+        char(10)+
+        "(defmacro for (initializer condition iterator body) (!result) ((lambda ()"+char(10)+
+        "    initializer"+char(10)+
+        "    (if condition (begin"+char(10)+
+        "        (loop (def !result body) iterator condition)"+char(10)+
+        "        !result)))))"+char(10)+
+        char(10)+
+        "(defmacro foreach (key value collection body) (!keys !idx !len !result !collection) ((lambda (!collection)"+char(10)+
+        "    (def !keys (indexes !collection))"+char(10)+
+        "    (def !len (len !keys))"+char(10)+
+        "    (def !idx 0)"+char(10)+
+        "    (if !len (begin"+char(10)+
+        "        (loop"+char(10)+
+        "            (def key (at !keys (var++ !idx)))"+char(10)+
+        "            (def value (at !collection key))"+char(10)+
+        "            (def !result body)"+char(10)+
+        "            (< !idx !len))"+char(10)+
+        "        !result))) collection))"+char(10)+
+        char(10)+
+        "(defmacro repeat (times body) (!times !result) (if"+char(10)+
+        "    (> (def !times times) 0)"+char(10)+
+        "    (begin"+char(10)+
+        "        (loop (def !result body) (-- !times))"+char(10)+
+        "        !result)))"+char(10)+
+        char(10)+
+        "(defmacro defalias (name keyword) () (defmacro name () () keyword))"+char(10)+
+        char(10)+
+        "(defun concat () (join _rem ''))"+char(10)+
+        char(10)+
+        "(defun // (a b) (floor (/ a b)))"+char(10)+
+        char(10)+
+        "(defmacro swap (a b) (!temp) (begin"+char(10)+
+        "    (def !temp a)"+char(10)+
+        "    (= a b)"+char(10)+
+        "    (= b !temp)))"+char(10)+
+        char(10)+
+        "(defmacro ++ (var) () (= var (+ var 1)))"+char(10)+
+        "(defmacro var++ (var) (!temp) (begin"+char(10)+
+        "    (def !temp var)"+char(10)+
+        "    (= var (+ var 1))"+char(10)+
+        "    !temp))"+char(10)+
+        char(10)+
+        "(defmacro -- (var) () (= var (- var 1)))"+char(10)+
+        "(defmacro var-- (var) (!temp) (begin"+char(10)+
+        "    (def !temp var)"+char(10)+
+        "    (= var (- var 1))"+char(10)+
+        "    !temp))"+char(10)+
+        char(10)+
+        "(defmacro += (var val) () (= var (+ var val)))"+char(10)+
+        "(defmacro -= (var val) () (= var (- var val)))"+char(10)+
+        "(defmacro *= (var val) () (= var (* var val)))"+char(10)+
+        "(defmacro /= (var val) () (= var (/ var val)))"+char(10)+
+        "(defmacro //= (var val) () (= var (// var val)))"+char(10)+
+        "(defmacro %= (var val) () (= var (% var val)))"+char(10)+
+        "(defmacro ^= (var val) () (= var (^ var val)))"+char(10)+
+        "(defmacro &= (var val) () (= var (& var val)))"+char(10)+
+        "(defmacro |= (var val) () (= var (| var val)))"+char(10)+
+        char(10)+
+        "(defun add (result) (foreach k v _rem (+= result v)))"+char(10)+
+        "(defun sub (result) (foreach k v _rem (-= result v)))"+char(10)+
+        "(defun mul (result) (foreach k v _rem (*= result v)))"+char(10)+
+        "(defun div (result) (foreach k v _rem (/= result v)))"+char(10)+
+        "(defun mod (result) (foreach k v _rem (%= result v)))"+char(10)+
+        "(defun pow (result) (foreach k v _rem (^= result v)))"+char(10)+
+        "(defun and (result) (foreach k v _rem (&= result v)))"+char(10)+
+        "(defun or (result) (foreach k v _rem (|= result v)))"+char(10)+
+        "(def not !)"+char(10)+
+        char(10)+
+        "(def params (if (hasIndex globals 'params') (at globals 'params') (array)))"+char(10)+
+        char(10)+
+        "(def script-path (program_path))"+char(10)+
+        char(10)+
+        ";(defun gensym () (exec '(defmacro _ () (sym) (quote sym))(_)')) ;; Unquote is needed to make it any usefull      " //This one is hardcoded code you can run at start up.
+      globals.glosureEnv = Env(GlobalEnv)
+      execute(prepareCode, glosureEnv)
+    end if
+  
+    helpMsg = "Usage: glosure -- invoke Glosure REPL, type ;quit to quit."+char(10)+
+  "Usage: glosure [-e|exec] ""code""  -- execute Glosure code."+char(10)+
+  "Glosure interpreter version: 52fd0c2. For a more detailed guide read https://github.com/rocketorbit/Glosure/blob/main/Tutorial.md"+char(10)+
+  "<b>Warning: This command is a programming language! Your error may result in crash!</b>"+char(10)+
+  char(10)+
+  "Short reference:"+char(10)+
+  "(function arg1 arg2 argn) essentially behaves like function(arg1, arg2, argn) in miniscript"+char(10)+
+  "This language has 7 datatypes,"+char(10)+
+  "-- string number list map null are the same as GreyScript string number list map null,"+char(10)+
+  "-- glosure means GreyScript function,"+char(10)+
+  "-- lambda means a Glosure ""anonymous function"""+char(10)+
+  "Use 'hi' to repersent a string ""hi"""+char(10)+
+  "Use 42 to repersent a number 42, true is a predefined variable with a value 1,"+char(10)+
+  "-- false is a predefined variable with a value 0."+char(10)+
+  "null is a predefined variable with a value null."+char(10)+
+  "Use (list 1 2 'a') to repersent a list [1, 2, ""a""]"+char(10)+
+  "Use (map 'a' 1 'b' 2) to repersent a map {""a"": 1, ""b"": 2},"+char(10)+
+  "-- globals is a predefined map which references the GreyScript globals map."+char(10)+
+  "Use (def name 'value') to define a variable name with a value ""value"""+char(10)+
+  "Use (lambda (arguments) (body)) to define an anonymous lambda expression(aka function),"+char(10)+
+  "-- you can bind it to a variable name with syntax like (def square (lambda (x) (* x x)))."+char(10)+
+  "-- This is the only native datatype and you should NEVER pass this through API."+char(10)+
+  "Use (glosure (arguments) (body)) to define an anonymous glosure(aka GreyScript function), you can bind it to a variable name with syntax like (def square (glosure (x) (* x x)))."+char(10)+
+  "-- This is only used for GreyScript interop and you should not use this when you can use lambda instead."+char(10)+
+  "Use (while expression statement) to loop without recursion."+char(10)+
+  "Use (if expression statement optional_else_statement) to use if or if-else statement."+char(10)+
+  "Use (function_name argument_1 argument_2 argument_N) to call a binded lambda or a binded glosure."+char(10)+
+  "Use (dot object method_name argument_1 argument_2 argument_N) to access a method under a grey hack object."+char(10)+
+  "-- This is dangerous and can cause crash if used incorrectly, read Manual.exe while using it."+char(10)+
+  "(at name index) essentially works like name[index], you can use it on any container."+char(10)+
+  "(set name index value) essentially works like name[index] = value, you can use it on any container."+char(10)+
+  "-- It can also used to assign any glosure to host env with globals"+char(10)+
+  "-- <b>Warning: Advanced feature are not for people who dont know what they are doing!"+char(10)+
+  "---- Your error will very likely result in crash!"+char(10)+
+  char(10)+
+  "NOTE: lines entered into the REPL will be added to the 'up-arrow' command history"
+    if arg1 == "help" or arg1 == "-h" then return helpMsg
+    if arg1 == "-e" or arg1 == "exec" then return execute(arg2, glosureEnv)
+    if arg1 == "-E" or arg1 == "eval" then return eval(arg2, glosureEnv)
+    return repl(glosureEnv)
+  end function
+  //
+  // htop by redit0
+  command.htop = function(arg1=0, arg2=0,arg3=0,arg4=0)
+    colorize = function(num, v, perc = 0)
+      p = ""
+      if perc then p = "%"
+      if num > 94 then return "<color=#c30000><b>" + v + p + "</b></color>"
+          if num > 89 then return "<color=#ffa500><b>" + v + p + "</b></color>"
+          if num > 79 then return "<color=#dbd700><b>" + v + p + "</b></color>"
+      return "<color=#85b8ff><b>" + v + p + "</b></color>"
+    end function
+    if @arg1 != 0 then
+      if ["string","number","shell","computer"].indexOf(typeof(@arg1)) == null then return "Invalid argument: "+typeof(@arg1)+": "+@arg1
+      top_usage = "htop || actually htop"+char(10)+
+      "<b>Usage: "+colorGold+"htop</color> -- show processes running on the active host_computer"+char(10)+
+      "-- to end the running process, use the command:<b> purge -d [opt:name]"+char(10)+
+      "---- or note the daemon name printed on the screen and "+char(10)+
+      "---- remove the corresponding line from <b>/root/5hell.d</b>"+char(10)+
+      "---- or delete the file entirely"+char(10)+
+      "-- if the file cannot be created, then the process must be exited with <b>ctrl+c"+char(10)+
+      "-- when glasspool is active:"+char(10)+
+      "-- the active shell/computer is the active host_computer"+char(10)+
+      "<b>Usage: htop -- show processes running on active host_computer"+char(10)+
+      "--eg: htop"+char(10)+
+      "<b>Usage: htop [#] -- show processes running on the buffer object at the specified index."+char(10)+
+      "--eg: htop 1"+char(10)+
+      "<b>Usage: htop [shell|computer] -- show processes running on the piped object."+char(10)+
+      "--eg: clipa @B 1 | htop"+char(10)+
+      "--eg: rsi 1 7 | htop"
+      if arg1 == "help" or arg1 == "-h" then return top_usage
+      if typeof(arg1) == "number" then arg1 = str(arg1)
+      if typeof(arg1) == "shell" then
+        locals.top_comp = arg1.host_computer
+      else if typeof(arg1) == "computer" then
+        locals.top_comp = arg1
+      else if typeof(arg1.to_int) == "number" then
+        idx = arg1.to_int
+        if idx >= 0 and idx < globals.BUFFER.len then temp_comp = globals.BUFFER[idx] else return "BUFFER: invalid selection."
+        if typeof(temp_comp) == "shell" then
+          locals.top_comp = temp_comp.host_computer
+        else if typeof(temp_comp) == "computer" then
+          locals.top_comp = temp_comp
+        else
+          return "BUFFER: invalid object type: " + typeof(temp_comp)
+        end if
+      else
+        return "Invalid argument: "+typeof(arg1)+": "+arg1
+      end if
+    else
+      locals.top_comp = globals.localmachine
+    end if
+    hostname = locals.top_comp.get_name
+    manager = new DaemonManager
+    daemon = manager.Start("htop", hostname + " - " + locals.top_comp.public_ip + "::" + locals.top_comp.local_ip)
+    while (daemon and manager.Check(daemon)) or not manager.__initialized
+          lines = locals.top_comp.show_procs.split("\n")[1:]
+          procs = []
+          users = []
+          memory = 0
+          cpu = 0
+          admin = 0
+          for line in lines
+              parts = line.split(" ")
+              process = {"user":parts[0], "pid":parts[1], "cpu":parts[2][:-1].val, "memory":parts[3][:-1].val, "command":parts[4].replace("5hell",colorRed+"5"+colorWhite+"hell")}
+              procs.push(process)
+          end for
+          for proc in procs
+              if proc.user == "root" and proc.command == "dsession" then admin = 1
+              if (proc.command == "dsession" or proc.command == "Xorg") and users.indexOf(proc.user) == null then users.push(proc.user)
+              memory = memory+proc.memory
+              cpu = cpu+proc.cpu
+          end for
+          cpu_squares = ceil(20*(cpu/100))
+          cpu_blanks = 20-cpu_squares
+          cpu_bar = colorize(cpu,"#"*cpu_squares) + "<color=#ffffff00>" + "#"*cpu_blanks + "</color>"
+          memory_squares = ceil(20*(memory/100))
+          memory_blanks = 20-memory_squares
+          memory_bar = colorize(memory,"#"*memory_squares) + "<color=#ffffff00>" + "#"*memory_blanks + "</color>"
+          output = "<color=#eeeeee><b><size=110%>Monitoring: "+hostname+"</size><size=90%>"+char(10)+
+      "[" + locals.top_comp.public_ip + "] [" + locals.top_comp.local_ip + "]"+char(10)+
+      "Daemon: "+daemon+"</size></b></color>" + char(10)*2 +
+          "Running Processes: " + procs.len + char(10) +
+          "Users Online: " + users.len + char(10) +
+          "CPU Utilization: [" + cpu_bar + "]==[ "+colorize(cpu,cpu,1)+" ]" + char(10) +
+          "RAM Utilization: [" + memory_bar + "]==[ "+colorize(memory,memory,1)+" ]" + char(10)*2
+          if admin then output = output + "<size=140%><mark=c3000099>" + " "*12 + "<b>ADMIN ONLINE</b>" + " "*12 + "</mark></size><color=#ffffff00>|</color>" + char(10)*2
+          procList = "<color=#666666><b><voffset=0.5em>USER<pos=130>PID<pos=210>CPU<pos=290>RAM<pos=370>COMMAND</voffset></b></color>" + char(10)
+          for proc in procs
+              if proc.user == "root" then
+                  procList = procList+colorize(99,"root")
+              else if proc.user == "guest" then
+                  procList = procList+"<color=#666666><b>guest</b></color>"
+              else
+                  procList = procList+colorize(1,proc.user)
+              end if
+              procList = procList + "<pos=130><color=#77aa33><b>" + proc.pid + "</b></color><pos=210>"+colorize(proc.cpu,proc.cpu,1)
+              procList = procList + "<pos=290>"+colorize(proc.memory,proc.memory,1)
+              procList = procList + "<pos=370><color=#00709d><b>" + proc.command + "</b></color>" + char(10)
+          end for
+          output = output + procList
+          print(output, 1)
+          wait 0.5
+    end while
+  end function
+  
+  
+  
+  //////// contributed shared functions ///////////////
+  
+  // regex engine for greyscript
+  // transcribed from C code provided by Princeton U.
+  // useage: re.match( String: regex pattern, Char Array (list): text to parse )
+  // returns 1 if match and 0 if no match
+  // regex engine, translated from C code provided by Princeton U., by Plu70
+  re = {}
+  re.match = function(regexp, text) 
+    if regexp[0] == "^" then
+      regexp.pull
+      return re.match_here(regexp,text)
+    end if
+    while text.len > 0
+      if re.match_here(regexp, text) then return 1
+      text.pull
+    end while
+    return 0
+  end function
+  re.match_here = function(regexp, text)
+    if not regexp then return 1
+    if regexp.len > 1 and regexp[1] == "#" then 
+      return self.match_star(regexp[0], regexp[2:], text)
+    end if
+    if regexp[0] == "$" and not regexp.hasIndex(1) then
+      if text.hasIndex(1) then return 0 else return 1
+    end if
+    if text.len > 0 and (regexp[0] == "*" or regexp[0] == text[0]) then 
+      return self.match_here(regexp[1:], text[1:])
+    end if
+    return 0
+  end function
+  re.match_star = function(c, regexp, text)
+    while text.len and (text[0] == c or c == "*") 
+      if re.match_here( regexp, text) then return 1
+      text = text[1:]
+    end while
+    return 0
+  end function
+  if DEBUG then print("<size=75%>loaded regex engine...</size>")
+  // end regex engine //
+  //
+  // checkUser function by Corvus, additions by Plu70
+  // disgusting hacks added to make it compatible with GH's new filesystem permission rules
+  checkUser = function(result)
+    if DEBUG then print("checkUser: "+@result)
+    if typeof(@result) == "function" then return "function"
+    user = ""
+    rfile = null
+    file = null
+    if result == null then return "null"
+    if typeof(result) != "shell" and typeof(result) != "ftpshell" and typeof(result) != "file" and typeof(result) != "computer" and typeof(result) != "ftpComputer" then return "???"
+    if typeof(result) == "computer" or typeof(result) == "ftpComputer" then
+      file = result.File("/home")
+      rfile = result.File("/")
+    else if typeof(result) == "shell" or typeof(result) == "ftpshell" then
+      file = result.host_computer.File("/home")
+      rfile = result.host_computer.File("/")
+    end if
+    if typeof(rfile) == "file" and rfile.has_permission("w") then
+      user = "root"
+    else if typeof(rfile) == "file" and file then
+      for folder in file.get_folders
+        if typeof(folder) == "file" and folder.has_permission("w") and folder.name != "guest" then user = folder.name
+      end for
+    end if
+    if typeof(result) == "file" then
+      if DEBUG then print "check_user: found file"
+      if not p_validate(result,"name") then return "null"
+      file = result
+      if file.name != "/" then
+        // file = file.parent
+        while file and file.name != "/" // File may not exist by now, so .parent() returns null and .name() results in a crash!
+          file = file.parent
+          if typeof(file) != "file" then file = null
+        end while
+      end if
+      if typeof(file) != "file" then return "???"
+      if file.has_permission("w") then user = "root"
+      for folder in file.get_folders
+        if typeof(folder) != "file" then return "???"
+        if folder.name == "root" then
+          if folder.has_permission("w") then user = "root"
+        end if
+        if folder.name == "home" and user != "root" then
+          for sub in folder.get_folders
+            if typeof(sub) != "file" then return "???"
+            if sub.has_permission("w") and sub.name != "guest" then user = sub.name
+          end for
+        end if
+      end for
+    end if
+    if user == "" then user = "guest"
+    return user // by Corvus
+  end function
+  // end check user //
+  //
+  //
+  //
+  // DAEMON manager, by redi0
+  //
+  DaemonManager = {
+    "__comp": globals.localmachine,
+    "__file": null,
+    //"__filePath": "/root/5hell.d",
+    "__filePath": globals.currentPath+"/5hell.d",
+    "__initialized": 0,
+    "__type": {
+      "kore": "kore",
+      "hashim": "hashim",
+      "htop": "htop",
+      "outmon": "outmon",
+      "rsi": "rsi"}}// greyscript doesn't like these closing braces on their own line for whatever reason
+  
+  DaemonManager.__getNext = function(type)
+    if not self.__initialized then return null
+    max = 0
+    lines = self.List
+    for line in lines
+      if line == "" then continue
+      if line.indexOf(self.__type[type]) != null then
+        identifier = line.split(" ")[0]
+        if identifier.indexOf("_") == null then continue
+        parts = identifier.split("_")
+        if parts.len != 2 then continue
+        if typeof(parts[1].to_int) != "number" then continue
+        test = parts[1].to_int
+        if test > max then max = test
+      end if
+    end for
+    return max + 1
+  end function
+  
+  
+  DaemonManager.Check = function(daemon)
+    if typeof(@daemon) != "string" then return
+    if not self.__initialized then return 0
+    lines = self.List
+    for line in lines
+      parts = @line.split(" ")
+      if parts[0] == daemon then return 1
+    end for
+    return 0
+  end function
+
+  DaemonManager.List = function
+    if not self.__initialized then return []
+    if not self.__file then return []
+    content = self.__file.get_content
+    if not content then return []
+    lines = content.split(char(10))
+    for idx in range(0,lines.len - 1)
+      if lines[idx] == "" then
+        lines.remove(idx)
+        idx = idx - 1
+      end if
+    end for
+    return lines
+  end function
+  
+  // original by redit0
+  // DaemonManager.Init = function
+  //   file = self.__comp.File(self.__filePath)
+  //   if not file then
+  //     //self.__comp.touch("/root", "5hell.d")
+  //     self.__comp.touch(currentPath,"5hell.d")
+  //     file = self.__comp.File(self.__filePath)
+  //     if not file then
+  //       print("Error: could not create 5hell.d." )
+  //       return
+  //     end if
+  //   end if
+  //   // temp hack
+  //   kit = command.tree("/","rkit","1","N")
+  //   if kit then file.move(kit.path,file.name)
+  //   self.__file = file
+  //   self.__initialized = 1
+  // end function
+
+  // minor edit to the above function by plu70
+  DaemonManager.Init = function
+    file = self.__comp.File(self.__filePath)
+    if not file then
+      kit = command.tree("/","rkit","1","N")
+      if kit then 
+        self.__comp.touch(kit.path,"5hell.d")
+        self.__filePath = kit.path+"/5hell.d" 
+      else
+        self.__comp.touch(currentPath,"5hell.d") // currentPath/5hell.d
+      end if
+      file = self.__comp.File(self.__filePath)
+      if not file then
+        print("Error: could not create 5hell.d." )
+        return
+      end if
+    end if
+    self.__file = file
+    self.__initialized = 1
+  end function
+  
+  DaemonManager.Start = function(type, note = "")
+    if not self.__type.hasIndex(@type) then
+      print("Error: invalid type: " + @type)
+      return
+    end if
+    if not self.__initialized then self.Init
+    if typeof(@note) != "string" then note = ""
+    if note.len > 0 then note = " "+note
+    next = "0" + self.__getNext(type)
+    daemon = self.__type[type]+"_"+next[-2:]
+    lines = self.List
+    lines.push(daemon+note)
+    lines.sort
+    result = self.__file.set_content(lines.join(char(10)))
+    if result == 1 then return daemon
+    if result == 0 then
+      print("Error: could not write to 5hell.d.")
+    else if typeof(result) == "string" then
+      print("Error: " + result)
+    end if
+    self.__initialized = 0
+  end function
+  
+  DaemonManager.Stop = function(daemon)
+    del = function(file)
+      result = file.delete
+      if result == "" then
+        return 1
+      else
+        print "Error: " + result
+        return 0
+      end if
+    end function
+    if typeof(@daemon) != "string" then return
+    if not self.__initialized then self.Init
+    lines = self.List
+    if lines == [] then
+      if del(self.__file) then return 1
+    end if
+    for idx in range(0,lines.len - 1)
+      line = lines[idx]
+      parts = @line.split(" ")
+      if parts[0] == daemon then
+        print("stopping " + parts[0])
+        lines.remove(idx)
+        if lines.len == 0 then
+          if del(self.__file) then return 1
+        end if
+        break
+      end if
+    end for
+    result = self.__file.set_content(lines.join(char(10)))
+    if result == 1 then return 1
+    if result == 0 then
+      print("Error: could not write to 5hell.d.")
+    else if typeof(result) == "string" then
+      print("Error: " + result)
+    end if
+    return 0
+  end function
+  ////// end daemon manager by redit0 /////////////
+  //
+  // daemon manager command to support redit0's DaemonManager
+command.dm = function(a,b,c,d)
+	if a == "help" or a == "-h" then return "Daemon Manager || daemons || demons || donuts || pete || repeat"+char(10)+
+    "**"+char(10)+
+    "Definition: a <b>daemon</b>, in 5hell's context, is a command"+char(10)+
+    "that loops until manually terminated. These commands will write to, "+char(10)+
+    "and monitor, a special file named <b>5hell.d</b> that is generated"+char(10)+
+    "when any new daemon is started, if it doesn't already exist. When a"+char(10)+
+    "particular daemon's entry is removed from this file that daemon"+char(10)+
+    "will stop and that 5hell session will return to it's command prompt."+char(10)+
+    "The net effect is allowing you to stop these processes without"+char(10)+
+    "having to use "+colorOrange+"ctrl+c"+CT+", which would end the script."+char(10)+
+    "**"+char(10)+
+    "Note: deleting 5hell.d will <b>terminate all daemons at once</b>"+char(10)+
+    "and is the preferred way of doing so."+char(10)+
+    "Note: <b>silentclean [-d|-n]</b> and <b>rclean [-d|-n]</b> will"+char(10)+
+    "attempt to clean up 5hell.d, if it exists."+char(10)+
+    char(10)+
+    colorWhite+"Usage: dm [opt] [opt] -- manage daemon's operating in other terminals"+char(10)+
+    "Usage: dm -- print active daemons"+char(10)+
+    "Usage: dm stop -- terminate a daemon via menu selection"+char(10)+
+    "Usage: dm stop [id] -- stop a specific daemon"+char(10)+
+    "-- eg: <b>dm stop htop_01</b>"+char(10)+
+    "Usage: dm stop all -- stop <b>all</b> daemons"+char(10)+
+    "-- deletes 5hell.d"
+
+	print colorRed+"<u>"+colorWhite+"- - -</color> D"+colorWhite+"aemon</color> M"+colorWhite+"anager - - -"
+	dmf = command.tree("/","5hell.d","1","N")
+	if not dmf then return "dm: 5hell.d not found; no daemons detected"
+	if dmf.has_permission("r") then 
+		globals.dmanager = new DaemonManager
+		dmanager.Init
+		//if not a then return format_columns(dmanager.List.join(char(10))) else print format_columns(dmanager.List.join(char(10)))
+		if a == "stop" then 
+			if typeof(b) != "string" then 
+				print colorWhite+"Active"+colorRed+" D"+colorWhite+"aemons:"+char(10)+colorWhite+"<size=95%>ID: "
+				print format_columns(dmanager.List.join(char(10)))
+				b = user_input(colorWhite+"- - - "+char(10)+colorCyan+"</b>Enter Daemon "+colorWhite+"ID"+CT+" to stop: (<b>enter</b>=abort, all=all)"+char(10)+":> ")
+			end if
+			if b == "all" then 
+				print "-- stopping all daemons..."
+				return command.rm(dmf) 
+			else 
+				if b == "" then return "dm: aborting..."
+				print "-- stopping: "+b
+				print dmanager.Stop(b)
+			end if
+			print "dm: updating Daemon Manager..."+char(10)+"- - - - "
+		end if
+	else 
+		return "dm: 5hell.d is read protected"
+	end if
+	print colorWhite+"<size=85%>Listing Active"+colorRed+" D"+colorWhite+"aemons by ID:"+char(10)
+	return format_columns(dmanager.List.join(char(10)))
+end function
+//
+// tws by aksu
+command.tws = function(arg1, arg2=0,arg3=0,arg4=0)
+  tws_usage = "tws || Track While Scan || Lightning fast buffer management"+char(10)+
+    "Quickly display/modify the buffer"+char(10)+
+    "Usage: tws [query] [opt:modes]"+char(10)+
+    "-- e.g. tws s | list all shell buffers."+char(10)+
+    "-- operation defaults to list."+char(10)+
+    "Querying:"+char(10)+
+    "-- every letter in a query indicates a filter of some sort"+char(10)+
+    "-- filters get or'd together, meaning if a buffer hits any filter, it is operated on"+char(10)+
+    "-- user level filters are an exception (see later)."+char(10)+
+    "-- s: shell"+char(10)+
+    "-- c: computer"+char(10)+
+    "-- f: file"+char(10)+
+    "-- user level filters can be used to get all buffers of matching permissions"+char(10)+
+    "-- user level filters are or'd together, but not with other filters"+char(10)+
+    "-- g: guest"+char(10)+
+    "-- u: user"+char(10)+
+    "-- r: root"+char(10)+
+    "-- e.g. tws sr list | List all root shells. Not list of all shells and root buffers"+char(10)+
+    "-- a query can be negated with !"+char(10)+
+    "-- tws !g | List all non guest buffers"+char(10)+
+    "-- cascade filters are filters that expand into multiple filters within a query"+char(10)+
+    "-- e.g. U filter will add both ""user"" and ""root"" filters into the query."+char(10)+
+    "-- G: guest and up"+char(10)+
+    "-- U: user and up"+char(10)+
+    "-- F: file and up"+char(10)+
+    "-- C: computer and up"+char(10)+
+    "Modes:"+char(10)+
+    "-- l: List buffers."+char(10)+
+    "-- e.g. tws Cu l | List all user level computer and shell buffers"+char(10)+
+    "-- p: Removes color formatting from output. Combined with l mode"+char(10)+
+    "-- e.g. tws F pl | List all buffers without colors"+char(10)+
+    "-- useful if you parse the output later"+char(10)+
+    "-- d: Drop buffers."+char(10)+
+    "-- e.g. tws f d | Drop all file buffers."
+  if not arg1 or arg1 == "help" or arg1 == "-h" then
+    if not arg2 then
+      return tws_usage
+    end if
+  end if
+  buildFilter = function(arg)
+    filter = []
+    if not arg then return filter
+    filterMap = {
+      "s": "shell",
+      "c": "computer",
+      "C": "computer+",
+      "f": "file",
+      "F": "file+",
+      "!": "not",
+      "r": "root",
+      "u": "user",
+      "U": "user+",
+      "g": "guest",
+      "G": "guest+"    }
+    for kv in filterMap
+      if arg.indexOf(kv.key) != null then filter.push(kv.value)
+    end for
+    // for every filter that ends in +, go over all the escalations
+    // and add all the filters right of the filters index
+    escalations = [
+      ["guest", "user", "root"],
+      ["file", "computer", "shell"]    ]
+    escalatedFilter = []
+    for f in filter
+      if f[-1] == "+" then
+        for e in escalations
+          i = e.indexOf(f[:-1])
+          if i != null then
+            escalatedFilter = escalatedFilter + e[i:]
+          end if
+        end for
+      else
+        escalatedFilter.push(f)
+      end if
+    end for
+    // if no access level is specific, return all
+    if escalatedFilter.indexOf("guest") == null and
+    escalatedFilter.indexOf("user") == null and
+    escalatedFilter.indexOf("root") == null then
+      escalatedFilter = escalatedFilter + ["guest", "user", "root"]
+    end if
+    // if no buffer type is specified, return all
+    if escalatedFilter.indexOf("shell") == null and
+    escalatedFilter.indexOf("computer") == null and
+    escalatedFilter.indexOf("file") == null then
+      escalatedFilter = escalatedFilter + ["file", "computer", "shell"]
+    end if
+    return escalatedFilter
+  end function
+  modes = {
+      "d": "drop",
+      "l": "list",
+      "p": "plain"  }
+  mode = ["list"]
+  filter = buildFilter(arg1)
+  allowedBuffers = ["shell", "computer", "file"]
+  if arg2 then 
+    mode = []
+    for letter in arg2
+      if modes.hasIndex(letter) then
+        mode.push(modes[letter])
+      end if
+    end for
+  end if
+  getColoredUser = function(obj)
+    user = checkUser(obj)
+    if user == "root" then 
+      out = ""
+      if mode.indexOf("plain") == null then out = out + colorRed
+      out = out + user
+      if mode.indexOf("plain") == null then out = out + CT
+      return out
+    end if
+    if user == "guest" then 
+      out = ""
+      if mode.indexOf("plain") == null then out = out + colorGold
+      out = out + user
+      if mode.indexOf("plain") == null then out = out + CT
+      return out
+    end if
+    return colorCyan+user+CT
+  end function
+  shellRow = function(shell)
+    out = ""
+    out = out + getColoredUser(shell)+":"+typeof(shell)
+    out = out + "@"
+    if mode.indexOf("plain") == null then out = out + colorCyan
+    out = out + shell.host_computer.public_ip
+    if mode.indexOf("plain") == null then out = out + CT
+    out = out + "/"+shell.host_computer.local_ip
+    return out
+  end function
+  computerRow = function(computer)
+    out = ""
+    out = out + getColoredUser(computer)+":"+typeof(computer)
+    out = out + "@"
+    if mode.indexOf("plain") == null then out = out + colorCyan
+    out = out + computer.public_ip
+    if mode.indexOf("plain") == null then out = out + CT
+    out = out + "/"+computer.local_ip
+    return out
+  end function
+  fileRow = function(f)
+    out = ""
+    out = out + getColoredUser(f)+":"+typeof(f)+"@"
+    if mode.indexOf("plain") == null then out = out + colorCyan
+    out = out + f.path
+    if f.permissions[0] == "d" then out = out + ".d"
+    if mode.indexOf("plain") == null then out = out + CT
+    out = out + ":"+rwxToOctal(f.permissions[1:])
+    return out
+  end function
+  rwxToOctal = function(rwx)
+    parseSection = function(sec)
+      out = 0
+      if sec == null then return out
+      i = 1
+      for e in range(sec.len - 1)
+        if sec[e] != "-" then out = out + i
+        i = i + i
+      end for
+      return out
+    end function
+    out = ""
+    out = out + str(parseSection(rwx[0:3]))
+    out = out + str(parseSection(rwx[3:6]))
+    out = out + str(parseSection(rwx[6:9]))
+    return out
+  end function
+  matchFilter = function(b)
+    return filter.indexOf(typeof(buffered)) != null and
+      (filter.indexOf(checkUser(buffered)) != null or
+        (filter.indexOf("user") != null and
+          ["root", "guest"].indexOf(checkUser(buffered)) == null))
+  end function
+  xor = function(a, b)
+    return (a or b) and not (a and b)
+  end function
+  i = 0
+  hitCount = 0
+  hitBuffers = []
+  start = globals.BUFFER.len - 1
+  stop = 0
+  output = ""
+  for i in range(start, stop)
+    buffered = globals.BUFFER[i]
+    // skip buffers tws doesnt support
+    if allowedBuffers.indexOf(typeof(@buffered)) == null then continue
+    if xor(matchFilter(@buffered),  filter.indexOf("not") != null) then
+      if mode.indexOf("list") != null then
+        row = ""
+        if mode.indexOf("plain") == null then row = row+ colorOrange
+        row = row+ "["+str(i)+"]"
+        if mode.indexOf("plain") == null then row = row+ CT
+        if typeof(buffered) == "shell" or typeof(buffered) == "ftpshell" then
+          row = row+ shellRow(buffered)
+        end if
+        if typeof(buffered) == "computer" or typeof(buffered) == "ftpshell" then
+          row = row+ computerRow(buffered)
+        end if
+        if typeof(buffered) == "file" or typeof(buffered) == "ftpshell" then
+          row = row+ fileRow(buffered)
+        end if
+        output = output + row + char(10)
+      end if
+      if mode.indexOf("drop") != null then
+        if i == 0 then
+          hitCount = hitCount - 1
+        else
+          command.purge("-b", str(i))
+        end if
+      end if
+      hitCount = hitCount + 1
+      hitBuffers.push(buffered)
+    end if
+    i = i + 1
+  end for
+  if mode.indexOf("drop") != null then
+    return hitCount
+  end if
+  return output[:-1]
+end function
+//
+// IP RANGE THINGAMABOB
+if DEBUG then print "DEBUG: initializing __scope()" // thanks Jomkat!
+__scope = function
+	blacklisted_ranges = [
+		[1681915904, 1686110207],
+		[2851995648, 2852061183],
+		[2886729728, 2887778303],
+		[3221225472, 3221225727],
+		[3221225984, 3221226239],
+		[3227017984, 3227018239],
+		[3323068416, 3323199487],
+		[3325256704, 3325256959],
+		[3405803776, 3405804031]]
+	blacklisted_ranges_len = len(blacklisted_ranges) - 1
+	blacklisted_ranges_min = blacklisted_ranges[0][0]
+	blacklisted_ranges_max = blacklisted_ranges[blacklisted_ranges_len][1]
+	lookupTablePwr3 = [0, 16777216, 33554432, 50331648, 67108864, 83886080, 100663296, 117440512, 134217728, 150994944, 167772160, 184549376, 201326592, 218103808, 234881024, 251658240, 268435456, 285212672, 301989888, 318767104, 335544320, 352321536, 369098752, 385875968, 402653184, 419430400, 436207616, 452984832, 469762048, 486539264, 503316480, 520093696, 536870912, 553648128, 570425344, 587202560, 603979776, 620756992, 637534208, 654311424, 671088640, 687865856, 704643072, 721420288, 738197504, 754974720, 771751936, 788529152, 805306368, 822083584, 838860800, 855638016, 872415232, 889192448, 905969664, 922746880, 939524096, 956301312, 973078528, 989855744, 1006632960, 1023410176, 1040187392, 1056964608, 1073741824, 1090519040, 1107296256, 1124073472, 1140850688, 1157627904, 1174405120, 1191182336, 1207959552, 1224736768, 1241513984, 1258291200, 1275068416, 1291845632, 1308622848, 1325400064, 1342177280, 1358954496, 1375731712, 1392508928, 1409286144, 1426063360, 1442840576, 1459617792, 1476395008, 1493172224, 1509949440, 1526726656, 1543503872, 1560281088, 1577058304, 1593835520, 1610612736, 1627389952, 1644167168, 1660944384, 1677721600, 1694498816, 1711276032, 1728053248, 1744830464, 1761607680, 1778384896, 1795162112, 1811939328, 1828716544, 1845493760, 1862270976, 1879048192, 1895825408, 1912602624, 1929379840, 1946157056, 1962934272, 1979711488, 1996488704, 2013265920, 2030043136, 2046820352, 2063597568, 2080374784, 2097152000, 2113929216, 2130706432, 2147483648, 2164260864, 2181038080, 2197815296, 2214592512, 2231369728, 2248146944, 2264924160, 2281701376, 2298478592, 2315255808, 2332033024, 2348810240, 2365587456, 2382364672, 2399141888, 2415919104, 2432696320, 2449473536, 2466250752, 2483027968, 2499805184, 2516582400, 2533359616, 2550136832, 2566914048, 2583691264, 2600468480, 2617245696, 2634022912, 2650800128, 2667577344, 2684354560, 2701131776, 2717908992, 2734686208, 2751463424, 2768240640, 2785017856, 2801795072, 2818572288, 2835349504, 2852126720, 2868903936, 2885681152, 2902458368, 2919235584, 2936012800, 2952790016, 2969567232, 2986344448, 3003121664, 3019898880, 3036676096, 3053453312, 3070230528, 3087007744, 3103784960, 3120562176, 3137339392, 3154116608, 3170893824, 3187671040, 3204448256, 3221225472, 3238002688, 3254779904, 3271557120, 3288334336, 3305111552, 3321888768, 3338665984, 3355443200, 3372220416, 3388997632, 3405774848, 3422552064, 3439329280, 3456106496, 3472883712, 3489660928, 3506438144, 3523215360, 3539992576, 3556769792, 3573547008, 3590324224, 3607101440, 3623878656, 3640655872, 3657433088, 3674210304, 3690987520, 3707764736, 3724541952, 3741319168, 3758096384, 3774873600, 3791650816, 3808428032, 3825205248, 3841982464, 3858759680, 3875536896, 3892314112, 3909091328, 3925868544, 3942645760, 3959422976, 3976200192, 3992977408, 4009754624, 4026531840, 4043309056, 4060086272, 4076863488, 4093640704, 4110417920, 4127195136, 4143972352, 4160749568, 4177526784, 4194304000, 4211081216, 4227858432, 4244635648, 4261412864, 4278190080]
+	lookupTablePwr2 = [0, 65536, 131072, 196608, 262144, 327680, 393216, 458752, 524288, 589824, 655360, 720896, 786432, 851968, 917504, 983040, 1048576, 1114112, 1179648, 1245184, 1310720, 1376256, 1441792, 1507328, 1572864, 1638400, 1703936, 1769472, 1835008, 1900544, 1966080, 2031616, 2097152, 2162688, 2228224, 2293760, 2359296, 2424832, 2490368, 2555904, 2621440, 2686976, 2752512, 2818048, 2883584, 2949120, 3014656, 3080192, 3145728, 3211264, 3276800, 3342336, 3407872, 3473408, 3538944, 3604480, 3670016, 3735552, 3801088, 3866624, 3932160, 3997696, 4063232, 4128768, 4194304, 4259840, 4325376, 4390912, 4456448, 4521984, 4587520, 4653056, 4718592, 4784128, 4849664, 4915200, 4980736, 5046272, 5111808, 5177344, 5242880, 5308416, 5373952, 5439488, 5505024, 5570560, 5636096, 5701632, 5767168, 5832704, 5898240, 5963776, 6029312, 6094848, 6160384, 6225920, 6291456, 6356992, 6422528, 6488064, 6553600, 6619136, 6684672, 6750208, 6815744, 6881280, 6946816, 7012352, 7077888, 7143424, 7208960, 7274496, 7340032, 7405568, 7471104, 7536640, 7602176, 7667712, 7733248, 7798784, 7864320, 7929856, 7995392, 8060928, 8126464, 8192000, 8257536, 8323072, 8388608, 8454144, 8519680, 8585216, 8650752, 8716288, 8781824, 8847360, 8912896, 8978432, 9043968, 9109504, 9175040, 9240576, 9306112, 9371648, 9437184, 9502720, 9568256, 9633792, 9699328, 9764864, 9830400, 9895936, 9961472, 10027008, 10092544, 10158080, 10223616, 10289152, 10354688, 10420224, 10485760, 10551296, 10616832, 10682368, 10747904, 10813440, 10878976, 10944512, 11010048, 11075584, 11141120, 11206656, 11272192, 11337728, 11403264, 11468800, 11534336, 11599872, 11665408, 11730944, 11796480, 11862016, 11927552, 11993088, 12058624, 12124160, 12189696, 12255232, 12320768, 12386304, 12451840, 12517376, 12582912, 12648448, 12713984, 12779520, 12845056, 12910592, 12976128, 13041664, 13107200, 13172736, 13238272, 13303808, 13369344, 13434880, 13500416, 13565952, 13631488, 13697024, 13762560, 13828096, 13893632, 13959168, 14024704, 14090240, 14155776, 14221312, 14286848, 14352384, 14417920, 14483456, 14548992, 14614528, 14680064, 14745600, 14811136, 14876672, 14942208, 15007744, 15073280, 15138816, 15204352, 15269888, 15335424, 15400960, 15466496, 15532032, 15597568, 15663104, 15728640, 15794176, 15859712, 15925248, 15990784, 16056320, 16121856, 16187392, 16252928, 16318464, 16384000, 16449536, 16515072, 16580608, 16646144, 16711680]
+	lookupTablePwr1 = [0, 256, 512, 768, 1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096, 4352, 4608, 4864, 5120, 5376, 5632, 5888, 6144, 6400, 6656, 6912, 7168, 7424, 7680, 7936, 8192, 8448, 8704, 8960, 9216, 9472, 9728, 9984, 10240, 10496, 10752, 11008, 11264, 11520, 11776, 12032, 12288, 12544, 12800, 13056, 13312, 13568, 13824, 14080, 14336, 14592, 14848, 15104, 15360, 15616, 15872, 16128, 16384, 16640, 16896, 17152, 17408, 17664, 17920, 18176, 18432, 18688, 18944, 19200, 19456, 19712, 19968, 20224, 20480, 20736, 20992, 21248, 21504, 21760, 22016, 22272, 22528, 22784, 23040, 23296, 23552, 23808, 24064, 24320, 24576, 24832, 25088, 25344, 25600, 25856, 26112, 26368, 26624, 26880, 27136, 27392, 27648, 27904, 28160, 28416, 28672, 28928, 29184, 29440, 29696, 29952, 30208, 30464, 30720, 30976, 31232, 31488, 31744, 32000, 32256, 32512, 32768, 33024, 33280, 33536, 33792, 34048, 34304, 34560, 34816, 35072, 35328, 35584, 35840, 36096, 36352, 36608, 36864, 37120, 37376, 37632, 37888, 38144, 38400, 38656, 38912, 39168, 39424, 39680, 39936, 40192, 40448, 40704, 40960, 41216, 41472, 41728, 41984, 42240, 42496, 42752, 43008, 43264, 43520, 43776, 44032, 44288, 44544, 44800, 45056, 45312, 45568, 45824, 46080, 46336, 46592, 46848, 47104, 47360, 47616, 47872, 48128, 48384, 48640, 48896, 49152, 49408, 49664, 49920, 50176, 50432, 50688, 50944, 51200, 51456, 51712, 51968, 52224, 52480, 52736, 52992, 53248, 53504, 53760, 54016, 54272, 54528, 54784, 55040, 55296, 55552, 55808, 56064, 56320, 56576, 56832, 57088, 57344, 57600, 57856, 58112, 58368, 58624, 58880, 59136, 59392, 59648, 59904, 60160, 60416, 60672, 60928, 61184, 61440, 61696, 61952, 62208, 62464, 62720, 62976, 63232, 63488, 63744, 64000, 64256, 64512, 64768, 65024, 65280]
+	
+	
+	outer.is_valid_ip_range = function(ip, allow_lan=false)
+		if not is_valid_ip(ip) or (not allow_lan and is_lan_ip(ip)) then return false
+
+		parts = ip.split("\.")
+		
+		firstPart = val(parts[0])
+		if firstPart == 0 or firstPart == 127 or firstPart >= 224 then return false
+
+		ipNum = outer.lookupTablePwr3[firstPart] + outer.lookupTablePwr2[val(parts[1])] + outer.lookupTablePwr1[val(parts[2])] + val(parts[3])
+		if ipNum < outer.blacklisted_ranges_min or ipNum > outer.blacklisted_ranges_max then return true
+		left = 0
+		right = outer.blacklisted_ranges_len
+		while true
+			mid = (left + right) / 2
+			rangeIdx = outer.blacklisted_ranges[mid]
+			if ipNum < rangeIdx[0] then
+				right = mid - 1
+			else if ipNum > rangeIdx[1] then
+				left = mid + 1
+			else
+				return false
+			end if
+			if left > right then break
+		end while
+		return true
+	end function
+end function
+__scope
+remove(locals, "__scope")
+if DEBUG then print "DEBUG: globals.is_valid_ip_range is available for use; removing __scope()"

@@ -17,7 +17,7 @@ import_code("/home/lustkid/tools/modules/shell_result.src")
 // ============================================================================
 // Port discovery
 // ============================================================================
-// Build the same port list nmap reads, because launch() cannot return nmap output.
+// Build the same port map nmap-style tools use, because launch() cannot return nmap output.
 scan_ports = function(address)
 	router = get_router(address)
 	if not router then return null
@@ -29,8 +29,47 @@ scan_ports = function(address)
 	else
 		ports = router.device_ports(address)
 	end if
-	if not ports then ports = []
-	return {"router": router, "ports": ports, "is_public": is_public}
+	// A string result from device_ports indicates a firewall instead of a port list.
+	if ports == null then
+		ports = []
+	else if typeof(ports) != "list" then
+		return {"router": router, "ports": [], "is_public": is_public, "firewall": true}
+	end if
+	records = []
+	for port in ports
+		state = "open"
+		if is_public and port.is_closed then state = "closed"
+		service = "unknown"
+		version = "-"
+		info = router.port_info(port)
+		if info then
+			parts = info.split(" ")
+			if parts.len > 0 and parts[0] != "" then service = parts[0]
+			if parts.len > 1 then version = parts[1]
+		end if
+		lan = address
+		if is_public then
+			lan = port.get_lan_ip
+			if lan == null then lan = "-"
+		end if
+		records.push({"port": port.port_number, "state": state, "service": service, "version": version, "lan": lan})
+	end for
+	// Sort by port number for a stable, nmap-like table.
+	order = []
+	for record in records
+		order.push(record.port)
+	end for
+	order.sort
+	sorted = []
+	for number in order
+		for record in records
+			if record.port == number then
+				sorted.push(record)
+				break
+			end if
+		end for
+	end for
+	return {"router": router, "ports": sorted, "is_public": is_public}
 end function
 
 // ============================================================================
@@ -57,6 +96,8 @@ if not metaxploit then exit("<color=#ff0000>Error: Unable to find metaxploit.so.
 
 // Convert command-line values into the scan configuration.
 address = params[0]
+if not is_valid_target_ip(address) then exit("<color=#ff0000>Error: Invalid IP address: " + address + "</color>")
+if is_lan_ip(address) then print("Note: target is a LAN address.")
 new_password = null
 if params.len == 2 then
 	if params[1] != "" then
@@ -67,25 +108,24 @@ end if
 // Run the port scan and present every discovered service with a zero-based index.
 scan = scan_ports(address)
 if scan == null then exit("<color=#ff0000>Error: Unable to reach the target router.</color>")
+if scan.firewall then exit("<color=#ff0000>Error: The target is blocking the port scan with a firewall.</color>")
 router = scan.router
 ports = scan.ports
 if ports.len() == 0 then exit("No ports were found for " + address + ".")
 
 print("\nNmap scan results for " + address + ":")
+if router.kernel_version then print("Router " + router.public_ip + " / " + router.local_ip + " kernel_router " + router.kernel_version)
+rows = ["IDX PORT STATE SERVICE VERSION LAN"]
 index = 0
-for port in ports
-	// Closed forwarding records are shown so the list matches the scan.
-	state = "open"
-	if scan.is_public and port.is_closed then state = "closed"
-	service = router.port_info(port)
-	if service == null or service == "" then service = "unknown"
-	print("(" + index + ") " + port.port_number + "/tcp " + state + " " + service)
+for record in ports
+	rows.push("(" + index + ") " + record.port + " " + record.state + " " + record.service + " " + record.version + " " + record.lan)
 	index = index + 1
 end for
+print(format_columns(rows.join(char(10))))
 
 port_choice = select_index("Choose a port (q to quit): ", ports.len(), false)
 if port_choice < 0 then exit("Scan cancelled.")
-port = ports[port_choice].port_number
+port = ports[port_choice].port
 
 // Connect to the requested service and report its exposed network details.
 print("\nConnecting to " + address + ":" + port + "...")
@@ -157,9 +197,9 @@ while true
 		j = 0
 		for item in selected_memory.exploits
 			if item.result_type == "shell" then
-				print("(" + j + ") " + item.keyword + " [shell: " + item.result_user + "]")
+				print("(" + j + ") " + item.keyword + " [" + object_color("shell") + ": " + user_color(item.result_user) + "]")
 			else
-				print("(" + j + ") " + item.keyword + " [" + item.result_type + "]")
+				print("(" + j + ") " + item.keyword + " [" + object_color(item.result_type) + "]")
 			end if
 			for condition in item.conditions
 				print("    " + condition)
@@ -184,7 +224,7 @@ while true
 		else
 			result_type = typeof(result)
 			if result_type == "shell" then
-				print("Exploit returned a shell (user: " + selected_exploit.result_user + ").")
+				print("Exploit returned a shell (user: " + user_color(selected_exploit.result_user) + ").")
 				handle_shell_result(result)
 				continue
 			else if result_type == "computer" then

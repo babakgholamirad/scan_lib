@@ -20,14 +20,16 @@ GreyScript is the game's customized MiniScript language. Its control blocks use 
 
 ## Important functions and data
 
-- `scan_ports(address)` returns `{"router": router, "ports": ports, "is_public": is_public}` for the target. Public addresses use `router.used_ports`; LAN addresses use `router.device_ports(address)`. The entry point prints each port with a zero-based index and passes the chosen `port_number` to `metaxploit.net_use`.
+- `scan_ports(address)` returns `{"router": router, "ports": records, "is_public": is_public}`. Public addresses use `router.used_ports`; LAN addresses use `router.device_ports(address)`. Each record has `port`, `state`, `service`, `version`, and `lan`. A string result from `device_ports` is reported as a firewall. The entry point prints the sorted records with `format_columns` and passes the chosen `port` to `metaxploit.net_use`.
 - `clean_result(text)` removes known scan-output noise and HTML bold tags, compresses repeated blank lines, and returns an empty string for null input. If scan output changes, review this cleanup list alongside the parser.
 - `parse_scan_result(text, memory, meta_lib, new_password)` turns cleaned scan output into exploit maps and precomputes each exploit's result. Each map has `keyword`, `conditions`, `result`, and `result_type`. A normal nonempty line starts an exploit; lines beginning with `* ` are attached as conditions to the current exploit. It is called once for each scanned memory address.
 - `select_index(prompt, item_count, allow_back)` validates a user-entered zero-based index. It returns `-1` for `q` or null input and `-2` for `b` when `allow_back` is true. The menu loop handles `-2` by continuing to its top, which redraws the memory-address list.
-- `handle_computer_result(computer)` checks for a readable, nonempty `/etc/passwd` on the returned target computer, asks before overwriting a local copy, writes it as `/home/<active_user>/receivedPaswd.txt`, and offers to launch `/bin/decipher`, remove the file, or return.
+- `handle_computer_result(computer)` prints the computer's user and public/LAN IPs, then checks for a readable, nonempty `/etc/passwd` on the returned target computer, asks before overwriting a local copy, writes it as `/home/<active_user>/receivedPaswd.txt`, and offers to launch `/bin/decipher`, remove the file, or return.
 - `get_shell_home_users(shell)` lists folders under the returned shell's `/home` through its `host_computer`.
-- `get_shell_user(shell)` reports the shell's user. A writable `/` means `root`; otherwise it returns the writable `/home/<user>` folder, defaulting to `guest`.
-- `handle_shell_result(shell)` shows the shell user and offers to open a terminal with `shell.start_terminal`, open FileExplorer, upload and run decipher, or remove the session's uploaded files and open the remote log tools for trace cleanup. FileExplorer and the log tools are reused from `/usr/bin` when present; otherwise a readable local copy from `/bin` or `current_path + "/tools/"` is uploaded to `/home/guest/scan_lib_tools/`. Option 4 launches FileExplorer and LogViewer two seconds apart, then removes the uploaded copies; option 2 leaves any FileExplorer upload for option 4 cleanup.
+- `check_user(obj)` and `get_shell_user(shell)` report the user behind a shell or computer. A writable `/` means `root`; otherwise the writable `/home/<user>` folder is returned, defaulting to `guest`.
+- `find_local_app(name)` checks `/usr/bin`, `/bin`, and `current_path + "/tools/"` for a readable local app. `find_app(shell, name)` prefers the target's `/usr/bin` or `/bin` copy, then falls back to `find_local_app`. `upload_file(local_path, remote_dir, shell)` wraps `scp` and normalizes its result.
+- `handle_shell_result(shell)` shows the shell user and offers to open a terminal with `shell.start_terminal`, open FileExplorer, upload and run decipher, or remove the session's uploaded files and open the remote log tools for trace cleanup. FileExplorer and the log tools are reused from the target when present; otherwise a readable local copy is uploaded to `/home/guest/scan_lib_tools/`. Option 4 launches FileExplorer and LogViewer two seconds apart, then removes the uploaded copies; option 2 leaves any FileExplorer upload for option 4 cleanup.
+- `user_color(name)`, `object_color(type)`, and `is_valid_target_ip(address)` live in `menu_input.src` and are shared by the menus and the entry point.
 - `exploit_array` is a list of maps shaped like `{"memory": address, "exploits": [...]}`. Each exploit map contains `keyword`, `conditions`, `result`, and `result_type`; shell results also store `result_user` for the exploit menu. `selected_memory` and `selected_exploit` are the entries chosen in the menus.
 
 ## Grey Hack runtime notes from in-game runs
@@ -47,6 +49,7 @@ GreyScript is the game's customized MiniScript language. Its control blocks use 
 - `community_exploiter.txt` is a separate argument-driven exploit runner. It is useful as a reference for `metaxploit.net_use`, `dump_lib`, `MetaLib.overflow`, and handling a returned shell/computer, but its behavior and assumptions differ from the scanner.
 - `scan_lib_backup.txt` is a historical copy. Do not copy old behavior into the active script without checking the current implementation and the desired behavior.
 - `docs/releasse notes.html` is the raw, large developer-announcement export. Read the focused summaries below first; search the HTML only when a specific release detail is needed.
+- `vendor/5hell/` contains the pinned MIT-licensed 5hell sources used as a reference for GreyScript patterns; see `vendor/5hell/PROVENANCE.md`. Do not import them directly into scan_lib.
 
 ## Documentation
 

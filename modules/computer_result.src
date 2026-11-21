@@ -6,6 +6,9 @@
 
 // Inspect a computer object, save its readable passwd file locally, and offer actions.
 handle_computer_result = function(computer)
+	// Show the access level and network identity before handling the password file.
+	print("\nComputer result (user: " + user_color(check_user(computer)) + ")")
+	print("Public IP: " + computer.public_ip + " / LAN IP: " + computer.local_ip)
 	// Confirm the remote file exists, is readable, and has content before proceeding.
 	passwd_file = computer.File("/etc/passwd")
 	if not passwd_file then

@@ -13,23 +13,71 @@ get_shell_home_users = function(shell)
 	if not home_folder then return null
 	if not home_folder.is_folder then return null
 	if not home_folder.has_permission("r") then return null
-	return home_folder.get_folders
+	folders = home_folder.get_folders
+	if typeof(folders) != "list" then return null
+	return folders
 end function
 
-// Report the user this shell is running as, using writable filesystem access.
-get_shell_user = function(shell)
-	computer = shell.host_computer
+// Determine the user behind a shell or computer from writable filesystem access.
+check_user = function(obj)
+	if obj == null then return "unknown"
+	obj_type = typeof(obj)
+	computer = null
+	if obj_type == "shell" or obj_type == "ftpshell" then
+		computer = obj.host_computer
+	else if obj_type == "computer" then
+		computer = obj
+	end if
 	if not computer then return "unknown"
-	// A writable root folder means the shell has root privileges.
+	// A writable root folder means the object has root privileges.
 	root_folder = computer.File("/")
 	if root_folder and root_folder.has_permission("w") then return "root"
-	// Otherwise the writable home folder identifies the active user; guest is the fallback.
-	home_users = get_shell_home_users(shell)
-	if home_users == null then return "unknown"
-	for home_user in home_users
-		if home_user.name != "guest" and home_user.has_permission("w") then return home_user.name
+	// Otherwise the writable home folder identifies the user; guest is the fallback.
+	home_folder = computer.File("/home")
+	if not home_folder then return "unknown"
+	folders = home_folder.get_folders
+	if typeof(folders) != "list" then return "guest"
+	for folder in folders
+		if folder.name != "guest" and folder.has_permission("w") then return folder.name
 	end for
 	return "guest"
+end function
+
+get_shell_user = function(shell)
+	return check_user(shell)
+end function
+
+// Find a readable local app in the standard binary folders or the bundled tools folder.
+find_local_app = function(app_name)
+	local_computer = get_shell.host_computer
+	if not local_computer then return null
+	for path in ["/usr/bin/" + app_name, "/bin/" + app_name, current_path + "/tools/" + app_name]
+		local_file = local_computer.File(path)
+		if local_file and local_file.has_permission("r") then return path
+	end for
+	return null
+end function
+
+// Prefer the target's own app, then fall back to a readable local copy for upload.
+find_app = function(shell, app_name)
+	computer = shell.host_computer
+	if not computer then return null
+	for path in ["/usr/bin/" + app_name, "/bin/" + app_name]
+		remote_file = computer.File(path)
+		if remote_file and remote_file.has_permission("x") then
+			return {"path": path, "remote": true}
+		end if
+	end for
+	local_path = find_local_app(app_name)
+	if local_path then return {"path": local_path, "remote": false}
+	return null
+end function
+
+// Upload one file and normalize the scp result for callers.
+upload_file = function(local_path, remote_dir, shell)
+	result = get_shell.scp(local_path, remote_dir, shell, false)
+	if result == true then return true
+	return result
 end function
 
 // Delete only the paths this session recorded as uploaded by scan_lib.
@@ -58,37 +106,15 @@ end function
 
 // Find a log utility remotely or upload a readable local copy into a staging folder.
 prepare_log_tool = function(shell, app_name, uploaded_files)
-	remote_computer = shell.host_computer
-	if not remote_computer then
-		print("Could not access the remote computer while checking for " + app_name + ".")
+	app = find_app(shell, app_name)
+	if not app then
+		print("Could not find " + app_name + " on the target or in /usr/bin, /bin, or " + current_path + "/tools/.")
 		return null
 	end if
-	remote_path = "/usr/bin/" + app_name
-	// Reuse the target's own copy when the log tool is already installed there.
-	if remote_computer.File(remote_path) then
+	// Reuse the target's own copy when the tool is already installed there.
+	if app.remote then
 		print(app_name + " is already available on the target.")
-		return remote_path
-	end if
-
-	local_computer = get_shell.host_computer
-	if not local_computer then
-		print("Could not access the local computer to find " + app_name + ".")
-		return null
-	end if
-	local_path = "/usr/bin/" + app_name
-	local_app = local_computer.File(local_path)
-	if not local_app then
-		// Fall back to the app's bundled tools folder beside the local script.
-		local_path = current_path + "/tools/" + app_name
-		local_app = local_computer.File(local_path)
-	end if
-	if not local_app then
-		print("Could not find a local copy of " + app_name + " in /usr/bin or " + current_path + "/tools/.")
-		return null
-	end if
-	if not local_app.has_permission("r") then
-		print("Unable to read the local copy of " + app_name + " at " + local_path)
-		return null
+		return app.path
 	end if
 
 	remote_tools_path = "/home/guest/scan_lib_tools"
@@ -99,7 +125,7 @@ prepare_log_tool = function(shell, app_name, uploaded_files)
 	uploaded_files.push(remote_app_path)
 	print("Uploading " + app_name + "...")
 	// scp treats the destination as a directory, so the basename is retained.
-	upload_result = get_shell.scp(local_path, remote_tools_path, shell, false)
+	upload_result = upload_file(app.path, remote_tools_path, shell)
 	if upload_result != true then
 		print("Could not upload " + app_name + ": " + upload_result)
 		return null
@@ -112,7 +138,7 @@ handle_shell_result = function(shell)
 	uploaded_files = []
 	while true
 		// The shell menu stays open until b or closed input returns to the exploit list.
-		print("\nActive shell (user: " + get_shell_user(shell) + ")")
+		print("\nActive shell (user: " + user_color(get_shell_user(shell)) + ")")
 		print("1. Open terminal with this shell")
 		print("2. Open FileExplorer")
 		print("3. Upload decipher and decipher Mail.txt")
@@ -157,52 +183,42 @@ handle_shell_result = function(shell)
 					// The chosen user's mail file is the path decipher will be run on.
 					user_name = home_users[user_choice].name
 					mail_path = "/home/" + user_name + "/Config/Mail.txt"
-					// decipher and its shared library live together in the local tools folder.
-					local_path = current_path + "/tools/"
-					local_decipher_path = local_path + "decipher"
-					local_crypto_path = local_path + "crypto.so"
-					local_decipher = get_shell.host_computer.File(local_decipher_path)
-					if not local_decipher then
-						print("Could not find the local decipher app at " + local_decipher_path)
-					else if not local_decipher.has_permission("r") then
-						print("Unable to read the local decipher app at " + local_decipher_path)
+					// decipher and its shared library may live in /usr/bin, /bin, or the bundled tools folder.
+					local_decipher_path = find_local_app("decipher")
+					local_crypto_path = find_local_app("crypto.so")
+					if not local_decipher_path then
+						print("Could not find the local decipher app in /usr/bin, /bin, or " + current_path + "/tools/.")
+					else if not local_crypto_path then
+						print("Could not find the local crypto.so dependency in /usr/bin, /bin, or " + current_path + "/tools/.")
 					else
-							// Both files must be readable locally before any upload is attempted.
-						local_crypto = get_shell.host_computer.File(local_crypto_path)
-						if not local_crypto then
-							print("Could not find the decipher dependency at " + local_crypto_path)
-						else if not local_crypto.has_permission("r") then
-							print("Unable to read the decipher dependency at " + local_crypto_path)
-						else
-							// Stage both files in one remote folder keyed by the target user.
-							remote_tools_path = "/home/guest/scan_lib_" + user_name + "/"
-							print("Preparing upload folder " + remote_tools_path + "...")
-							shell.launch("/bin/mkdir", "/home/guest/scan_lib_" + user_name+"/")
-							remote_decipher_path = remote_tools_path + "decipher"
-							remote_crypto_path = remote_tools_path + "crypto.so"
-							uploaded_files.push(remote_decipher_path)
-							uploaded_files.push(remote_crypto_path)
-							print("Uploading decipher and crypto.so...")
-							// Check each transfer independently; partial uploads can remain on error.
-							upload_decipher_result = get_shell.scp(local_decipher_path, remote_tools_path, shell, false)
-							upload_crypto_result = get_shell.scp(local_crypto_path, remote_tools_path, shell, false)
-							if upload_decipher_result == true and upload_crypto_result == true then
-								print("Decipher uploaded. Running it on " + mail_path + "...")
-								launch_result = shell.launch(remote_decipher_path, mail_path)
-								if launch_result == null then
-									print("Decipher launched successfully.")
-								else if launch_result == 0 then
-									print("Could not launch decipher on the target.")
-								else
-									print("Decipher launch result: " + launch_result)
-								end if
+						// Stage both files in one remote folder keyed by the target user.
+						remote_tools_path = "/home/guest/scan_lib_" + user_name + "/"
+						print("Preparing upload folder " + remote_tools_path + "...")
+						shell.launch("/bin/mkdir", remote_tools_path)
+						remote_decipher_path = remote_tools_path + "decipher"
+						remote_crypto_path = remote_tools_path + "crypto.so"
+						uploaded_files.push(remote_decipher_path)
+						uploaded_files.push(remote_crypto_path)
+						print("Uploading decipher and crypto.so...")
+						// Check each transfer independently; partial uploads can remain on error.
+						upload_decipher_result = upload_file(local_decipher_path, remote_tools_path, shell)
+						upload_crypto_result = upload_file(local_crypto_path, remote_tools_path, shell)
+						if upload_decipher_result == true and upload_crypto_result == true then
+							print("Decipher uploaded. Running it on " + mail_path + "...")
+							launch_result = shell.launch(remote_decipher_path, mail_path)
+							if launch_result == null then
+								print("Decipher launched successfully.")
+							else if launch_result == 0 then
+								print("Could not launch decipher on the target.")
 							else
-								if upload_decipher_result != true then
-									print("Could not upload decipher: " + upload_decipher_result)
-								end if
-								if upload_crypto_result != true then
-									print("Could not upload crypto.so: " + upload_crypto_result)
-								end if
+								print("Decipher launch result: " + launch_result)
+							end if
+						else
+							if upload_decipher_result != true then
+								print("Could not upload decipher: " + upload_decipher_result)
+							end if
+							if upload_crypto_result != true then
+								print("Could not upload crypto.so: " + upload_crypto_result)
 							end if
 						end if
 					end if

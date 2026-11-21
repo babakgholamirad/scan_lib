@@ -1,6 +1,6 @@
 // ============================================================================
-// Shared menu input
-// Validates numbered choices and preserves the quit/back return codes.
+// Shared menu input and display helpers
+// Validates numbered choices, formats result labels, and validates target IPs.
 // This source is included by scan_lib.txt with Grey Hack import_code.
 // ============================================================================
 
@@ -25,4 +25,25 @@ select_index = function(prompt, item_count, allow_back)
 			print("Invalid selection. Enter a listed number or q to quit.")
 		end if
 	end while
+end function
+
+// Color a user name using the same root/guest distinction as 5hell.
+user_color = function(user)
+	if user == "root" then return "<color=#FF0000FF><b>" + user + "</color></b>"
+	if user == "guest" then return "<color=#FFFFFFFF><b>" + user + "</color></b>"
+	return "<color=#00FFFFFF><b>" + user + "</color></b>"
+end function
+
+// Color an object type so shell, computer, and file results stand out.
+object_color = function(result_type)
+	if result_type == "file" then return "<color=#00FF00FF><b>" + result_type + "</color></b>"
+	if result_type == "computer" then return "<color=#00FFFFFF><b>" + result_type + "</color></b>"
+	if result_type == "shell" then return "<color=#CCCC00FF><b>" + result_type + "</color></b>"
+	return result_type
+end function
+
+// Reject malformed target addresses before any network call.
+is_valid_target_ip = function(address)
+	if address == null then return false
+	return is_valid_ip(address)
 end function

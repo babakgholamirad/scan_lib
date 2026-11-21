@@ -1,0 +1,1934 @@
+//
+// changes:
+//
+//// To Do:
+////
+// database overhaul :(
+// tdump: wait for response feature
+// add custom theme config
+// add a way to tell grep to ignore specific folders
+// expand tree -f to take both path and object as params (jk have to start over) 
+// -- kinda fixed this in the regular tree command...
+// update 5phinx F1 help info: remove or correct outdated info
+// absolutely must update the databasing system
+// -- a single flat file is not sufficient
+// update chop and grep to use piped strings
+// todo: db
+// todo: tree -f has a superior search algo vs regular, ancient tree
+// -- lets bring tree into the [-f]uture
+// todo: consolidate code in hashim and gopher into a single method accessible by both
+// todo: add catagory var to ALL commands: general, needsShell, needsComp, needsFile, needsLaunch, needsMeta, needsCrypto (other required objects for individual commands should be obvious)
+// todo: user_input override that allows pulling user_input from a list stored in the custom object
+// -- to be populated by scripts calling 5hell through a nested launch
+// -- need a way to secure this first
+// todo: a way to authenticate do.rc per user, to avoid running your target's do.rc (or target's trap do.rc) during an attack...
+// db: still needs to be able to self repair // mostly implemented
+// rkit: should probably make a database file strucure
+// actually fix grep's algo
+// make a get_database shared function
+// make a sort_database function
+// ensure password fields do not push to input buffer
+////
+//// To Done:
+//
+// UPDATE: updated all instances of get_files and get_folders for new permissions system
+// UPDATE: updated all instances of floating newlines (ie: newlines in source that do not terminate with a quote symbol: " )
+// makfit: REMOVED. file sizes are no longer determined by filename so the command is kaput
+// perms: minor changes to default behavior of anti-brick tech
+// -- will now apply g+rx to /, /usr/bin, and /bin
+// perms: added 'perms unlock partial' to apply g+x to /usr/bin and /bin
+// -- and adjusted 'perms lock partial' to do the same after a lockdown
+// unlock: added command shortcut for perms unlock [all|path|partial|binaries]
+// lock: adjusted default behavior and added lock partial as an option
+// -- ensures Desktop can be read, sets g+rx to more items, sets u+x to /bin/bash on proxy servers
+// file: added word count
+// file: the count for subfolders, lines, words, and characters will display permission_denied instead of a false 0
+// ls: will now also display info for the folder on which it is called
+// ls: will display file creation date/time
+// ls: changed the binary/not-binary indication to [fld],[bin],[txt]
+// sudo: added missing usage info
+// tree: added file permission checks to avoid crashes
+// tree: will display info for the folder on which it is called
+// tree: will display info the way ls -l displays info
+// tree: folder 'angle' symbols will be colored red (or the theme equivalent to colorRed) when the folder lacks read permissions
+// tree: lined up the output with the angle lines
+// curl: added file permission checks to avoid crashes
+// get_lib: ""    ""    ""
+// startup_resource_configuration: "" ""  ""
+// secure_copy: will now return destination shell object, on request
+// scpm: "" ""
+// infil: will request the destination shell from scpm when target shell is selected from the list instead of passed as a param
+// -- fixes the false "run: /home/guest/rkit/5hell not found." error
+// pwgen: reduced password seed list size
+// pwgen: added username seed list   <<<<<<<<< TODO
+// meta: meta load will now attempt to brute force libs in /lib when /lib does not have read permission
+// -- metaxploit.load ignores file permissions so we can still load them when we can't read them or the /lib folder
+// kraken: kraken prox (and the prox command) and kraken scrub will now set the u+x bit to /bin/bash 
+// whois: will now display the target network's netspeed in Mbps
+// probe: will now display the target network's netspeed in Mbps
+// 5phinx.5pk: portmap building and display is a little more efficient
+// cob: moved command.cob from dtools.5pk to kore.5pk because dtools ran out of room
+// 
+// 
+// scpm: merged pull request: modified secure_copy to facilitate SCPM outfile, thanks Arch-Magos Glazia!
+// credits: added Glaze
+//
+// 5phinx.5pk: print override: if DEBUG mode is active, SILENT prints will be force-printed through _print
+// --ie: DEBUG mode bypasses SILENT print mode
+// -- will also bypass clear_screen in DEBUG mode
+// air: fixed: not writing to an encrypted aircap file caused by lack of code to decrypt said file
+// air: will now report completion time
+// gopher: added -n flag for "no-dump"; prevents gopher from writing to dump.txt
+// felix: will autolaunch ImageViewer.exe, LogViewer.exe, PDFReader.exe when right=arrowing a .jpg, .log, .pdf
+// felix: scpm will be accessed by the [m] key
+// felix: fixed [t] tag4scpm key
+// rsi: added -m and -M flags to specify which metaxploitLib object to use
+// pause: -u|--until flag will work correctly
+// pause: you may now prepend all options with -v (verbose) as intended
+// -- verbose mode will print the current_date when the script resumes
+// -- note: midnight wrapping is not yet coded bc i dont want to do maths
+// mail: will write cracked credentials to dump.txt
+// -- cracking mail is still slow af, nothing i cna do about it
+// net.5pk: removed a bunch of old, unused code
+// pwgen: updated seed list
+// pwgen: updated usage info
+// enum: fixed -i flag not inserting
+//
+// air: minor output adjustment
+// help: fixed typo preventing full "help buffer" info from printing
+// ifconfig: fixed crash caused by typo "colorLightblue" in usage info
+//
+// ifconfig: updated usage info
+// air: will save credentials to a user specified file
+// -- file name is specified in the HOME object under HOME.air_file
+// -- set a HOME.air_key to encrypt/decrypt this file
+// -- you must create the file manually to enable this functionality
+// -- if you use this functionality, you may safely delete the essid.cap files
+// -- it is highly recommended that you encrypt this file
+// --note: this helps with the issue of non-alphanumeric characters being used in essid's
+// air: updated usage info
+// memdump: fixed crash when dumping clipboards containing null
+// -- slightly adjusted output formatting
+// contrib.5pk: added __scope function to verify valid ip range
+// -- thanks Jomkat!
+// aptm: added -l flag to return the list of repo ip's as a list
+// --eg: aptm -l | clipa || code @d 0 | Browser.exe
+// 5hell.src: updated rogue function execution protection
+// credits: updated
+//
+// rnip: will now exclude lan and invalid ips
+// -- except for 10.x.x.x, for right now. adjustments needed
+// pwgen: added 2 new seeds
+// malp: will no longer open malp when passing the -p flag
+// felix: fixed crash when using [t] tag 4 scp
+// help: pull request merged: typos fixed
+// glosure: pull request merged: Update Glosure interpreter to match upstream!
+// pause: added missing type check when parsing wait time value
+// string: -r and -R will not barf when input is a space
+// kore: fixed crash by adding type check to -r to ensure we actually created a file before attempting to read it
+// 5phinx.5pk: startup_resource_configuration: reverteted reencryption call to command.file from weird new custom function
+// -- do.rc will be reencrypted properly 
+//
+// DOCUMENT THE BELOW!!!
+//
+// contrib.5pk: checkUser: added support for ftpComputer and ftpFile type
+// 5phinx.5pk: p_validate: will return true when input is null instead of crashing
+// malp: fixed crash when buffer contained ftpShell or ftpComputer or ftpFile
+// -- removed incompatible buttons from ftpshell handler
+// -- fixed get/put buttons in ftshell handler
+// -- ftpComputer and ftpFile will be handled by generic object handler (decompiler) in malp
+// ---- custom handler when ftpComputer has access to local_ip and public_ip (at least)
+// --note: both ftpshell and ftpComputer are extremely limited in functionality
+// felix: can work with ftpshell, ftpComputer, ftpFile
+// glasspool: will NOT work with ftpshells or computers until kuro adds public and local ip to ftpComputer bc it's bs that they don't have it
+// rclean: will now work with ftp objects
+// scpm: will now work with ftpshells for both upload and download
+// cob: added missing function reference token (@) to _inspectable
+// ping: added ability initiate a ping using a piped shell
+// -- updated usage info
+// code: new option to return the value an individual list index (bc why wasn't that a thing?)
+// code: globals.decompiler and globals.p_exe will now take an argument for preselecting a menu option and params
+// -- supports invoking methods by name instead of by index #
+// ---- argument is passed as FIRST argument and object to decompile is passed as SECOND argument, in this case
+// ---- argument should be a string index number or string method name
+// ---- use quotes to pass a method/index name along with arguments for the method
+// ------eg: if @B 2 is a shell: 
+// --------: code @B 2 " ping 1.1.1.1 " 
+// --------: code @B 2 " scp /root/rkit /home/guest " // add @clipa, @clipb, @clipc as options
+// --------: code @B 2 5 // returns host_computer
+// note: these examples are obviously possible wihtout using code, they're just for illustration
+// -- code will still return the output of the invoked method	
+// aptm: will now return null from the menu and the output of the called function when launched with arguments
+// 5phinx.5pk: print override will now use _print internally instead of a recursive call
+// ifconfig: pull request: removed incomplete if statement
+// ifconfig: will display correct ip info for piped shells/computers
+// -- direct consequence is order of arguments no longer matters
+// -- usage info updated to reflect this
+//
+// cd: rewritten in order to fix some bugs
+// -- will no longer stop working when the current path doesn't exist
+// checkUser: rfile was formerly set to /root instead of /
+// -- resulting in a false 'guest' user return when /root is missing
+// -- it will now properly check perms on / 
+// file: exported encrypt_path to 5phinx.5pk to make it a shared funciton
+// -- changed name to: en_de_crypt_files
+// ---- since the function both encrypts and decrypts depending on the action passed (act)
+// kraken: will properly handle encrypted files when adding/deleting a repo
+// zc: zerochill will now properly display usage info when asked
+// rsi: update rsi -i|install usage info
+//
+// kraken: will immediately re-encrypt Map.conf after reading it
+// kraken: will accept a map_key as a final argument for all modes
+// -- except for when opening the kraken menu
+// kraken: updated usage info for: kraken prox [-gp|glasspool]
+// kraken: changed kraken prox -g/ prox -g to:
+// -- kraken prox [-gp|glasspool] and prox [-gp|glasspool]
+// -- tunnels through proxy chain and opens glasspool without taking further action
+// -- (remember Marinette has a prox -g option that works a little different and launches 5hell on connecting to the endpoint)
+// kraken: kraken buffer will now populate the enum buffer with proxy shells
+// -- this will facilitate using enum -d to batch control proxies
+// prox: updated usage info for: prox [-gp|glasspool]
+// kore: --control will automatically run hashim -d in parallel with it
+// -- if kore --control detects a change to the 'pass' file used by hashim, it will invoke it
+// --note: unlike socket_in/_out behavior, hashim calls will not be created as a job
+// -- hashim tasks will be logged like everything else
+// kore: fixed crash caused by typo: cahr
+// transmit: moved from globals space in 5phinx.5pk to command.transmit in kore.5pk
+// transmit: will now accept -w as a wait flag
+// transmit: will now accept input arguments in any order:
+// --ie: transmit -w password // transmit password -w // transmit
+// transmit: updated usage info
+// -- other 'improvements' to logic
+// 5phinx.5pk: globals.transmit moved to command.transmit
+// -- malp was already calling command.transit to router to globals.transmit anyway
+// brutus: will no longer block ssh brute when glasspool is active
+// -- ssh brute through glasspool on a burner machine is, in fact, the ideal way to do it
+// ifconfig: fixed typo preventing full usage info from printing
+// -- the missing info was a note reminding the user a shell or computer may be piped to ifconfig
+// iwlist: added -b, -e, -l
+// -- -e will return only essid's
+// -- -b will return only bssid's
+// -- -l as the second argument will return a list instead of string
+// infil: fixed carsh caused by type 'currenPath'
+// hashim: fixed -f getting stuck in daemon mode
+// -- also, hashes will be saved to dump.txt as: user:password:hash
+// ssh: clarified usage info
+// glosure: updated usage info to inform users that lines entered into the REPL are added to up-arrow history
+// -- i forgot to document that change made in the last update
+// aptm: will now always update the sources from sources.txt before acting when run from the command line
+// -- it already does this inside the menu
+//
+//
+// glosure: changed codeStr = user_input("</> ") to codeStr = user_input("</> ",0,0,1)
+// tree: standard tree and tree -f will now use 5hell's color palette
+// -- this means theme changes, such as Marinette's, will actually change tree's appearance
+// outmon: fixed the unfinished act/react stuff
+// help: added 'inspect [key]' to list of aliases
+// -- it's been an alias for a hot minute and i forgot to add it to the help
+// 5hell.src: added "-" as a comment character for do scripts
+// -- the other comment character are: # and |
+//
+// sudo: new command to differentiate from psudo's functions
+// -- simply does get_shell(user,pass).launch(/usr/bin/Terminal.exe,input)
+// -- or /bin/Terminal.exe
+//  --note: use: run /pathTo/sudo to run an external sudo binary
+// file: will no longer print usage when no input
+// -- will recommend using file -h instead
+// db: will properly catagorize bounce exploits
+// -- should no longer provide false "firewall disable" classifications
+// cd: currentPath will now match current_path, using the game's cd function
+// -- cd usage remains identical; this change should be transparent to the end user
+// ---- EXCEPT for glasspool cd will be SEPERATE from your non-glasspool cd!!!!!!
+// -- GLASSPOOL will NOT use current_path
+// -- the current_path will be preserved when returning from GLASSPOOL
+// --NOTE: please use: globals.currentPath = "path";cd(globals.currentPath)
+// ---- to maintain compatibility with internal currentPath calls within 5hell
+// --NOTE: this will allow correct tab completion EXCEPT in GLASSPOOL
+// ---- tab completion does not translate through glasspool
+// 5hell.src: fixed another stray += that slipped in bc i pushed the wrong file
+// macro: added \@pipe escape
+// -- @pipe and \@pipe are only processed within the macro command, not handled by ez_clip
+// malp: fixed to_int crashed caused by previous index finding change
+// glosure: merged pull request that hardcodes STL for qol
+// glosure: merged pull request reverting 5hell lambda support as it is no longer needed
+//
+// glosure: updated glosure to match upstream
+// 5hell.src: added support evaluating glosure lambdas as commands
+// help: added -- summary to get a brief description of each command
+// help: added glosure lambda support
+// credits: updated
+// probe: the "no network" indication will now include the computer name
+// -- this is to clarify which machine is not connected when attempting to probe through glasspool
+// 5hell.src: removed the "if not @pipe then continue" as it was probpematic
+// -- side effect of some 0's printing where they didint print before
+// -- i'll be going through and correcting those
+// -- in the mean time this allows piping and printing of empty maps and lists as well as literal zeros
+// -- there will be bugs
+// zap: will open the correct shell in malp
+// malp: will accept negative numbers for indexes
+// --eg: malp -b -1
+// macro: will check macro registry before evaluation
+// -- this negates the need to prepend macro calls with 'macro'
+// -- however, you may still prepend a macro with macro if there is a need to do so (filename conflicts, for instance)
+// enum: fixed -d option
+// -- will now respect @pipe rules for macros
+// -- will now append @pipe to the end of a command string that does not contain @pipe
+// -- this maintains (restores?) consistency with the function's usage info and examples
+// curl: will run locally on no input
+//
+// enum: -a will properly append -anything- to the enum buffer, not just strings and lists
+// -- lists are appended directly to the end of the existing list
+// -- everything else is appended as an entry to the existing list
+// malp: string handler given not-quite-a-makoever and more of some concealer and contouring
+// malp: buffer will now handle custom, user created objects using the generic object handler
+// code: also uses generic object handler for user-created/custom objects
+// malp: using malp -b [index] will actually open that index in the buffer
+// -- passing a non-int value will push that object to the buffer and open it's entry
+// -- -p [value] will push that value to the buffer without opening malp
+// -- passing a value without -p or -b will push the value to the buffer and open malp to it's main menu
+// -- you may also use the buffer command to push items to the buffer
+// buffer: fixed typos causing crash
+// HOME: fixed multiple instances of calling HOME and not get_custom_object.HOME
+// mail: fixed crash on spool when spool file is missing
+// mail: fixed cli login
+// transmit: fixed crash caused by typos and missing param
+// -- x2
+// pause: fixed typos and missing param causing carsh
+// pause: added -p-P and -f|-F to pause until file/process exists/stops existing
+// porter: fixed not returning correct output
+// help: fixed crash on -s
+//
+// buffer: new command to push something directly to the buffer without opening malp
+// pause: now has conditionals: is process present and is file present
+// -- -f will wait for a given file path to return a valid file object
+// -- -p will wait for a new instance of a given process to exist
+// porter: will return a string of result ips that may then be piped back into porter
+// -- it will still add the old output to clipb as before
+// felix: added slight delay to input
+// added waits to the clear_screen calls in the games in help.5pk
+// code: fixed missing newline characters preventing usage info from printing
+// -- code actually has a lot of usage info
+// -- now you can finally read it!!!!!
+//
+// credits: updated
+// db: fixed crash when writing new database.csv#
+// aptm: fixed crash when deleting repo ips
+// cob: push and inspect are now aliases for cob push and cob inspect
+// --eg: push mylist val == cob push mylist val
+// --eg: inspect HOME == cob inspect HOME
+// cob: reset will ensure restorition of hard coded values
+// cob: validate will ensure HOME and macros have their classID
+// cob: updated usage examples
+// enum: now has built in 'do' (actually from previous update just forgot to include it in the changes)
+// pwgen: added seed: I2n4Kh3Kd8
+//
+// tws: added new command contributed by Aksu
+// -- thanks Aksu!
+// credits: added Aksu for contributing tws
+// resource configuration: if do.rc is encrypted, 5hell will [attempt to] decrypt it 
+// -- will re-encrypt once read if it was decrypted
+// @HOME: added map_enc and dorc_enc fields to HOME map
+// -- will be used to decrypt Map.conf and do.rc, respectively, if they are encrypted
+// kraken: added -g -- glasspool to kraken
+// kraken: will now decrypt encrypted map.conf
+// -- prompts for encryption key if not supplied
+// -- will reencrypt if the file was encrypted
+// -- will not encrypt if the file was not originally encrypted
+// ---- use file -e to encrypt manually
+///--- update usage info
+// meta: "meta restore" will now restore the the launch metaxploitLib instead of the last
+// netdump: new command, gives access to net_session info
+// flood: new command for running DDOS attacks on a target
+// glasspool: moved to kore.5pk because net.5pk ran out of room
+// 5phinx.5pk: added transmit and decipher tbuf buttons to computer handler
+// -- removed errant returns from computer handler
+// sphinx: added netdump/net_session info to main page
+// sphinx: updated main page information irt metalib, target
+// sphinx: fixed bug where sphinx would not db local libs
+// sphinx: target ip info will be greyed out when target is al ocal lib
+// sphinx: will properly clear xploits, metalib, netsession when using [-]
+// sphinx: F1 help text moved to help.5pk
+// linkdb: will clear xploits when run
+// merged pull request for linkdb
+// felix: added tag 4 scp, gopher, run buttons
+// -- experimental; felix traditionally operates with only file objects
+// brutus: disabled use of brutus in glasspool
+// bios: fixed crash on inactive network
+// pwgen: added seed: Duke
+// reboot: fixed crash when using the command
+// rsi: corrected typo in usage info
+// rsi: added instructions and easy button for opening the browser to forward the port when using rsi install
+// cerebrum: will now consider ["a"] as dictionary not loaded and not request a purge before continuing
+// cp: fixed crash when arg2 is whitespace
+// probe: "firewall detected @ addr:" changed to "Hardware firewall from switch" to clarify that it is a hardware firewall from a switch and not a software firewall from router settings
+// -- these will always be underneath of a switch, for easy identification
+// probe: updated display info for a router's wifi broadcasting status;
+// -- the "Broadcasting: " line will only display if wifi is actually being broadcast by the target rotuer
+// ---- otherwise prints "-wifi disabled-"
+// probe: added -b flag to return only the boradcast status of the last probe
+// probe: probe [-s|show] will now return the broadcast status of the last probe
+// globals.get_lib: globals.routerLib set to null when the target isn't a router
+// dm: fixed errant print in usage info
+// db: enabled the -M flag
+// db: fixed -i prompting for inject when an inject has been supplied
+// db: added glasspool warning // todo: make a video showing how this is meant to work
+// air: removed troublesome .lowers
+// air: added -a flag for command line aireplay
+// -- takes either bssid or essid
+// gopher: will now run recursively when the infile is a folder
+// psudo: streamlined get_shell options: now -s, -f, -n
+// -- use: psudo -n
+// ---- to obtain a root shell without prompts or the malp menu
+// psudo: will reset the custom object when exiting from a start_terminal
+// cob: added cob reset to manually reset resource configuration // htis is crash recovery!
+// -- validates custom object
+// -- resets my*0, stack_pool
+// -- reruns do.rc
+// -- useful after a crash; for best results use: cob purge | cob reset
+// -- automatically runs after returning from a psudo -l (aka starting terminal via psudo)
+// cob: purging the custom object will now also purge macros
+// cob: greatly improved map manipulation within cob
+// cob: improved list manipulation within cob
+// code: universal object handler will now handle custom player objects
+// -- inlcuding those that do not contain functions
+// purge: purging the custom object will now also purge macros
+// curl: new command; prints /Public/htdocs/website.html for localmachine or piped object
+// -- simply calls globals.curl
+// purge: purging the BUFFER in glasspool no longer results in a duplicate shell entry
+// purge: rewritten and moved to 5hell.5pk
+// aptm: delete repo now takes index as well as ip
+// macro: added classID: macros; macro set and del are restricted from altering it
+// 
+// HELP.5pk: new .5pk; moved command.help to it's own file because it's 35 freakin kilobytes on it's own
+// -- 5hell.5pk now has room for moar feature creep
+// help: moved to the above .5pk
+// help: updated help guide
+// psudo: added opening piped shell to -l option as well as piping a shell to psudo without a flag
+// -- piping a shell skips confirmation
+// -- needs moar streamlining
+// reboot: new command, accepts piped objects
+// dm: new command; daemon manager; manages daemons
+// 5phinx.5pk: shortened the is_home function
+// cob: saftey checks to prevent overwriting HOME map
+// felix: now takes a path parameter; starts in the given path instead of /
+// felix: added perms/chmod button [p]
+// felix: won't print those debug lines outside of debug mode
+// zap: fixed hard crash on invalid input
+// perms: updated usage info
+// help: fixed crash in help conventions
+// macro: updated return on no input
+// updated credits
+// dig: fixed random crash when dig called zap that just randomly started happening???????????
+// -- anyway, fixed
+// air: updated usage info
+// cob: will disallow directly overwriting the HOME map
+// cob: cob.validate will ensure the HOME entry is a map
+// ez_clip: will run cob.validate before accessing @home
+// bank_heist: fixed crash caused by undefined 'tool'
+// db: added -M flag to automatically use @o myx0 for scanning without needing to meta -i @o myx0
+// -- still need to meta restore afterwards
+//
+// glosure: merged pull request: 'params' is now accessed via globals
+// glosure: merged pull request: added script-path
+// macro: added -f flag to import a macro from file
+// -- supports multiple lines
+// -- each newline character will be replaced by: |  |
+// ---- joining the lines together without piping output from one line to the next
+// dtools, kore.5pk: moved cad, fakepass, and dig to kore.5pk as dtools ran out of room
+// 5hell.src: added line to security section to nullify the user's access codes on successful login so they aren't hanging out in the company breakroom or whatever
+// 5phinx.5pk: fixed typos in globals.transmit that would cause crashes if called
+// 5phinx.5pk: ez_clip: added forgotten \@r to escape @r
+// 5phinx.5pk: removed instances of _cascade exit as it is no longer needed
+// liber: will now work with multiple database files
+// linkdb: will now work with multiple database files
+// -- will automatically grep all database.csv[N] files and use them
+// bios: will now detect multiple database files
+// db: fixed (yet another) crash (i don't want to talk about it)
+// db: needs to autorepair and auto-remove duplicates across multiple files
+// malp: database button will work with multiple database files
+// malp: todo: database button needs like a sort function or something
+// ifconfig: added -g|gateway: returns the gateway of the active computer object
+// ifconfig: added -w|wifi: manually connect wifi
+// -- usage info updated
+// iwlist: simplified return; returns localmachine.wifi_networks
+// -- takes bssid OR essid and then finds the other for you
+// iwlist: added -a flag; display the classic air powered iwlist
+// linkdb will read from multiple db files
+// -- don't ask why this wasn't already a thing. just don't.
+// rsi: corrected usage info: use -k|-K for deleting rkit on all rshells, not -d
+// -- -d is for daemon mode
+// rsi: added -D for extended daemon mode
+// -- -d will stop listening when -any- rshell is connected
+// -- -D will stop listening when the -next- rshell is connected
+// ----ie: -D will operate on a non-empty rshell buffer
+// -- you may follow -d|-D with a flag or menu option
+// -- see rsi help for more
+// rsi: removed cascade exit from start_terminal option
+// rsi: fixed crash caused by printing an error instead of returning an error
+// psudo: removed cascade exit from start terminal: will actually work now
+// file: added encrypt, decrypt, is_encrypted: -e, -d, -ie
+// -- unavailable if crypto.so is not loaded
+// -- works recursively on folders
+// -- folders themselves may not be encrypted, only contents
+// tree: corrected usage info re/ -f, -r, ;
+// -- trees from piped object's path, not /
+// sc: added 5hell.d to -d and -n
+// 
+//
+// db: fixed crash in db; name not defined
+// db: fixed other crashes
+// db: definitely fixed the crash
+// db: will dynamically choose a lan inject value that (hopefully) exists on the target network
+// db: will have a slightly easier time telling firewall disable exploits and bounce exploits apart
+// poke: will be less zealous about it's affirmations
+//
+// updated credits
+// mv: removed ellipsis from output
+// cp: removed ellipsis from output
+// help: fixed help alias' full text not displaying, which was hiding important alias information from the user
+// db: will now write a new database.csv when the last-numbered one is full
+// -- writes to the path of the last numbered file
+// -- starts at database.cvs, incriments to database.csv[N]
+// --ie database.csv1,....cas2,....csv3,...
+// -- still need to get 5hell to work with reading multiple files
+// shell: --daemons output adjusted
+// psudo: fixed -sf -- skip prompt not showing in usage info
+// -- will auto open in malp
+// psudo: fixed 'y' not opening malp when prompted
+// psudo: added -sn to skip prompt and skip malp
+// poke: updated usage info
+// poke: adjusted "file exists" output
+// malp: added -p -- push to buffer without opening malp
+// malp: fixed malp unexpectedly opening objects in the buffer under edge cases
+// psudo: added warning about traces when using start_terminal to usage info
+// calc: adjusted usage info for the 'base' fuction aka padic representation
+// -- made it easier to search for by search for when using the keyword "padic" *cough*
+// 5phinx.5pk: fixed crash in secure_connect: undefined 'passwd'
+// code: updated usage info; I really should consider breaking this into 3 different commands
+// grep: improved output when displaying matches irt symlinks and word searches file matches
+// -- updated usage info
+// file: will display the origin file of a symlink
+// sl: will return the path to the original file when symlink tests are positive
+// --eg: poke /root/a || sl /root/a /home/user/Desktop/b || sl b 
+// ----: /root/a
+// -- will return 0 when target file is not a symlink
+//
+// dig: added regex to grep for 5hell to ensure it gets "5hell" and not "5hell.d"
+// 5hell.src: juggled sanity checks to better handle new bash stuff
+// shell: fixed crash when piping int:0 to the void
+// shell: you may now launch binaries in /bin and /usr/bin by name, without pathing
+// -- just like regular bash
+// -- tab completion and command history stuff applies
+// cad: changed local var 'cd' to local var 'cad' bc we can't assign to cd
+// air: restored -h flag
+// -- not actually sure why past me disabled it
+// shell: new flag: --nt
+// -- place at end of command string to launch a new terminal and run the command in the new terminal
+// -- this is the same as running Terminal.exe with params so you may use it to send 5hell commands through --nt if 5hell is your bash
+// --eg: |> someBinary " param param parmampupampam \" param with quotes \" " --nt // launches someBinary in a new Terminal with the given params
+// -- passing '"' as a launch param is now possible
+// nt: new command to do the above but as a command
+// -- more intuitive when wrapping complex commands to be 5porked
+// --eg: nt " kraken rkit || prox " 
+// --vs: " kraken rkit || prox " --nt
+// -- both result in the same action
+// -- nt may take piped shells, then it will launch a new window using that shell
+// -- be warned launching .exe's this way counts as a start_terminal and may result in a trace
+// --eg: zap | nt Browser.exe -- opens a new terminal on the target shell and then opens the browser from that terminal
+// --vs: zap | run /usr/bin/Browser.exe -- opens the browser using the target shell; no terminal window
+// --note: remember that both count as start_terminal
+// -- nested nt launches require a pause to be passed with it _unless_ 5hell is your bash and tables/tp is present
+// ---- in which case the natural delay when importing the dictionary at launch will suffice as a delay
+// --eg: nt " nt nt \" nt nt \" "
+// 5hell.src: fixed --5pork bomb
+// -- now it's a 5pork sloth using nt
+// params: bash doesn't have a global params field which causes weird issues with 5hell so now there are a bunch of checks to avoid crashing because of it
+// exit: fixed crash on exit
+// mkdir: added highlight to new dir name in output
+// kore: fixed crash in kore -r when skipping table creation
+// shell: will specify if launch binary is named something other than 5hell
+// -- like bash
+// transmit: fixed crash caused by undefined variable "port"
+// HOME: added check to prevent overwriting cob.HOME if it already exists
+// brutus: removed errant debug line
+// aptm: fixed crash caused by metaxploit not being present when hot_swapping libs
+// 
+// mail: added missing usage info regarding logging into mail via comman line
+// --ie: mail [email] [pass]
+// -- been there for a while, i just forgot to document it
+// -- literally months... 
+// brutus: removed vestigial "arg5" that was preventing command.shell from sending any input at all to brutus
+// -- which in turn prevented passing any arguments (such as help) to brutus
+// brutus: (temporarily) disabled: brutus -s
+// -- use: ssh user@-brutus [ip] instead
+// mv: added -r flag to overwrite destination folder (prevously only possible in felix)
+// -- n.b: this is a 'rename and overwrite' command for folders
+// cerebrum: fixed dictionary not updating
+// cob: validate will include the HOME map
+// purge: -o: HOME map will be excluded when purging the custom object
+// purge: -M will correctly purge the active MetaLib object
+// purge: -r will now accept a string of PID's or process names to exclude from purging the rshell buffer
+// -- delimit with the ":" character
+// kill: will accept a string of PID's or process names to exclude from the kill
+// -- delimit with the ":" character
+// rsi: -p will accept a string of PID's or process names to exclude from the purge
+// -- delimit with the ":" character
+// soon: i'll add purge refinemnt to purging the BUFFER soonish (maybe)
+// aptm: fixed: not allowing the importation of an aptclientlib if one isn't already loaded
+// pwgen: added 'pegade' to the seed list. the game made this from "pegasus" but my generator didn't
+// -- this will result in several more password iterations being generated from this seed
+// -- you could rerun pwgen if you want, after this change, or you could just shoehorn 'pegade' into your tables and call it good
+//
+// 5phinx.5pk: startup _import_tables will no longer print debug output when not in debug mode
+// aptm: will now ignore invalid ips
+// pwgen: reverted global.HASH_TABLE change
+// -- pwgen will rebuild the hash table on each run
+// -- this will prevent incomplete tables from being formed
+// -- this removes the potential speed boost and pwgen is back to it's original speed
+// -- this will also (temporarily) disable making custom hash_tables
+// -- i'll revisit this and figure out a good compromise
+// cerebrum: will no longer import tables if it is located in .Trash
+// air: removed bad is_network_active check; air will work again
+// air: completed the monitor mode check; air will aireplay again...
+// kore: fixed crash in kore -r when creating rkit; added quotes to /HOME["t5"]
+// rclean: fixed rclean refusing to scrub index 0
+// malp: fixed [8] trying to run 5hell.d instead of 5hell
+// help: alias: corrected typos and corrected information regarding creating macros
+// grep: removed spammy debug lines from regex engine
+// grep: will no longer print "Function()" when it finds a match
+// -- turns out print greppy.grepped[-1]["name"] returns the string "Function()" because ["name"] is a function reference to the "name" function in the object's map
+// ---- where .name would be the result of said function
+//	
+// 5hell.src: will return 0 if when input-prompt[0] is 0 or ""
+// -- moved the "extra print before the prompt" line to within the user_input/input received check
+// -- should further reduce unwanted prints when executing do.rc or other batch files
+// kore: fixed the default do.rc created by kore -r
+// -- removed whitespace and placed comments where they belong
+// --NOTE: invalid lines in do.rc will still cause 5hell to print a return line for that line
+// ---- comment out or remove the line to avoid this
+// rsi: correctly linked button [3] to infil command
+// pwgen: fixed creating incorrect folder structure and general not workingness
+// -- will now properly respect the paths indicated in cob.HOME.tp and cob.HOME.t5 (which are defined individually)
+// -- will write to current path if the defined parent folder of tables/t[p|5] does not exist
+// pwgen: moved HASH_TABLE to globals
+// -- this way it won't create it again if it already exists
+// -- ie when doing: pwgen | pwgen hash
+// -- will speed up the process a little bit
+// air: fixed air not properly detecting your network card or monitor mode
+//
+// 5hell.src: fixed undefined color code and color termination
+// felix: fixed missing paramter: clr
+// air: fixed undefined "wlan"
+// p_validate: fixed broken __isa check
+// 5hell.src: removed errant </color> tag
+// cerebrum: will offer to import tables when detected (if not already loaded)
+//
+// 5hell.src: PASSWORD SECURITY section moved to top of 5hell.search
+// -- still commented out by default, but easier to find 
+// run: fixed typo causing crash when running from glasspool
+// sphinx: added additional "color5phinxDisplay" colorDefenition
+// silentclean: move from kore.5pk to dtools.5pk
+// kore.5pk: moved all commands except kore to a new .5pk called net.5pk
+// -- kore.5pk will contain a much expanded kore along with some new commands and possibly non-command shared functions
+// -- this will free up space in dtools, net, and 5hell.5pks
+// -- yay, room for more feature creep
+// sphinx: moved command.sphinx to kore.5pk (5phinx itself remains in 5phinx.5pk)
+// kore: will now check if we are home and disallow -S (paranoid secure) if we are home
+// kore: -r option will now generate a do.rc in rkit if one is not present
+// -- this is still in alpha
+// -- this do.rc will include a comment section with info on using do.rc and adjusting the default colors to fit a user's theme
+// kore: added --control: kore runs in daemon mode and executes commands written to an input file
+// -- this will allow controlling one or more 5hell sessions through a shared input file
+// -- and a shared output file
+// -- optionally allows spooling a log of all interactions to file
+// -- this is big
+// kore: fixed [-sc] flag being ignored
+// -- will properly run kore's secure protocol with silentclean instead of rclean
+// outmon: moved to kore.5pk
+// outmon: updated usage info
+// outmon: default interval changed to .1
+// -- default path removed; supplying a path is now requried
+// outmon: added ability to define actions on file change
+// -- see outmon -h for more
+// malp: moved to kore.5pk
+// hashim: moved to kore.5pk
+// 5phinx.5pk: moved the anti-brick at home check in perms to 5phinx.5pk for use as a shared resource
+// -- uses the same anti-brick logic as 'lock'
+// 5phinx: when setting port to 8080, IF target ip is a public ip, it will be switched to the local ip of the router at the public ip
+// -- if target ip is a lan ip, it will remain as is
+// -- this will NOT occur when using the target command
+// 5phinx.5pk: start_up_resource_configuration will skip comment lines to avoid printing blank lines to the terminal
+// bios: added color termination to security audit elements
+// rsi: swapped order of buttons to match order in buffer
+// rsi: added upload rkit button
+// -- made it button [3]
+// -- former button [3] scp has been moved to button [9]
+// air: fixed crash when invoking air when network is inactive
+// air: removed un-needed block for detect hidden when glasspool is active
+// air: will prevent aireplay invocation if monitor mode is inactive
+// -- will print a warning when air is invoked
+// -- air automatically actives monitor mode so if this happens, the card is incapable of monitor mode
+// help: fixed two typos in help_conventions
+// HOME_SERVER: @home server info moved from a list to a map
+// -- updated references throught the source code
+// -- added new elements: ~/tables/tp, ~/database.csv
+// -- the HOME map is in the get_custom_object map, making it accessible and editable by cob at runtime
+// felix: will now warn the user before allowing a run or database operation to take place
+// -- the warning informs the user that run works on the active shell object, not the file object
+// -- the warning informs the user that databasing works only on the launching shell, not the file object or the active shell (add this to usage info)
+// felix: should have less flicker when refreshing in clear_screen mode.
+// shell: the shell command will return the ip of the active computer object instead of the active shell's
+// -- this avoids confusion while in glass puddle mode (glasspool for computer objects)
+// cerebrum: will now search for both tables/tp and tables/t5 when invoked;
+// -- will check for tp first, then t5
+// -- this includes the auto import that occurs when 5hell starts up
+// cerebrum: fixed cerebrum failing to offer to auto import on invocation when tables/tp and/or tables/t5 are present
+// brutus: polished usage info a bit
+// hashim: polished usage info
+// -- adjusted default settings to better suit parse home server info 
+// clipboard: the clip spaces will now initialize as empty strings instead of null
+// glasspool: clarified that the [-m] option shows buffer shells AND rshells
+// -- making 'gp -m' more useful than 'gp @B -m'
+// ezclip: added @r [index|-m] to access an object in the reverse shell buffer
+// -- works the same as @B [index|-m]
+// -- if there is not a shell at the index given, an error will print and the replacement will be (Int: 0)
+// do: updated the 'do help extra' examples to include clipa ++
+// do: will skip comment lines;
+// -- should stop unwanted printing of blank lines in your do script execution
+// macro: will now suppress the printing of return values until the final return
+// -- this will stop the double printing of return values
+// -- this comes at the cost of not printing the return values of all but the last command
+// ----- (those values are still piped as normal, it's just the print that's suppressed)
+// -- use: macro -v [macroname] to launch a macro in verbose mode, instead
+// -- optionally: call do within the macro to get each line to print:
+// eg: macro set ok " echo dokie | echo okie" // only prints okie dokie
+// eg: macro set ok " do 1 \" echo dokie | echo okie \" " // prints dokie, then okie dokie
+// --note: macro returns it's last value, while do returns a time stamp
+// ---- make sure to use the one best suited to your nefarious doings
+// memdump: added get_custom_object elements and macro list to memory items dumped to file
+// -- excludes gco.dictionary
+//
+// 5phinx.5pk: added print override: can now specify default print color in 5hell.src 
+// -- error and warning colors are placeholders; will be implemented soon(tm)
+// -- this doesn't work for multiline prints!!!!!!!!!!!!!! fix it!!!!!!
+// sphinx: now has configurable color theme stuff
+// -- see 5hell.src for 5phinx color definitions
+// kore: added --override [colorDef] [newColor]
+// -- finally, theme compatibility!
+// -- you may change any colorDefinition in 5hell.src (any global that starts with the word 'color')
+// -- put these lines in your do.rc for custom themes without recompiling
+// -- or edit the appropriate definitions in 5hell.src to hard code changes
+// --eg kore --override colorDefault <#FFFFFFFF>
+// kore: added --silent to toggle silent print mode on and off
+// -- place this at the top and bottom of your do.rc to suppress startup output
+// -- remember it's a toggle, so match the on and off!
+// 5hell.src: added: shell --this
+// -- pushes the current active shell to the buffer
+// ---- i've been meaning to add this for a long time, just kept forgetting
+// -- keep in mind it doesn't *return* the shell since it's not actully running a command and therefore isn't "returning" at all
+// -- the utility of this is when i lose an active shell object for some reason ( such as killing an rshell i accessed via glasspool...)
+// db: will correctly link global net_session
+// -- this will allow malp to properly display net_session info after db runs
+// ssh: will now return "ssh: failed" instead of null when ssh fails
+// run: will fail if it receives "ssh: failed" as a second or third argument
+// -- this is to prevent a run occurring locally when it was meant to be remote
+// ---- when piping from ssh
+// -- I still need to think of good logic to use in run when you pipe in a non-existant shell
+// -- currently, run will execute on the active shell if not piped a valid shell
+// ---- remember this when you pipe non-existant shells from failed attacks
+// run: will print a line indicating if it is running on a target shell instead of locally
+// -- if glasspool is active and no shell is supplied,
+// ---- run will indicate it is running via glasspool
+// perms: fixed 'perms lock down' and 'perms unlock all' bug
+// silentclean: fixed silentclean ignoring piped shells/computers when they are the first argument
+// -- silentclean will now fail when it receives invalid input
+// ---- instead of running in default mode on invalid input
+// air: will report the actual number of ACKS required when selecting attack method
+// -- if max acks is > 34000 it will recommend using brutus instead of air
+// cerebrum: fixed crash while importing dictionary with: cerebrum -i @home 
+// -- the -i option will now accept any ip address (or local path)
+// -- using @home will paste the @home ip address, making usage the same
+// -- -i will now accept either tables/tp or tables/t5 as input for the dicitonary
+// jtr: fixed crash when using n:use numbers and 1:first cap only
+// -- eg: jtr 5 15 aAn 1
+// credits: added CyanMatter
+//
+// DaemonManager: added hack to move 5hell.d to move 5hell.d to rkit on initialization, if rkit exists
+// hotfix: DaemonManager will load 5hell.d to rkit, if present, on initialization instead of /root
+// -- it will load to /root if rkit is not present
+// -- launching 5hell after adding this update will automatically move 5hell.d to rkit if both are present
+//
+// DaemonManager: merged PR from redit0: added DaemonManager.List method
+// -- to use the new method:
+// ----: manager = new DaemonManager
+// ----: manager.Init
+// ----: daemons = manager.List
+// rsi: glasspool option is now option [4] to remain consitent with malp
+// -- the to_buffer option (formerly [4]) is now option [1]
+// 5hell.src: the security section will now be commented out by default
+// -- uncomment and customize if you wish to secure 5hell with a password
+// scpm: fixed bug causing scpm to report failure when it actually succeeded 
+// -- basically if the copy_to path was '/'  then the success check looked for //path, 
+// -- will now properly prevent the extra '/' in the path
+// fetch: get_binaries now has a toggle to return only .log files (chats and system.log)
+// --: fetch -b [shell] -- all binaries, fetch -l [shell] -- only logs
+// cerebrum: will now search for tables/tp throughout the filesystem instead of a static location
+// -- this is mostly because i got annoyed at it not importing /home/guest/rkit/tables like i expected the last change to do
+// -- so now it'll load no matter where it is. rename it if you don't like that
+// 5hell.5pk: will properly set the BIGBRAIN bool 
+// dig: added 'rclean -d @c` to the end of the default dig.bat 
+// -- missing a log scrub line is a bit of a big deal, sorry :|
+// dig: adjustments to dig -s to get it to power through failure
+// -- more therapy needed
+// 5hell.src: changed the FROM PARAMS, FROM FILE lines to debug lines, as they were meant to be
+// portmap: put a blinky in make portmap
+// cob: adjusted return text
+// bios: -i will accept relative paths
+// -- -i will also automatically buffer results
+// bios: added [-C] [cryptoLib|/path] -- replace the global crypto library
+//
+// 5hell.src: moved the color palette from 5hell.5pk to the top of 5hell.src to both make room and make changing default colors easier for the end user
+// -- for example, if your default text color is cyan, and you want the cyan lines to be a different color so they stand out; change the hex value 
+// 5hell.src: will replace || with |  | for the 'input' var as well
+// do: will properly handle using || in do scripts thanks to the above
+// clipboard: fixed crash when using ++/-- on an int stored in the clipboard
+// -- using ++/-- will now recast the value as a string after increasing/decreasing
+// -- this is to fix crashes in other commands that expect string, not integer, input, as well
+// -- pipe to string -n and then to another function/command if you really, really need an int 
+// shuffled some other commands around the .5pks to make room and to improve consistency between .5pk contents
+//
+// cob: added ability to 'cob inspect' a map within the custom object (currently only one layer deep)
+// --eg: cob set mac {} || cob set mac.lmore " tags " || cob inspect mac 
+// cob: inspect will now show a small amount of the contents of stored maps
+// macro: fixed issue causing the wrong part of the string to be highlited when a selfcall is possible
+// sphinx: you may now launch 5phinx without metaxploit or crypto present
+// -- scanning won't work, but you can still launch it and use probe, idk
+// -- just feels weird blocking it
+// contrib.5pk: rejuggled the position of two functions because i forgot why i had put them in their pre-juggle position in the first place
+// probe: when probing a lan ip that is not a router, probe will walk that subnet 1 ip at a time to find the correct router
+// sphinx: the port info display (under target ip display) in sphinx will update this information when port is a router an the probe is actually done
+// -- it won't, in most cases, update when only theip itself is changed. have to redo the probe first
+// -- changing the port number *should* update the port info right away
+// -- changing target ip to a public ip *will* immediately update the port info to the new router if target port is also a router
+//
+// the whole thing: threw @'s at 5hell to prevent unwanted rogue function execution when passing functions around as params for *some* commands
+// -- if you find cases where I missed and you think it needs it, pleae @ me. If you don't like how messy the code is, don't @ me, bro.
+// -- the goal is to allow functions to be passed around as if they were objects and only execute them when we really, really want to
+// -- you can run params through globals.Kérberos( arg ) as an @ reference (ie: arg = Kérberos(@arg)
+// NEW FUNCTION: Kérberos(arg) will return arg as a reference if it is not a function and will return:
+// ---- Kérberos: prevented rogue function execution
+// -- if arg is a function
+// -- put this in your custom commands (or existing commands) if piped functions are executing without your permission
+// run: will not execute piped function refrences
+// run: updated usage info
+// echo: will not execute piped function refrences
+// ez_clip: will (hopefully) not execute function references
+// malp: rogue function prevention added
+// 5hell.src: added --daemons, --daemons stop [name] to view and stop daemons
+// 5hell.src: added rogue function execution prevention
+// clip[a|b|c]: _complete__rewrite_
+// -- consolidated code
+// -- clipboard is now a map; easier to add new clip spaces if desired
+// -- easier to incorporate into future session objects
+// -- added --, ++, -=, += for incrementing/decrementing the clipboard if it is an int or string: int
+// -- added -z -- set clipboard to zero
+// -- added -n -- set clipboard to null
+// -- updated usage info
+// -- usage info is larger than the actual clipboard code :|
+// globals: changed all references to old globals.clip_board_x to globals.CLIP[index]
+// -- in the future this will be session.CLIP[index]
+// 5hell.src: updated comment regarding do.rc to include putting a priority version in Config 
+// -- the one in Config supercedes the one in rkit 
+// -- this info is in the help info but i felt it also belonged in 5hell.src
+// malp: option [3] upload rkit will now launch 5hell right away without prompts
+// -- use [8] run if you want to run it with launch params
+// -- this routine now uses command.infil, which is a new command
+// malp: will no longer execute piped/stored functions without being told to do so
+// new: command.infil: runs the same routing as [3] in malp
+// -- because why wasn't this a command?
+// --: infil [shell_object] [opt:params]
+// --eg: infil @B -m " bat pwn.bat "
+// globals.decompiler: overhauled decompiler, p_validate, p_exe
+// -- these will play nicer with piped functions 
+// -- at the moment, to explicitly execute a piped function; pipe it to command.code 
+// --eg: cob get funky_town | code
+// -- this prompts for each param the function takes, if any, before executing the function and returning the result
+// ---- i hope to improve on this in the future
+// _switch: overhauled to better handle piped functions
+// cob: you may now get and set nested indexes within maps s
+// -- setting list indexes still needs work; needs push, pull, pop, etc
+// ---- so that will be Soon(tm)
+// -- see cob -h for details
+// rclean: cleaned up 'detection_factor' display
+// -- fixed crash when selecting an object from the mini-menu when using @B -m
+// help: added missing -A flag option
+// dig: fixed the 'idfk' database error (fucking hopefully, idfk)
+// linkdb: will now return 1 on success and 0 on fail 
+// calc: moved from kore.5pk to dtools.5pk to free up space and also because it kinda belongs there anyway
+// code: moved to dtools.5pk from 5hell.5pk
+// pwgen: moved to contrib.5pk from dtools.5pk
+// 
+//
+// 5hell.5pk: added colorGrey
+// 5phinx.5pk: removed over 10k chars of legacy/commented code
+// dtools.5pk: also removed a bunch of legacy code
+// 5phinx: imporoved target port information display
+// -- it won't mix and match your targets anymore 
+// -- Except: when target port is 0 and target ip is not a router
+// ---- then port info will show the gateway router of the network
+// ---- i may or may not 'fix' this. atm, i can't decide if it's good or bad.
+// probe: upgraded super powers:
+// -- will now show machines not directly connected to a _remote_ router in grey
+// ---- when probing a local network, this won't apply
+// -- when probing a remote network, this applies to machines with a port forwarded to them that are not on the gateway's subnet
+// NOTE: when combined with the below, a machine with lib and ip in grey is most likely non-existant!
+// -- will now (attempt to) distinguish between non-existant machines vs non-responsive machines (aka missing lib)
+// -- formerly ports forwarded to non-existant machiens showed as "unknown"
+// ---- they will now show as "no machine" in grey
+// -- formerly ports forwarded to non-responsive machines showed as "unknown"
+// ---- they will now show as "no response" in grey
+// ---- machines with an active port but missing/corrupt .so will show as "no response"
+// --NOTE: when a portscan is run externally and a port is forwarded to an existing machine within the network that is; 
+// ---- (a) not directly connected to the gateway
+// ---- (b) missing it's lib.so
+// -- the machine will show as "no machine" instead of "no response" despite the machine existing
+// ---- when probe is run internally on the same network, that same machine will show, correctly, as "no response"
+// ---- this will change when i think up an efficient solution. the current state is a bit hacky
+// NOTE: to reiterate: if port/lib info AND lan ip are greyed out, the machine is either not there at all, or is nuked
+// -- it's difficult to tell for sure without investigating it yourself. gl.
+// probe: fixed typo causing crash in update_port_info
+// probe: fixed typo causing crash in usage info; updated usage info
+// purge: added -p -- purge PORT_MAP
+// kore: fixed crash on no arguments
+//
+// 5hell.5pk: moved globals.get_file to 5phinx.5pk bc 5hell.5pk ran out of room
+// globals.get_file: will now return a file object if passed a file object
+// -- formerly the function would return the file path if input was a file object, and file object if input was a file path
+// -- now get_file will always return a file object
+// -- this will probably break some things...
+// 5hell.src: moved checking if prompt[0] is a file that we are trying to run to after confirming it isn't a command
+// -- this will reduce get_file calls (which recurse the whole filesystem) 
+// ---- as well as preventing files with the same name as a command from interfering with command execution
+// probe: facelift; color coded aspects of the output
+// -- red: switch or firewall or closed port
+// -- green: open port (includes gateway and internal)
+// -- magenta: non-switch router/machine with port 8080
+// -- cyan: known lib
+// -- gold: unknown lib
+// -- orange: no database found
+// -- white: server
+// probe: updated usage info
+// grep: fixed grep -a and grep -f losing the last result found
+// perms: perms lock [opt] will now take a path in addition to the keywords: all, partial, down
+// -- providing a path locks that path recursively
+// --eg: perms lock /root
+// perms: unlock now takes a path in addition to the keyword: all
+// --eg: perms unlock /bin
+// lock: the lock alias for perms lock all has been made into a command with additional options
+// -- lock by itself will work as normal
+// -- lock [path|file_object] will lock that path, recursively
+// kore: updated usage info
+// air: fixed pathing issue causing a crash on startup 
+// air: menu has changed!!!! be sure to take note of the new menu options when cracking wifi
+// air: will search the system for file.cap instead of assuming current path or home_dir
+// -- current public version of the game has weird current_path vs launch_path rules
+// -- experimental might fix this but for now we have to search for file.cap because it can end up in a number of folders depending on the situation
+// -- using tree instead of grep so that the search is silent
+// air: will now prompt for the final destination folder for the generated .cap file
+// -- leave blank (press enter) to use default; currentPath
+// zap: you may now pass an inject value to zap when preselecting an attack
+// --eg: zap 1 password, zap 1 191.168.0.2
+// zap: you may use the -r flag to skip the BUFFER prompt
+// --eg: zap -r 1 password
+// -- remember that zap [mem] [val] [opt:inject] will already skip all prompts
+// run: you may now run binaries on a system without the 'run' prepend
+// -- this is to give run more bash-like performance
+// -- simply typing the full or relative path is sufficient to run an external script
+// -- note that macros take priority over this;
+// ---- a macro named the same as a file or command will be processed instead of the file or command
+// -- using run to run scripts will still work, of course
+// run: updated usage info and usage examples
+// zap: updated usage info
+// meta: will now return the linked/loaded metaLib for ease of piping
+// macro: fixed typo causing crash when viewing usage info
+// -- added info about escaping ez_clip (eg @a, @b) with '\'
+// ----eg macro set foo " echo \@b " vs macro set foo " echo @b "
+// macro: will now print the macro string to be executed
+// macro: will now warn if a macro shares the name with an existing command
+// -- if a command and a macro share the same name, the macro will execute, not the command
+// macro: added warning if macro contains infinite loop // produces FALSE POSITIVES!!!! but otherwise doesn't interfere
+// fetch: added -b -- fetch binaries; works same as the button in malp/rsi
+// -- fetch -b [opt: path] [piped_shell] 
+// -- defaults to current path
+//
+// if: fixed bug preventing if from working correctly
+// -- also updated output
+// -- it is now safe to do silly things like: if " echo bar " " echo foo " " if bar bar \" echo foo \" foo " bar
+// enum: updated usage info
+// kore: fixed typo in kore -S usage info 
+// kore: added temporary hack to ensure kore clears all mail.txt and bank.txt
+// -- grep -a is omitting it's last result from it's return, fix it
+// rsi: added rsi -l -- return the length of the rshell buffer
+// -- added rsi [-k|-K] -- remove rkit and scrub log on all rshelled machines
+// -- added rsi --export -- return the rshell buffer as a list
+// -- updated usage info
+// --eg: macro set bubye " rsi -k || rsi -p y "
+// macro: will now accept piped input
+// macro: updated usage info
+// -- when setting a macro the @pipe point in the string will be replaced by whatever was piped to the macro call
+// macro: adjusted output of macro -l|list
+// purge: fixed incorrect prompt for purge -m; it will no longer ask if you want to clear rshells when purging macros
+// cob: added validate function to ensure the custom object contains the macros and stack_pool indexes
+// --: 5hell will auto-call this routine in as many appropriate cases as I am able anticipate
+// perms: added /bin/bash and /etc/init.d to the anti-brick routine for 'lock' (aka perms lock all)
+// sc: added /bin/bash to nuke routine
+// rclean: added /bin/bash to nuke routine
+//
+// air: will now search filesystem for .cap files instead of only current path
+// pwgen: will now use HOME_SERVER[6] settings for default path for writing tables/tp and tables/t5
+// -- this string must end in: /tables/t5
+// ---- don't forget!
+// --eg: if HOME_SERVER[6] is: /root/rkit/tables/t5
+// ---- then pwgen will write tables/t5 and tables/tp to /root/rkit
+// --NOTE: kore -r will still copy tables from anywhere on the filesystem into rkit when run
+// ----- this will likely change in the future
+// pwgen: fixed: the last password file being overwritten, resulting in lost passwords
+// hashim: will now use HOME_SERVER settings for default paths to the pass/swap file and the tables folder
+// -- will search fs for tables if not found in specified folder, as a backup
+// rshell: will now use HOME_SERVER settings for default port, as well as default ip, of rshell server
+// checkUser: updated to not reject ftpshells
+// malp: fixed: scp gives a malformed error message on bad download
+// malp: fixed ftpshell handler to actually handle ftpshells
+// -- note: ftpshell.put is currently broken in the game
+// -- you can still -upload- to an ftpshell from a regular shell with scp, though
+// -- just no downloading from an ftpshell (no ftpshell.put)
+// rsi: changed locals.shells to locals.rshells
+// 5hell.src: you may now use || to seperate commands without piping output
+// -- this works the same as piping to empty space, ie:
+// ---- echo one | echo two |  | echo three
+// -- is the same as
+// ---- echo one | echo two || echo three
+// -- where the last command will only echo 'three' and not the output of the previous commands
+// -- this is '&&' in most shells, i think
+// -- updated pipe usage info
+// ezclip: fixed "to_int not found in map" when using @p
+// perms: corrected note when using lock:
+// -- the command to bypass anti-brick is: perms lock down
+// -- not perms lock all
+// -- the 'lock' alias is aliased to perms lock all
+// games: drug wars: adjusted difficulty of officer hardass
+// -- adjusted several values including inventory space, event frequency, drug size
+//
+// pwgen/cerebrum: the default dir for tables has been moved to home_dir/rkit/tables
+// -- this way you can take it with you when uploading and use it if you, for instance, start_terminal and lose stuff in memory
+// -- be sure to move your currently existing /root/tables to your rkit folder!
+// -- kore -r will now copy tables to rkit, if it exists outside of rkit 
+// cererum: please note that when cerebrum auto-imports the dictionary from tables, it uses a grep routine
+// -- meaning you do not *have* to put tables in rkit
+// ---- cerebrum will detect it anywhere on the system - at launch -
+// -- using the @home function of cerebrum will use the information in HOME_SERVER 
+// -- the @home function uses ssh for connection 
+// -- ip, port, username, password, and path to tables are all utilized, please define these appropriately
+//
+// games: drug wars: updated wealth values for all neighborhoods (hopefully this makes winning more feasable)
+// do: launching 5hell with do now accepts all params passed
+// -- you may launch 5hell with params without the do # prepend
+// -- launching with do as the first param will still exit when complete
+// -- launching with do as the first param has two modes:
+// -- if -f is not params[2] then everything from params[2] and on will be wrapped in floating quotes when processed
+// ---- this means the whole line will be executed as a single do script
+// ---- if  params[2] is -f then the file named in params[3] will be launched first, then the rest of the line will evaluate
+// -- launching with commands without do as the first param will result in the whole line being evaluated
+// ---- 5hell will not exit once the evaluation is complete
+// do: added the above to usage info
+// do: updated usage info to include info about adding comments to a do script
+// 5hell.src: added 8th element to HOME_SERVER: int:default=1222 rshell server port
+// rshell: will use HOME_SERVER[7] as default rshell server port
+// help: actually added the line for help daemon to the help page, oops
+//
+// malp: hotfix: copy and move in the file handler will actually work now
+// malp: file handler fixes:
+// --: fixed crash in copy routine
+// --: combined copy and move routine 
+// --: fixed rename routine 
+// --: removed duplicate curl routine
+// --: added spam routine: fill a folder with a bunch of copies
+// malp: shell handler will now loop until exited the same way the computer handler does
+// credits: added: bakeneko, GSQ, blujoker for ideas and bug catching
+//
+// mail: added command line login
+// -- mail [email] [opt:password]
+// mail: added command line brutus login
+// -- mail [email] -brutus
+// mail: added command line spool option
+// -- mail spool [opt:path]
+// -- must be logged in to spool mail
+// ez_clip: fixed a crashed when when using @B on a bad index; missing b_err
+// 5hell.src: changed load order of prelaunch stuffs:
+// -- stack_pool now loads before do.rc to prevent a negative stackpool when do.rc calls 'run'
+// meta: load (and load_lib) will take a full_path as well as a filename
+// -- previously it only loaded libs in /lib, now you can load any lib
+// -- be aware you may only EXPLOIT libs in /lib
+// -- but checking things like version and patched status they don't need to be
+// meta: updated usage info for the above
+// rclean: updated usage info regarding using a premade 'silentclean' scrub file
+// -- poorly documented feature needed more attention
+// -- will now copy the scrub file over the log instead of moving it
+// silentclean: added the above to silentclean
+// -- will now search for a file named 'silentclean' and use it if it finds it
+// -- will move the scrub file over the log instead of copying it
+//
+// string: fixed crash in -N no_parse option: p_str -> sp_str
+// chop: added 'split' search param to usage info so ppl looking for 'split' can find it
+// -- why did a command that is all about split not have split in the usage info? fiik
+// aptm: finished command line options for aptm
+// aptm: will correctly check for updates and not update up-to-date libs
+// -- remember that you can give aptm update a path to any file or directory
+// -- passing a directory updates all libs in that directory
+// kore: will run silentclean as part of [-s|-S] secure routine
+// -- seriously, this whole time I thought it already was :/
+// kore: will no longer run kore -s before kore -r
+//
+// 5hell.5pk: changed the load order of globals and 5phinx/contrib to accommodate the super_import change
+// 5hell.5pk/5phinx.5pk: will now use globals.super_import (located in 5phinx.5pk) to import libs
+// -- this replaces hot_swap_libs used by aptm
+// -- this will ensure the latest lib version is loaded on startup
+// -- this will load metaxploit, crypto, and aptclient from any directory with any filename
+// -- the latest version will be used if multiples are detected
+// -- this will also be implemented into: meta -i and meta restore
+// -- the old globals.metaxploit, et al., will eventually be deprecated and replaced by the above
+// aptm: changed error text
+// help: added help daemon
+// -- updated help alias and help convention
+// ---- added information about escaping quotes and @-aliases
+// if: returns reference when result is a raw (non command) function
+// chop: fixed missing char(10) that was preventing full usage info from printing
+// scpm: removed blod tag from local ip in trajectory prompt to make it a little easier to read
+// -- hopefully :\
+// kore: added -S for a more paranoid secure routine
+// kore: fixed weird bug that was causing kore -s to run twice in some cases
+// 
+// ez_clip: all ez clips can be escaped with \
+// --eg: \@a , \" , \@o, \@home, etc... 
+// -- this will help with using variables in macros
+// -- allowing them to be set when the macro is run, not when it's made
+// purge: changed over two legacy "purge -d" internal calls to "purge -x"
+//
+// htop: reformatted usage info
+// outmon: reformatted usage info
+// hashim: reformatted usage info
+// macro: removed bold tag from output
+// purge: -o option will no longer remove the stack_pool 
+//
+// purge: -o option will no longer remove the macros registry
+// purge: added -m; clear macros
+// purge: changed -m; clear daemons to -d; clear daemons
+// purge: changed -d; purge xploits to -x; purge xploits
+// purge: updated usage info
+// ez_clip: added @t for target ip and @p for target port
+// eg: meta link @t @p
+//
+// exit: removed msg check as it was a bad idea
+// removed the import line for games.5pk
+//
+// games.5pk: is no more, it has been changed to contrib.5pk
+// contrib.5pk: will contain functions and commands contributed by the community
+// -- this is mainly because the other .5pks were running out of room and games.5pk had plenty of space
+// --note: glosure, the daemon manager, the regex engine, htop, and check user have been moved to contrib.5pk 
+// -- the three games are still in contrib.5pk
+// -- the import code line has been moved to just under the import 5phinx line in 5hell.5pk
+// -- formerly this line was located within the command.games function
+// This marks the beginning of the great 5hell refactoring where code will be consolidated, objectified and organized
+//
+// macro: moved all macros to the macro registry
+// --: this is a map within the custom object
+// macro: added macro [-l|list]
+// --: this will return a string with all macros and their definitions
+// --: cob get macros (or just 'get macros') will return the macros map
+// macro: added macro [-g|get] [name] to return a given macro's string
+// macro: fixed hard crash in usage info
+//
+// do.rc: removed wildly counter-productive line from _resource_configuration
+// rclean: hopefully won't shit itself anymore when using -n
+// macro: added macro registry
+// macro: corrected usage info
+// --: creating a macro requires -s|set flag: macro [-s|set] [name] [value]
+// cob: will no longer spam usage info on bad input
+//
+// 5hell.src: added more info to display when typing 'shell'
+// db: added a warning about mismatched files when loading a local lib with a remote metaxploit object
+// -- this is until i can figure out a smarter way to handle that case
+// 5phinx.5pk: added _cascade function which will cascade exit if start_terminal is called
+// -- this is to solve the need to manually exit 5hell if using psudo in a nested launch
+// removed NIGHTLY global references
+// removed more commented code
+// adjusted usage info of diff and zc
+// usr: added missing -a/-d flags for add and delete
+//
+// silentclean: will no longer spam usage info on bad input
+// --: remember that now you can: gp -d " sc | return " @B [index]
+// --: or lazy bones it with: gp -d sc -m
+// --: will print a warning and continue to scrub locally
+// glasspool: corrected typoe in help info: glaspool -> glasspool
+// glasspool: added ability to specify a command or macro when initializing glasspool
+// --eg: glasspool -d " echo bob " @B [index]
+// code: fixed hard crash when passing invalid (or no) input to functions in the generic object handler
+// -- will now warn the user if a function is required; ie no default
+// -- the function will now return if the argument is required 
+// -- arguments with defaults are parsed as the default if no input
+// -- ints wrapped in ' will be cast as strings; eg '1' == string, 1 == number
+// -- you may now type null to specify the null character in this context
+//
+// added daemon control!!
+// -- hashim, rsi, and outmon will now make use of a daemon control system
+// -- when running in daemon mode a file named 5hell.d will be created in /root
+// -- individual lines in this file can be removed to end a daemon without using ctrl+c
+// -- cool stuff! thanks redit0!
+//
+// updated credits
+// added greybel support
+//
+// glosure: bug fix
+// tree: removed unused code
+// grep: added -a option to return all matched files as a list
+// kore: fixed infinite loop when kore doesn't have write permissions to Mail.txt/Bank.txt 
+//
+// 5hell.5pk: removed unused code
+// dtools.5pk: removed unused code
+// dtools.5pk & kore.5pk: moved hashim and tdump from kore to dtools
+// kore.5pk: removed unused code
+// kore.5pk: added glosure as a new command
+// -- thanks rocketorbit!
+// -- be sure to check the usage info and follow the link found there for more info
+// credits: added credit to rocketorbit for glosure code
+// credits: added inspiration/idea credit to: Conner, STYX, Fear_Rua, Penelope
+// cob: reenabled @clipa/b/c replacement inputs
+//
+// 5hell.src: moved HOME_SERVER configuration to BEFORE the 5hell.5pk import line
+// -- be sure to update this to avoid an undefined identifier error
+// macro: now requires a [-s|set] flag in order to create a macro
+// -- this is to avoid overwriting a macro on accident with piped input when calling a macro
+// brutus: reverted disabling in glasspool; now it just warns
+// hashim: added TABLES_DIR global that hashim will use to find the hash tables
+// -- default is still /root/tables/t5
+// -- edit this in the globals.HOME_SERVER variable in 5hell.src, NOT the TABLES_DIR var in 5hell.5pk
+//
+// brutus: disabled while GLASSPOOL is active; brutus doesn't translate through glasspool it just ends up rooting your own machine; so now it wont
+// kore: -r will now create an empty database.csv if it doesn't exist
+// kore: -r will now highlight the path used to cp 5hell into rkit (as well as properly rename it to 5hell)
+// --NOTE: kore -r copies 5hell from the launch path of the instance of 5hell running the command
+// ----: mind your launch path to ensure the correct 5hell is copied
+// dig: will create an empty database.csv if it doesn't exist
+// dig: dig.bat is created on dig's first run or when you use: dig --edit (or manually create it, of course)
+// -- the default dig.bat is bare bones, please customize it to suit the behavior you desire
+// silentclean: nuke option (sc -n) will now require the override flag '--n' before executing on a machine running Xorg (aka a home pc)
+// -- this is to help protect you from nuking yourself on accident but still allow you to nuke yourself on purpose
+// rclean: -n will now properly nuke the filesystem
+// -- note, since rclean requires you to specify a shell/computer/file object, it does NOT have the same restriction as the above
+// -- please nuke responsibly
+// db: passing -i to a db -r call should now result in a prompt for an inject
+// db: will no longer use a default inject of 'password'
+// -- this is to avoid unintentional password changes
+// string: -r (replace): will use @[int] in order to specify a specific character code
+// --eg: string -r bob @32 " this is a string withbobin it " -- would replace 'bob' with a space
+// -- use @0 for a 'zero space' character; aka: ""
+//
+// changed malp and memory alpha to auto-open a piped value
+// moved rnip and porter to kore.5pk because 5hell.5pk ran out of room
+// macro: you may now run macro's WITHOUT the 'macro' prepend!!!!!!!!!
+// --i.e.: set a macro with: macro " [string of commands or whatever] "
+// -- then fire the macro with: |> [macro_name]
+// -- combining this with `do.rc` lets you set macro's at runtime
+// -- aka: easy way to add new commands!!
+// -- this change is a single line in 5hell.src, first entry for aliases
+// ---- at the time of this post, it's line 191 (may change in the future, of course)
+// ---- in case you want to easily add it to your custom 5hell.src
+// psudo: complete overhaul of function and usage info
+// -- hopefully how it works (and why to use it) is much clearer now
+// zap: will no longer offer to start terminal on a shell
+// -- instead it will buffer it as normal then offer to open that object in the BUFFER 
+// -- please note that executing zap without the menu does NOT result in a prompt
+// -- i.e.: zap [mem] [add] [inj] == no prompt || zap == prompt
+// -- both options will still return the shell object as normal
+// -- the default choice for opening the shell in the buffer is Y
+// -- if y'all would prefer N be the default, let me know and we'll switch it
+//
+// do: fixed typo causing crash when using do -h
+// cname: fixed typo in usage info
+// calc: will no longer spam usage info on bad input
+//
+// meta: fixed several places that the update from meta link -r|-l changing to meta load|link was missing
+// -- this affected zero chill and db/linkdb in edge cases
+// linkdb: will no longer return full usage info on no-input
+// hotfix: fixed missing newline in macro usage info
+// hotfix: removed accidental color codes from the database
+// bios: added line to report number of entries in custom object
+//
+// do.rc: 5hell will now look for do.rc in Config first, and rkit second, executing only the first one found
+// help: added entry: help alias
+// -- explains do and macro
+// credits: updated with new contributors
+// silentclean: updated how sc searches for rkit/5hell to avoid issues when cleaning through glasspool
+// dig: updated default dig.bat to include a dropping a root rshell
+// meta: fixed invalid file path check on metaxloitLib import
+// rsi: added check to prevent crash when rsi list is empty when refreshing the menu
+// scribus: added: @I - insert above line, @N - display noparse output without line numbers
+// scribus: fixed typo causing a crash when supplying incorrect line number to @i
+// string: fixed missing newlines that were preventing full usage info from printing
+// tree: symlinks will be colored yellow
+// ls: symlinks will be colored yellow
+// macro: added new command for making macros
+// -- they function similarly to do scripts
+// -- but different
+// -- depending on feedback, either macro or do may be changed to match the other
+// if: reduced spam by muting the return output of evaluated functions
+// -- print statements within the function will still be printed
+// string: changed -R flag; now indicates 'remove'
+// 5hell.src: added note that color palette may be overwritten by uncommenting the appropriate lines in 5hell.src
+// pwgen: added the words operator and feral to word seed list
+// echo: will no longer return usage information on no input
+// do: made return output smaller
+// do: attempting to put a gate clause to terminate script execution early
+// -- if the final return value of a line in a do script is @STOP
+// ---- the script will stop that iteration without completing further commands
+// ---- the next iteration will start; this is equivalent to a "continue" in a loop
+// -- if the final return value of a line in a do script is @RETURN
+// ---- the entire chain will cease and you will be returned to the command line
+// ---- this is equivalent to a "break" in a loop
+// -- an example gate clause: if " echo @STOP " " echo go " " echo 15 " " get stack_pool "
+// db: further refinements to the fixes added in the PR
+// -- fixed missing 'inject' in local lib databasing
+// -- will now detect firewall disable and password change exploits
+// -- will now dynamically assign a lan ip inject if not supplied
+// -- will now use "password" as default password change value
+// -- may pass -i as a param to be prompted for an inject value to use as password or lan ip
+// merged PR fixing incorrect inject logic in the db command
+//
+// kraken: hotfix to fix completely busted status
+//
+// if: fixed commands not evaluating correctly
+// -- ezclip evaluates before the if statement, this can cause problems
+// -- the solution is to use piping inside of if statements instead
+// --eg: if " echo yes " " echo no " " /lib/net.so " " grep -p @a "
+// -- is better written as
+// --eg: if " echo yes " " echo no " " /lib/net.so " " clipa | grep -p "
+// usr: add user now takes a password param
+// usr: del user now takes a delete-home-dir boolean
+// cerebrum: will no longer import the dictionary on launch if it already exists in cob
+// do.rc: will only execute if stack_pool is 0
+// 
+// 5hell.src: fixed infinite loop when prompt[0] is a "|"
+// -- now if prompt[0] is a "|" the line will be skipped, 
+// -- --effectively making the line a comment if it is in a do script
+// 5hell.src: REAL comment characters added to 5hell.src 
+// -- these are escaped from command.shell's input param only!
+// -- essentially this means do scripts (including dig.bat, and do.rc)
+// -- current comment chars are #, -, /
+// todo: add global BOOLS to enable/disable the startup procedures
+// added startup_resource_configuration
+// added startup import cerebrum
+// added startup stack_pool
+// added startup export metaxploitLib
+// meta: updated usage info
+// meta: added -r|return for returning the metaLib object
+// -- fixed bug preventing printing currently linked metalib name and version when using meta without params
+// meta: changed link -r|-l to: 
+// -- meta link -- link a remote net_session and dump the metaLib (formerly meta link -r)
+// -- meta load -- load a local metaLib (formerly meta link -l)
+// meta: added meta -x -- return the metaxploitLib object (same as bios -x)
+// zap: you may now pass an index to autoselect and exploit from the list
+// nsl: passing no argument defaults to local gateway
+// kore: made kore -s output a little less messy
+// kore: kore -s will now remove ALL bank.txt and mail.txt on a system
+// -- be sure to rename these files if you don't want kore to delete them
+// bios: added --stack option to return the stack_pool value
+// sphinx: updated F1 usage info within 5phinx
+// -- updated UI with additional target types
+// -- changed two variables to functions so that they update when called
+// metaxploit: 5hell will now export it's metaxploit object on each launch to the custom object
+// -- entries will be stored as key: myx# : MetaxploitLib
+// -- key will start at myx0, max is myx15
+// -- returning one level and launching anew will -overwrite- the entry that corresponds to that launch #
+// -- you can check the bios command and look for stack pool
+// -- the number listed will be the index of the current launches MetaxploitLib
+// enum: will enumerate more types of maps: shells, computers, files, custom_objects
+// -- note: in most cases it is better to send one of those objects through the decompiler (code command) instead of enum
+// ---- but you do you boo boo
+// run: fixed a typo in run causing a crash on 3 arguments
+// dig: fixed a type mismatch when using the dig button in 5phinx
+// pause: added verbose option, changed default behavior to silent
+//
+// zc: updated zer0Chill usage info to reflect current function and procedure
+// bios: updated stackpool to accurately track through nested launches
+// -- stack pool is shown in bios
+// -- stack pool increments when shell.launch is used
+// -- stack pool decrements when returning from shell.launch
+// -- the game will prevent you from exceeding something like 15 stack calls
+// bios: updated info, now shows:
+// -- accurate wifi strength bar
+// -- accurate file/folder count
+// -- accurate security audit score, with details
+// ---- 0 is worst score, 10 is best
+// scribus: added trim and noparse options
+// shell: fixed typo in 5hell.src causing GLASSPOOL status to print incorrectly
+// string: fixed typo preventing usage info from displaying
+// gopher: added small delay before loop to avoid strange issue involving crypto scanning before the scan is actually called.....
+// sphinx: actually connected the dig button to dig
+// sphinx: added highlight to dig button
+// osint: made it useful again .... shhhhh
+// diff: improved accuracy of line number output with -l option
+//
+// slight improvements to file handler
+// -- added to clipboard, move, rename, copy
+// slight imporvement to shell handler
+// -- added fetch metaxploit
+// fetch: added command to fetch metaxploitlib from piped shell (yeah, your friggin jump file. be happy)
+// meta: adjusted size of output text for [-i] option
+// quit: corrected logic error preventing auto=exit
+// run: adjusted number of params to 4 from 5 to prevent conflict with new 5hell.src 
+// -- need to fix command launching to be able to accomodate functions with more than 4 params as per old 5hell.src
+// rsi: fixed rsi being stuck in daemon mode
+// bios: added error message indicating when bios -i fails
+// -- error reminds user it is used for include_lib and not metaxploit.load
+// db: fixed typo preventing piping in a MetaLib/MetaxploitLib
+// liber: usage info will actually show now
+// malp: shell handler: decompiler will now buffer the return value, not the shell itself
+// malp: shell handler: upload rkit will correctly restore permissions 
+// credits: updated credits
+// 5hell.src: updated how command.shell returns from internal calls
+// 5hell.src: additional optimizations from Clover. Thanks Clover!
+// help: fixed typo in help buffer
+// string: fixed typo in usage info that caused a crash
+// cob: removed some misleading punctuation from output
+//
+// cname: new command for returning name of host_computer
+// tree: fixed usage info
+// tree: fixed typo causing tree to crash
+// kraken: will print failure messages when uploads fail
+// poke: fixed weird issue with not writing to /
+// if: should no longer show a double return
+// if: fixed an edge case crash when running if within do under certain circumstances
+// db: fixed typo preventing piping a metalib to db -m
+// mv: updated input handling and usage info
+// added colorOlive and colorViolet 
+// todo: fix osint to do something new since it got nerfed
+// 
+// shell: added 'shell --debug' command to manually toggle DEBUG mode at runtime
+// if: fixed crash caused by undefined 'c' variable
+// -- note: ez clip assignments happen before if evaluation;
+// ---- this can result in objects being invalidated before use
+// ---- to retrieve variables within an if statement, use:
+// ---- get ( cob get ) and clipa, clipb, clipc without parameters
+// ---- and pipe the returns into the statement
+// eg: clipb @B 1 |  | if " echo true " " echo false " " Mail.txt " " clipb | grep -n Mail "
+// gopher: will search for dump.txt and write to it before writing a new dump.txt to current path
+// -- basically: poke rkit/dump.txt
+// -- and then forget about it
+// fixed fetch metaxploit in shell handler (todo)
+// meta: fixed any-key prompt with meta link without further parameters
+// tree: added option to return a list of files
+// ps: fixed missing char(10) in usage info, unlocking new abilities!
+// -- you can (have been able to for a while) pipe computer and shell objects to ps
+// ps: colorized output
+// target: updated parameters and usage
+// -- colorized output
+// quit: change prompt to any-key press prompt
+// 5hell.5pk: removed changelog and put it in in it's own file
+// -- reason: 5hell.5pk was about to exceed the character limit
+// decompiler: p_exe no longer barfs when functions have no input parameters
+// grep: fixed issue with grep misreporting symlink paths
+// -- added info on simlink source
+// cat: setting noparse to default was causing issues so now cat has a -n|--noparse flag to print text with richtext escaped
+// -- unlike normal cat, this only prints the output without returning it (because it adds the noparse tag, which messes up other stuff)
+// file: will detect symlinks
+// -- fixed a crash from previous version related to this
+// ls: will detect symlinks
+// ls: added -r flag for raw, uncolorized output
+// ls: updated usage info
+// ls: sort by size (soon)
+// nsl: now has a flag to set target ip
+// nsl: now accepts domains as well as ip's
+// nsl: updated output appearance
+// whois: now has a flag to set target ip
+// whois: now accepts domains as well as ip's
+// whois: updated output appearance
+// whois and nsl are now linked at the hip
+//
+// ezclip: moved from 5hell.src to 5phinx.5pk
+// -- is now a function that is processed for each piped command
+// -- this means variables may be assigned -and- used in the same inline pipe chain
+// if: substantial improvements: all params may now execute 5hell commands
+// -- use quotes to input complex strings
+// ls: output will no longer have a leading empty line
+// ls: colorized output (matches tree command)
+// ps: colorized output
+// updated help for @o and @B in easy clip
+// 5hell.src: added @o [key] and @B [#] as prompt tokens
+// -- @o will insert the value of get_custom_object[key]
+// -- @B will insert the value of globals.BUFFER[#]
+// -- these operations take place during the FIRST easy clip pass before the single quote pass
+// meta: meta -i will now correctly accept a path
+// -- meta link without params will now prompt for local/remote
+// malp: added actual usage info to the usage info
+// malp: added [-b] option to open the buffer as soon as malp opens
+// malp: updated the visual appearance of some handlers
+// malp: updated and added to functions of multiple handlers
+// -- shell, computer, file, list, and string handlers
+// -- also fixed a bunch of random bugs and what not, can't remember them all
+// osint: added new command for locating npc's by username
+// forgot to mention adding zerochill last update
+// -- this is currently a (working) stub, it will be expanded
+// misc tidbits that i forgot
+//
+// pwgen: added length 3 and 4 password support
+// -- rudimentary: approx 20k+ additional passwords
+// md5: adjusted output
+// gopher: adjusted output
+// enum: fixed missing sli_2
+// jtr: corrected parameter order in usage info
+// jtr: improved generation speed and duplicate handling
+// diff: added autotrim, ignore whitespace options
+// -- and fixed associated crashes
+//
+// iff: added 'iff' command to evaluate simple if statements
+// -- compiler complains if i try to do command.if so i'ts command.iff, deal wit' it
+// -- very primitive atm (of limited use) further expansion planned
+// sl: added symlink command to create and check for symbolic links
+// -- further updates to this are coming, as well as integration into ls and tree
+// scribus: will begin on line 0 of empty text buffers
+// run: fixed 'parameters' variable being in the wrong dang place. wtf??? 
+// -- gremlins, definitely gremlins...
+// malp: added string and list hanlders
+// decompiler: fixed some bugs, handled the above handlers
+// fixed crash in malp/decompiler when processing integer
+// file: fixed -b flag, will now BUFFER like it should
+// liber: added -r and -lr flags for returning raw, uncolorized output
+// liber: fixed crash when piped incorrect data type
+// liber: now accepts piped MetaLib objects
+// prox: fixed typo that was crashing help -search
+// diff: corrected DEBUG line that was causing a crash
+// diff: will start counting line numbers at 1 instead of 0
+// -- added -l option to return a list of line numbers with differences
+// -- the list will be a list of integers to be compatible with the zero day stuff
+// string: added new options for making lists, ints and lists of ints
+// -- also fixed clipped usage info
+// string: added -t option for trimming input
+// enum: fixed clipped usage info
+// -- this has revealed many new features that you probably missed!
+// gopher: will now store user:pass:hash in dump.txt
+// tdump: will correctly check for write access
+// kore: -s will now also delete /home/guest folder
+// kore: -r will now fetch metaxploit and crypto from OUTSIDE of the rkit >.>
+// updated credits
+//
+// p_exe plays nicely with arbitrary function execution, finally
+// code: decompiler will no longer barf when fed integers
+// run: will accept piped file objects
+// meta: fixed pathing issue with -i import flag
+// -- will now accept relative paths
+// get_binaries: fixed pathing issue (a couple updates back, actually)
+// dig: no longer barfs when db trims the database
+// db: will be cleaner about trimming the database so dig doesn't barf
+//
+// roil: removed prompts by default
+// -- added -p|--prompt param to restore prompts
+// meta: link -r accepts [ip] [port]
+// updated usage info for the above
+// added dhza to credits
+//
+// fixed display issue in sphinx when port is (int: 0)
+// added reverse nsl
+// chop: help info was clipped: fixed it
+// added color to help
+// whois: added getbox option to sus out a neurobox network
+// added whoami command
+// updated iwlist help info
+// colorized output of cp and mv
+// gave kraken binary powers
+// -- needs polish
+// updated 5hell.src with whoami in prompt
+//
+// file: fixed typo preventing file usage info from printing
+// file: removed weird grep routine 
+// 5phinx: updated newtree to return a list on quiet == 2
+// makfit: removed autolockdown after compilation because wtf why
+// -- also updated output text
+// cat: added -n flag for 'no_parse' mode; returns file contents with richtext tags escaped
+// -- updated usage info for this change
+// cat: added check for newline in filename input
+//
+// added new entries to the credits
+// updated readme on github
+// 
+// 5hell.src: added @ references to the prompt parsing added in the previous update
+// -- this will prevent piped functions from executing in transit
+// glasspool: highlighted some text in the glasspool banner
+// glasspool: will update current path to home directory of user when activated
+// make: will actually default to the current path when no output path is given
+// -- for real this time
+// tree: updated output to be in line with tree -f
+// -- updated list_files in 5phinx.5pk
+// -- i think it looks prettier now
+// rsi: purge: added ip echo to globals.rsi_purge
+// cob: added return_indexes
+// cob: updated output of cob inspect
+// -- will now truncate values for ease of inspection
+// -- updated usage info to reflect this change
+// echo: updated usage info
+// ps: updated usage info
+// meta: fixed bug preventing importing metaxploitLib when one is not already set
+// attempting to fix rsi population delay (fingers crossed)
+// passwd: updated usage info to include the word "password" (for searchability)
+//
+// cat: added cats to cat
+// string: added: string -r [old text] [new text] [text to parse]
+// -- returns prased text with all instances of old text replaced with new text
+// string: added: string [number] to return a number as a string
+// md5: updated usage info
+// file: now accepts an object as an additional parameter
+// -- updated usage info
+// -- runs file with the scope of the object
+// -- eg: clipb @B [#] | file -c /etc/passwd
+// ---- where [#] is the buffer index of a shell:
+// ---- clips the shell and pipes it into: file [-c] [/path] [search_this_object]
+// ---- and returns the character count (if not binary)
+// do: added 'bat' shortcut for: do 1 -f to 5hell.src
+// -- e.g: |> bat foo.bar  is the same as |> do 1 -f foo.bar
+// added a sick a$$ new prompt to 5hell.src 
+// fullprompt is now on by default
+// -- red line: root, green line: user, white line: guest
+// added the ability to put text inside of floating quotes into a single param:
+// -- a floating quote is a single quote " passed as a parameter
+// -- a single floating quote without a closing floating quote is parsed as is
+// -- quotes touching text ( "example" ) are parsed as is
+// ---- only " example text block " is parsed as a text block
+// -- example: echo " bob's burgers is a great show "
+// -- results in bob's burgers is a great show being printed to the screen
+// -- echo bob's burgers is a great show, without quotes, would print:
+// -- bob's burgers is a
+// -- you may use multiple, but not nested, quote blocks
+// -- e.g: echo /home/guest/rkit/5hell | clipa |   | echo do 1 -f dig.bat | run @a
+// -- is the same as: run /home/guest/rkit/5hell " do 1 -f dig.bat "
+// -- e.g: poke haha " this is a bunch of "text" " | echo this is some " more text. isn't it great? "
+// -- works with easy clipc: clipa bob |  | echo burger | clipb |  | echo " @a @b "
+// cp: updated usage info
+// grep: updated and clarified usage
+// grep: added -p option to return file path
+// glasspool: updated splash info
+// poke: removed pesky overwrite prompt
+// perms: perms lock all and lock now look for Xorg in processes instead of user_email
+// -- this will prevent bricking a home pc when lock is run before the user has created an email account
+// liber: now checks against database and colorizes output
+// db: database now trims itself from the top when it's too big
+// -- still working on a (simple) multi file db solution
+// 
+// tdump will dump to current path
+//
+// added new command: diff [arg] [arg]
+// enum: returns string instead of int, converts int input to string
+// chop: added 4th param: outfile name
+// pause: added a line break to pause -m
+// rclean: changed cleaner file to xorg.conf (a txt file instead of binary)
+// -- this will speed up scrubs
+// do: fixed a crash when -f target is binary
+//
+// 5hell.src!!!! added get/set alias for cob get/cob set
+// kore overhaul:
+// -- -r == rkit , -s == secure protocol, -h == hdd size reporting
+// -- defunct code commented out
+// get_binaries: will now actually pull binaries from user home folders as well as system.log
+// rm: gives more feedback
+// cat: looks a little nicer
+// whois: added neurobox network highlight
+// fully reverted 5phinx facelift 
+// perms: updated usage info
+// added -n (nuke) option for rclean and updated usage info to include -d and -n
+	// -d and -n work the same as silentclean -d and -n (more or less...)
+// silentclean: updated usage info 
+// kill: added option to kill by process name
+// make: build path will default to currentPath if none supplied
+// make: importable boolean should work now
+//
+// fixed typo in grep causing irritating crash
+// -- grep and grep -f work normally again
+// fixed typo in get_lib that caused a crash when getting a lib
+// updated pause command and usage info
+// updated cc usage info
+// 
+// broke dig --edit (again)
+// fixed dig --edit (again)
+// updated usage info for dig
+// reverted 5phinx facelift
+// added some clarification to linking a lib or netsession
+// fixed typo in meta help that prevented displaying the entire string
+// added libname and version to decompiler: metaLib
+// added enum -e usage info (return the enum list)
+// updated code usage info
+// updated makfit usage info
+// reminded self it's makfit not mkfit
+// 
+// document the below:
+// greatly updated the usage information for the meta command
+// updated herme5 mail client documentation for spool, delete all
+// added exporting enum entries to malp en masse
+// updated 5phinx documentation
+// 5phinx/malp: added globals.get_binaries to pull all useful binaries from a shell
+// -- added get binaries button to RSI and the shell handler in BUFFER
+// -- uses newtree and enum
+// -- CLI option soon(tm)
+// mail: delete all added
+// cleaned up the usege info for command.file 
+// updated 5phinx UI
+// updated grep usage info
+// added documentation for grep -n
+// updated enum documentation for new -b option
+// hotfix:
+// fixed an issue in tree -f : it was trying to enumerate empty lists
+// fixed crash in kore -r
+// fixed typo in mail that caused crash after brute forcing an email
+// fixed syntax error causing loading local libs to crash
+// fixed typo causing a crash with purge -o
+//
+//
+// code: fixed char code return: code [char|string](returns: char code)
+// db: added -m to customize scan with metaLib and metaxploitLib of choice // needs docs
+// string: new command added: string -- for stringifying lists
+// enum: added append function
+// enum: added insert function
+// enum: added purge function
+// enum: map support soon(tm)
+// ls: show all flag (formerly -a) is now implicit (i.e. always on)
+// ls: ls -a and ls -A are now equivalent and will sort files alphabetically
+// bios: added purging custom object
+// bios: added several additional return types
+// bios: added a line at the bottom to remind user that bios has more functionality
+// cob: added purging custom object
+// dig: fixed -s option. sussing works again.
+// mail: -brutus option will save found password to custom_object
+// mail: added spool function to herme5 > read mail (dump mail to file)
+// meta: added lib param to link -l to skip menu: meta link -l [lib_name]
+// -- omit path, just use that lib name i.e. net.so, libssh.so, etc
+// meta: you can now import metaLib objects with meta link [object] // needs docs
+// meta: improved importing metaxploitLib objects
+// meta: added backing up and restoring original metaxploitLib object
+// meta: updated documentation to reflect changes
+// liber: -l option works again (dang typos)
+// kore: fixed typo that caused an incorrect completion time to be printed
+// pause: change minimum time from .1 to .001 seconds
+// cc: using cc [index] will no longer spam the screen with the entire cc buffer
+// removed legacy dictionary code
+// removed duplicate cob code
+//
+// tagged 4 spc will now work properly again
+// [9] download txt will work properly instead of going to the decompiler
+// updated usage info for jtr to reflect proper order of params (that is: set size first, then word length)
+//
+// in globals.decompiler: changed locals.re to fe to avoid namespace conflict with regex engine (globals.re)
+// added smtp command
+// fixed error in p_validate when validating numbers
+// 
+// updated lanpro to be MUCH faster and more accurate
+// -- lanpro now has two modes: remote and local
+// -- modes are activated automatically
+// -- a public ip will activate remote mode
+// -- a lan ip or no ip will activate local mode
+// if the public ip given matches the public ip of the local gateway:
+// ---- local mode will be activated
+// fixed missing end ifs in r_hecks >> 5hpinx.5pk
+// -- no idea how it was working without those :|
+// glasspool should now start you off in the home directory of the chosen object
+// further updated the for loop in command.dig
+// updated dig to correctly parse ip/port when both come in as arg1
+// -- e.g when piping command.target to command.dig
+//
+// fixed the --edit param for dig
+// fixed crash in p_validate when validating numbers
+// fixed crash in 5phinx on port scan
+// fixed error in dig not setting permissions correctly
+//
+// IMPORTANT! 5hell.src has changed!
+// added @tbuf alias to 5hell.src
+// tree should no longer duplicate entries to the tbuf
+// fixed bug in command.poke that caused writing to / on bad input
+// updated malp to properly use p_exe for functions
+// updated p_exe to handle raw functions as well as functions within maps/objects
+// updated decompiler to use p_exe for functions
+// updated dump_memory to dump the clipboards as well as t_buf
+//
+// added new_exit to 5phinx
+// -- will add the exit return value to the custom_object.return_value
+// -- added Jessa to credits
+// fixed rclean to delete the correct rkit on -d
+// fixed rclean to correctly scrub log when using -d on piped object
+// updated silentclean help info
+// adjusted output of linkdb/meta link
+// updated meta link to correctly warn about leaving a log
+// fixed typo in rsi: will print correct rshell index when using -r
+// updated dig help extra to a better script
+// -- use @home in r.bat to avoid leaving an ip
+// added @home alias to 5hell.src 
+// this means update 5hell.src as well as 5hell.5pk!!
+// -- @home as cli parameter will be replaced by HOME_SERVER[0] -- the home server ip address
+// fixed crash on bad input in liber
+//
+// added null file check to p_validate
+// -- should prevent null file crashes
+// tree: added -f option to enumerate files as objects
+// enum: will properly add lists to the enum buffer
+// -- soon(tm) tree will be rewritten to use this new format for all tree functions
+// glasspool: -r option will now select correct rshell index
+//
+// fixed rsi -p (and purge -r): will work correctly now
+// -- warning purging rsi kills ALL programs on the target
+// -- this is because rshells may have any name and I'm not writing 1000
+// -- lines of code to determine what you named your rshells
+// meta link: removed erronious warning about leaving a log
+// -- linking a net session no longer results in a connection log!
+// fixed kraken crash on bad input
+// fixed crash in run on bad input
+//
+// fixed whatever is causing db -r * to crash 
+// fixed db -r [ip] * to scan the router as well
+// -- also fixed a weird crash in db
+// added drugwars.5pk to games!
+// updated help files for below changes
+// file -n|-p -- return file name or path
+// added import option to aptm (pipe an aptclientLib to switch scope!!)
+// fixed display error in ifconfig
+// added bios -m -- returns the metaLib object
+// added import option to the meta command
+// -- pipe a metaxploitLib to meta -i
+// -- meta -i MetaxploitLib will change scope to a remote metax
+// -- use cob set to export it from a target and cob get to import it once you return
+// rsi: added option to kill all rshells (same as purge -r)
+// fixed integer casting in p_exe (decompiler function handler)
+// fixed hashim path parameter
+// fixed glasspool to rshell connect
+// added command line options for rsi (return objct, auto select)
+//
+// added purge -r for purging the RSI buffer
+// run: new usage: run [path|file object] [params | shell object] [shell object | params]
+// scpm: added more command line options. eg destination param
+// scpm [opt:-d] [opt:path_from] [opt:path_to] [opt: shell_object]
+// grep -f [pattern] [path] - return the first matching file as an object
+// added try source to 5phinx. not yet implemented, though.
+// expanded rm capabilities. now takes file, computer, shell objects
+// 5phinx: changed whois to probe
+// fixed rkit construction in kore. now searches for parts correctly.
+// malp: fixed crash when file object in BUFFER is deleted from filesystem
+//
+// fixed typo in psduo
+// fixed database.csv being written only to /root/rkit *
+// -- now searches for rkit and places file in first rkit found
+// 
+// added command: glasspool [opt] -- command line use of BUFFER glasspool function 
+// added command: tdump [opt] -- dump tbuf to a pass file (e.g. use in conjunction with hashim)
+// -- added dump tbuf to computer handler. does the above.
+// log spoof in file handler correctly searchs for a suitable file to use for spoofing
+// completely rewrote transmit. now requires @home setup in 5hell.src
+// -- transmits tbuf directly to pass file on @home server (where hashim -d should be running)
+// removed filemon, dbmon. will return as monitor in the future
+// silentclean -d will delete rkit if it is the parent path of 5hell (deletes 5hell otherwise)
+// rclean -d [opt] will delete rkit if it is the parent path of 5hell (deletes 5hell otherwise) 
+// shell handler in BUFFER won't auto exit anymore
+// computer handler in BUFFER accepts 'q' for quit
+//
+// added delete all to mail
+// added check grp, check usr
+// fixed crash in usr/grp when arguments invalid
+// added wildcard option to db/dbaser
+// updated netdump output
+// updated malp menu: added netsession info
+// fixed battleship
+// sped up grep a tiny bit
+// dig [ip] [port] and dig [port] [ip] are now both valid, to help with piping
+// sped up pwgen/cerebrum immensely
+// updated cerebrum to load to custom object
+// added option to dig to reverse inputs
+// fixed crash in perms
+// changed the permissions checks in check_user from read to write
+// fixed another bug in decompiler and p_exe
+// updated some help documentation
+// completely rewrote gopher, commented out old version in 5phinx.5pk
+// extended partial object support to all main object types
+// added more partial object support
+// scribus: disabled confirmation before opening file
+// fixed crash in grep when grepping
+// added partial support for partial objects
+// fixed crash in db when target ip invalid
+// fixed crash in make when path invalid
+// minor update to the 5phinx gui
+// rclean: fixed an input bug
+// aptm: changed "go back" to "exit" to avoid confusion
+// changed position of jtr and cob in the help menu
+// cerebrum: fixed a bigbrain bug
+// added several additional checks for active network to avoid crashes (more to come)
+// target: rewritten to be more useful and intuitive
+// fixed makfit pathing errors
+// added rsi -i|install -- install the rshell server if librshell.so is in /lib
+// updated cerebrum and brutus dictionary imports
+// changed clipspace buffer selection back to @B (clipb @B -m|#)
+// changed ez clip back to @a,@b,@c
+// updated help search to include regex
+// added 'search' as param for help
+// added highlighting to help -s|show|search
+// updated cob to have an install function (install functions from custom object)
+// fixed outmon interval (maybe?)
+// fixed easy clip and clipspace buffer selection (@b)
+// fixed crash when checking wifi when wifi is disabled
+// updated dictionary file imports. Default is no import. Create files per instructions (below) and uncomment import lines as needed.
+// rclean: fixed bug caused by switch from @B to @b
+// clipb: changed @B to @b
+// changed easy clip to @A,@B,@C
+// fixed missed global reference in rsi causing error in experimental mode
+// clipa|b|c: fixed error when using clipb @B # in experimental mode
+// fixed bios display for clipboards, fixed db -l crash
+// liber: now works on directories
+// improved db -l
+// 5phinx: fixed [-] clear_db button
+// file: info now indicates importable status
+// malp: buffer items directly with malp [thing]
+// brutus/ssh: fixed infinite loop in -brutus attack for ssh
+// whois: added default to local
+// scpm: added file or string_path input options
+// poke: -n option; sets file content to null
+// malp: update_path when returning from glasspool
+// clipboard: updated help info and fixed clipb @B 0 issue
+// 5phinx/memory alpha/kraken: logic updated
+// malp: corrected typo when uploading rkit via BUFFER
+// cerebrum | brutus: actually fixed 'Dictionary: 0 not found' error
+// 5phinx: bank_heist will prompt to activate cerebrum when gopher is selected for decipher
+// updated @home helpfile
+// removed /virt filesystem dependancy for hashim, dbmon, kore -r
+// updated compatibility with new miniscript version
+// added line break in port mapper
+// updated help info for transmit. clarified use.
+// fixed kore -r -- rkit construction (missed crypto.so)
+// --debug mode
+// purge: updated confirmation, added tagged4scp option
+// memAlpha: added tagged4scp option to files in buffer
+// scpm: added tagged4scp option
+// pwgen: moar seeds
+// 5phinx: port info in hooked_comp
+// brutus: import directory of csv or nsv files
+// cerebrum: import dir of csv or newline separated value files
+// updated cerebrum -i @home
+// fixed bug in mv deleting folder if moved over itself
+// sniff: help file updated
+// 5hell.src: added "sc" shortcut
+// updated air: manual and -c option
+// added blockmon, cmin7, wt
+// moved dig to its own .5pk and merged mal.5pk with 5hell.5pk
+// improved cerebrum load time
+// added /tables/tp option to herme5 brute force
+// smtpul added
+//
+// fixed cc #
+// fixed rclean #
+//
+// todo:
+// blockain, wallet, smtp_u_l,
+// portmapper; spider ping, herme5; address book,
+// porter; add a lib finder filter
+//
+///////////////////////////////////////
