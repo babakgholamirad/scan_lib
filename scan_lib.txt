@@ -1,0 +1,173 @@
+// ============================================================================
+// scan_lib entry point
+// The helper modules are compiled into this program from /bin/scan_lib_modules.
+// Keep each module there when installing; the entry executable can remain /bin/scan_lib.
+// ============================================================================
+
+// Scan parsing and exploit record construction.
+import_code("/bin/scan_lib_modules/scan_parsing.txt")
+
+// Shared numbered menu input used by all menus.
+import_code("/bin/scan_lib_modules/menu_input.txt")
+
+// Result handlers are kept separate from scanning and menu navigation.
+import_code("/bin/scan_lib_modules/computer_result.txt")
+import_code("/bin/scan_lib_modules/shell_result.txt")
+
+// ============================================================================
+// Command-line validation and dependency loading
+// ============================================================================
+// Accept an address, port, and optional password; help is handled below.
+
+if params.len < 2 or params.len > 3 then
+	// Show usage for missing or extra command-line arguments.
+	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] [port] (new_password)</b>\nScans the remote library, lets you choose a discovered exploit, and runs it.")
+end if
+if params[0] == "-h" or params[0] == "--help" then
+	// Support the standard short and long help flags.
+	exit("<b>Usage: " + program_path.split("/")[-1] + " [ip_address] [port] (new_password)</b>\nScans the remote library, lets you choose a discovered exploit, and runs it.")
+end if
+
+// Load the exploit library from the system location, then the app tools folder.
+metaxploit = include_lib("/lib/metaxploit.so")
+if not metaxploit then
+	// The bundled copy supports installs where the system library is unavailable.
+	metaxploit = include_lib(current_path + "/tools/metaxploit.so")
+end if
+if not metaxploit then exit("<color=#ff0000>Error: Unable to find metaxploit.so.</color>")
+
+// Convert command-line values into the scan configuration.
+address = params[0]
+port = params[1].to_int
+new_password = null
+if params.len == 3 then
+	if params[2] != "" then
+		new_password = params[2]
+	end if
+end if
+
+// Connect to the requested service and report its exposed network details.
+net_session = metaxploit.net_use(address, port)
+if not net_session then exit("<color=#ff0000>Error: Unable to connect.</color>")
+
+print("The number of devices connected to it as a gateway: " + net_session.get_num_conn_gateway())
+print("The number of ports forwarded from the remote device: " + net_session.get_num_portforward())
+print("The number of users registered on the remote device: " + net_session.get_num_users())
+print("Are there any active users on the system? " + net_session.is_any_active_user())
+if net_session.is_any_active_user() then
+	// Root activity is relevant only when at least one user is active.
+	print("Is root user active on the system? " + net_session.is_root_active_user())
+end if
+
+// Retrieve and inspect the remote library before searching its memory.
+meta_lib = net_session.dump_lib
+if not meta_lib then exit("<color=#ff0000>Error: Could not retrieve the remote library.</color>")
+if meta_lib.is_patched() then
+	// A patched library reports its patch date; otherwise report that it was never patched.
+	print("The library patch date is:")
+	print(meta_lib.is_patched(true))
+else
+	print("The library has never been patched.")
+end if
+
+// Scan every returned address and keep only addresses with parsed exploit options.
+memory_addresses = metaxploit.scan(meta_lib)
+if not memory_addresses then exit("The library scan failed.")
+if memory_addresses.len() == 0 then exit("No vulnerable memory addresses were found.")
+
+// Each entry stores an address and its available precomputed exploit records.
+exploit_array = []
+for memory in memory_addresses
+	// Keep only memory addresses with at least one parsed exploit option.
+	scan_text = metaxploit.scan_address(meta_lib, memory)
+	found_exploits = parse_scan_result(scan_text, memory, meta_lib, new_password)
+	if found_exploits.len() > 0 then
+		exploit_array.push({"memory": memory, "exploits": found_exploits})
+	end if
+end for
+
+// Stop cleanly when the scan found no usable options.
+if exploit_array.len() == 0 then exit("No usable exploit options were found in the scanned library.")
+
+// Address menu: selecting an address opens its exploit list; q exits.
+while true
+	print("\nDiscovered vulnerable memory addresses:")
+	index = 0
+	for item in exploit_array
+		print("(" + index + ") " + item.memory)
+		index = index + 1
+	end for
+
+	memory_choice = select_index("Choose a memory address (q to quit): ", exploit_array.len(), false)
+	if memory_choice < 0 then exit("Scan cancelled.")
+	// The selected address determines which precomputed exploit list is shown.
+	selected_memory = exploit_array[memory_choice]
+
+	// Exploit menu: b returns to the address list and q exits the program.
+	while true
+		print("\nExploit options for " + selected_memory.memory + ":")
+		j = 0
+		for item in selected_memory.exploits
+			print("(" + j + ") " + item.keyword + " [" + item.result_type + "]")
+			for condition in item.conditions
+				print("    " + condition)
+			end for
+			j = j + 1
+		end for
+
+		exploit_choice = select_index("Choose an exploit (b to return to memory addresses, q to quit): ", selected_memory.exploits.len(), true)
+		if exploit_choice == -2 then break
+		if exploit_choice < 0 then exit("Exploit cancelled.")
+		// Preserve the selected record so its stored result and metadata stay together.
+		selected_exploit = selected_memory.exploits[exploit_choice]
+
+		// Use the result computed during scanning; do not trigger overflow again.
+		print("Using the stored result for " + selected_exploit.keyword + " at " + selected_memory.memory + "...")
+		result = selected_exploit.result
+
+		// Dispatch the returned object by GreyScript type.
+		if result == null then
+			print("Exploit returned null; no usable result was produced.")
+			continue
+		else
+			result_type = typeof(result)
+			if result_type == "shell" then
+				print("Exploit returned a shell.")
+				handle_shell_result(result)
+				continue
+			else if result_type == "computer" then
+				print("Exploit returned a computer object.")
+				handle_computer_result(result)
+			else if result_type == "file" then
+				// A returned file object can be a directory, which has no content field.
+				print("Exploit returned a file: " + result.path)
+				if result.is_folder then
+					print("The returned path is a directory and has no file contents to display.")
+				else if result.content != null then
+					print(result.content)
+				else
+					print("The returned file has no readable contents.")
+				end if
+			else if result_type == "number" then
+				// Numeric exploit results use 1 for success and 0 for failure.
+				if result == 1 then
+					if new_password != null then
+						print("Password change succeeded: " + new_password)
+					else
+						print("Exploit succeeded.")
+					end if
+				else if result == 0 then
+					print("Exploit did not succeed.")
+					continue
+				else
+					print("Exploit returned numeric result: " + result)
+				end if
+			else
+				print("Exploit returned unsupported type: " + result_type)
+				print(result)
+				continue
+			end if
+		end if
+		exit()
+	end while
+end while

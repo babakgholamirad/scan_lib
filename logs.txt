@@ -1,0 +1,104 @@
+lustkid@lenny:~$ tools/scan_lib 90.79.159.152 80
+The number of devices connected to it as a gateway: 0
+The number of ports forwarded from the remote device: 1
+The number of users registered on the remote device: 3
+Are there any active users on the system? 1
+Is root user active on the system? 0
+The library has never been patched.
+[###################################]==[ 100% ]
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Starting attack... failed!
+No active root user found.
+Searching required library init.so => found!
+
+Starting attack...success!
+Computer obtained with credentials from user: guest
+Starting attack... failed!
+No guest user found.
+Starting attack... failed!
+No guest user found.
+Starting attack... failed!
+No guest user found.
+
+Starting attack...success!
+Privileges obtained from user: guest
+Starting attack... failed!
+No guest user found.
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Starting attack... failed!
+No active root user found.
+Searching required library kernel_module.so => found!
+Starting attack... failed!
+No active root user found.
+
+Starting attack...success!
+Privileges obtained from user: guest
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Searching required library kernel_module.so => found!
+
+Starting attack...success!
+Privileges obtained from user: Skeyers
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+Starting attack... failed!
+No active root user found.
+
+Starting attack...success!
+Executing payload...
+error: can't change password for user root. Passwords must be alphanumeric.
+Starting attack... failed!
+Insufficient amount of port forward towards the target.
+
+Discovered vulnerable memory addresses:
+(0) 0x6DA8E32F
+(1) 0x1CA64255
+(2) 0x6D6E4A9
+(3) 0xFB5A6FF
+(4) 0x15B9C718
+(5) 0x2E86E002
+(6) 0xBE47865
+Choose a memory address (q to quit): 1
+
+Exploit options for 0x1CA64255:
+(0) globalcolorshi [null]
+    * Checking path /bin exists in the file system.
+    * Checking guest active user.
+    * Checking registered users equal to 1.
+(1) yte [null]
+    * Checking an active user.
+    * Checking guest active user.
+    * Using namespace init.so compiled at version >= 1.0.0
+(2) undostanchorts [shell]
+Choose an exploit (b to return to memory addresses, q to quit): 2
+Using the stored result for undostanchorts at 0x1CA64255...
+Exploit returned a shell.
+
+Active shell
+1. Show users in /home
+2. Print /home/<user>/Config/Mail.txt contents
+3. Upload decipher and decipher Mail.txt
+b. Back to exploit menu
+Shell option: 3
+
+Users in /home:
+(0) Dunsars
+(1) Skeyers
+(2) guest
+Choose a user to decipher Mail.txt (q to cancel): 1
+Preparing upload folder /home/guest/scan_lib_Skeyers/...
+mkdir: /home/guest/scan_lib_Skeyers file exists
+Uploading decipher and crypto.so...
+100%	734.0 KB/s	0 sec (1048 Bytes of 1048 Bytes copied)
+Processing...
+100%	709.1 KB/s	0 sec (0.4 MB of 0.4 MB copied)
+Processing...
+Decipher uploaded. Running it on /home/Skeyers/Config/Mail.txt...
+Error: Missing crypto library
+Decipher launch result: 1
