@@ -16,6 +16,22 @@ get_shell_home_users = function(shell)
 	return home_folder.get_folders
 end function
 
+// Report the user this shell is running as, using writable filesystem access.
+get_shell_user = function(shell)
+	computer = shell.host_computer
+	if not computer then return "unknown"
+	// A writable root folder means the shell has root privileges.
+	root_folder = computer.File("/")
+	if root_folder and root_folder.has_permission("w") then return "root"
+	// Otherwise the writable home folder identifies the active user; guest is the fallback.
+	home_users = get_shell_home_users(shell)
+	if home_users == null then return "unknown"
+	for home_user in home_users
+		if home_user.name != "guest" and home_user.has_permission("w") then return home_user.name
+	end for
+	return "guest"
+end function
+
 // Delete only the paths this session recorded as uploaded by scan_lib.
 clear_uploaded_files = function(shell, uploaded_files)
 	computer = shell.host_computer
@@ -96,9 +112,9 @@ handle_shell_result = function(shell)
 	uploaded_files = []
 	while true
 		// The shell menu stays open until b or closed input returns to the exploit list.
-		print("\nActive shell")
-		print("1. Show users in /home")
-		print("2. Print /home/<user>/Config/Mail.txt contents")
+		print("\nActive shell (user: " + get_shell_user(shell) + ")")
+		print("1. Open terminal with this shell")
+		print("2. Open FileExplorer")
 		print("3. Upload decipher and decipher Mail.txt")
 		print("4. Remove uploaded files and clear traces")
 		print("b. Back to exploit menu")
@@ -107,27 +123,19 @@ handle_shell_result = function(shell)
 			return
 		else if choice.lower() == "b" then
 			return
-		// Options 1 and 2 share user discovery; option 2 then prints the chosen mail file.
-		else if choice == "1" or choice == "2" then
-			home_users = get_shell_home_users(shell)
-			if home_users == null then
-				print("Could not read the /home folder from this shell.")
-			else if home_users.len() == 0 then
-				print("No user folders were found in /home.")
-			else
-				print("\nUsers in /home:")
-				index = 0
-				for home_user in home_users
-					print("(" + index + ") " + home_user.name)
-					index = index + 1
-				end for
-				if choice == "2" then
-					user_choice = select_index("Choose a user to read Mail.txt (q to cancel): ", home_users.len(), false)
-					if user_choice >= 0 then
-						mail_path = "/home/" + home_users[user_choice].name + "/Config/Mail.txt"
-						print("Launching cat for " + mail_path + ":")
-						shell.launch("/bin/cat", mail_path)
-					end if
+		// Option 1 opens an interactive terminal attached to the remote shell.
+		else if choice == "1" then
+			print("Opening terminal...")
+			shell.start_terminal
+			return
+		// Option 2 opens the remote file browser, uploading a local copy if needed.
+		else if choice == "2" then
+			file_explorer_path = prepare_log_tool(shell, "FileExplorer.exe", uploaded_files)
+			if file_explorer_path then
+				print("Opening FileExplorer...")
+				file_explorer_result = shell.launch(file_explorer_path)
+				if file_explorer_result == 0 then
+					print("Could not launch FileExplorer.")
 				end if
 			end if
 		// Option 3 uploads both decipher and its library before launching on remote mail.

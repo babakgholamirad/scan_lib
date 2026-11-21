@@ -123,6 +123,12 @@ for memory in memory_addresses
 	// Keep only memory addresses with at least one parsed exploit option.
 	scan_text = metaxploit.scan_address(meta_lib, memory)
 	found_exploits = parse_scan_result(scan_text, memory, meta_lib, new_password)
+	// Record the shell user once so the exploit menu can show it without rechecking.
+	for exploit in found_exploits
+		if exploit.result_type == "shell" then
+			exploit["result_user"] = get_shell_user(exploit.result)
+		end if
+	end for
 	if found_exploits.len() > 0 then
 		exploit_array.push({"memory": memory, "exploits": found_exploits})
 	end if
@@ -150,7 +156,11 @@ while true
 		print("\nExploit options for " + selected_memory.memory + ":")
 		j = 0
 		for item in selected_memory.exploits
-			print("(" + j + ") " + item.keyword + " [" + item.result_type + "]")
+			if item.result_type == "shell" then
+				print("(" + j + ") " + item.keyword + " [shell: " + item.result_user + "]")
+			else
+				print("(" + j + ") " + item.keyword + " [" + item.result_type + "]")
+			end if
 			for condition in item.conditions
 				print("    " + condition)
 			end for
@@ -174,7 +184,7 @@ while true
 		else
 			result_type = typeof(result)
 			if result_type == "shell" then
-				print("Exploit returned a shell.")
+				print("Exploit returned a shell (user: " + selected_exploit.result_user + ").")
 				handle_shell_result(result)
 				continue
 			else if result_type == "computer" then
