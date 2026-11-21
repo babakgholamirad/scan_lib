@@ -69,7 +69,7 @@ scan_ports = function(address)
 			end if
 		end for
 	end for
-	return {"router": router, "ports": sorted, "is_public": is_public}
+	return {"router": router, "ports": sorted, "is_public": is_public, "firewall": false}
 end function
 
 // ============================================================================
