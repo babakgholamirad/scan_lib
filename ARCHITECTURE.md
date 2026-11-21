@@ -25,7 +25,7 @@ to be launched separately.
 - `scan_parsing.src`: scan-output cleanup, parsing, and overflow precomputation.
 - `menu_input.src`: shared selection validation, back/quit behavior, color labels, and target IP validation.
 - `computer_result.src`: handling computer objects and local passwd-file flow.
-- `shell_result.src`: shell/computer user detection, app lookup, upload helper, terminal/FileExplorer launch, remote mail/decipher workflow, log tools, and the internal-IP bounce workflow.
+- `shell_result.src`: shell/computer user detection, app lookup, upload helper, terminal/FileExplorer launch, remote mail/decipher workflow, log tools, the internal-IP bounce workflow, and the remote scanner copy/build/run workflow.
 - `scan_lib.txt`: app startup, scanning, memory-address and exploit menus, and result dispatch.
 
 Grey Hack runtime behavior cannot be checked from the host checkout. Review the

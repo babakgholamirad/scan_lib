@@ -154,6 +154,169 @@ discover_lan_ports = function(address)
 	return records
 end function
 
+// Return the directory portion of an absolute path.
+dir_name = function(path)
+	parts = path.split("/")
+	if parts.len <= 1 then return "/"
+	parts.pop
+	return parts.join("/")
+end function
+
+// Create each missing directory in an absolute path on the remote shell.
+ensure_remote_dir = function(shell, path)
+	parts = path.split("/")
+	current = ""
+	for part in parts
+		if part == "" then continue
+		current = current + "/" + part
+		if not shell.host_computer.File(current) then
+			shell.launch("/bin/mkdir", current)
+		end if
+	end for
+end function
+
+// Locate the running scanner's source file next to the installed program.
+find_scanner_source = function()
+	program_dir = dir_name(program_path)
+	program_name = program_path.split("/")[-1]
+	candidates = [
+		program_dir + "/scan_lib.txt",
+		program_dir + "/scan_lib.src",
+		program_dir + "/" + program_name + ".src",
+		home_dir + "/tools/scan_lib.txt",
+		home_dir + "/tools/scan_lib.src",
+		home_dir + "/tools/" + program_name + ".src",
+		current_path + "/scan_lib.txt",
+		current_path + "/scan_lib.src",
+		program_path
+	]
+	for path in candidates
+		source_file = get_shell.host_computer.File(path)
+		if source_file and source_file.has_permission("r") and source_file.content != null then
+			if source_file.content.indexOf("import_code") != null then
+				return {"path": path, "content": source_file.content}
+			end if
+		end if
+	end for
+	return null
+end function
+
+// Copy the scanner and its modules to the remote shell, build it there, and scan an IP.
+run_scanner_on_shell = function(shell)
+	target_ip = user_input("Target IP to scan from this shell (b to cancel): ")
+	if target_ip == null then return
+	target_ip = target_ip.trim()
+	if target_ip.lower() == "b" then return
+	if not is_valid_target_ip(target_ip) then
+		print("Invalid IP address: " + target_ip)
+		return
+	end if
+
+	source = find_scanner_source()
+	if source == null then
+		print("Could not find the local scan_lib source next to " + program_path + ".")
+		return
+	end if
+
+	// Collect the module paths declared by the scanner's import_code lines.
+	import_paths = []
+	for line in source.content.split(char(10))
+		line = line.trim()
+		if line[:12] == "import_code(" then
+			parts = line.split(char(34))
+			if parts.len >= 3 then import_paths.push(parts[1])
+		end if
+	end for
+	if import_paths.len() == 0 then
+		print("No import_code paths were found in the local scanner source.")
+		return
+	end if
+
+	program_dir = dir_name(source.path)
+	remote_source_name = "scan_lib_remote.src"
+	remote_source_path = program_dir + "/" + remote_source_name
+	remote_tools_dir = program_dir + "/tools"
+
+	print("Preparing " + program_dir + " on the target...")
+	ensure_remote_dir(shell, program_dir)
+	ensure_remote_dir(shell, remote_tools_dir)
+
+	// Copy each imported module to the same absolute path on the target.
+	for import_path in import_paths
+		module_dir = dir_name(import_path)
+		ensure_remote_dir(shell, module_dir)
+		print("Uploading " + import_path + "...")
+		upload_result = upload_file(import_path, module_dir, shell)
+		if upload_result != true then
+			print("Could not upload " + import_path + ": " + upload_result)
+			return
+		end if
+	end for
+
+	// Point the scanner's metaxploit fallback at the copied tools folder.
+	remote_content = source.content.replace("current_path + " + char(34) + "/tools/metaxploit.so" + char(34), char(34) + remote_tools_dir + "/metaxploit.so" + char(34))
+
+	// Write the scanner source to a local temporary file so it can be uploaded as .src.
+	local_temp_path = home_dir + "/" + remote_source_name
+	local_temp = get_shell.host_computer.File(local_temp_path)
+	if local_temp then local_temp.delete
+	get_shell.host_computer.touch(home_dir, remote_source_name)
+	local_temp = get_shell.host_computer.File(local_temp_path)
+	if not local_temp then
+		print("Could not create the local temporary source file.")
+		return
+	end if
+	local_temp.set_content(remote_content)
+	print("Uploading scanner source...")
+	upload_result = upload_file(local_temp_path, program_dir, shell)
+	local_temp.delete
+	if upload_result != true then
+		print("Could not upload the scanner source: " + upload_result)
+		return
+	end if
+
+	// The target must be able to load metaxploit.so from /lib or the copied tools folder.
+	remote_meta = shell.host_computer.File("/lib/metaxploit.so")
+	if not remote_meta or not remote_meta.has_permission("r") then
+		local_meta_path = null
+		for path in ["/lib/metaxploit.so", program_dir + "/tools/metaxploit.so", current_path + "/tools/metaxploit.so", "/usr/bin/metaxploit.so", "/bin/metaxploit.so"]
+			local_meta = get_shell.host_computer.File(path)
+			if local_meta and local_meta.has_permission("r") then
+				local_meta_path = path
+				break
+			end if
+		end for
+		if local_meta_path then
+			print("Uploading metaxploit.so to the target...")
+			upload_result = upload_file(local_meta_path, remote_tools_dir, shell)
+			if upload_result != true then
+				print("Could not upload metaxploit.so: " + upload_result)
+				return
+			end if
+		else
+			print("Warning: no local metaxploit.so was found; the target must already have one.")
+		end if
+	end if
+
+	print("Building scanner on the target...")
+	build_result = shell.build(remote_source_path, program_dir)
+	if build_result then
+		print("Build failed: " + build_result)
+		return
+	end if
+
+	print("Launching scanner on the target...")
+	launch_result = shell.launch(program_dir + "/scan_lib_remote", target_ip)
+	if launch_result == 0 then
+		print("Could not launch the scanner on the target.")
+	else if launch_result != null then
+		print("Scanner launch result: " + launch_result)
+	else
+		print("Scanner launched. If the menus do not accept input, use option 1 and run:")
+		print(program_dir + "/scan_lib_remote " + target_ip)
+	end if
+end function
+
 // Try a router bounce exploit, then fall back to a service connection from this shell.
 bounce_to_internal_ip = function(shell, meta_lib, exploit_array)
 	// The internal address is the only value a bounce exploit needs.
@@ -277,6 +440,7 @@ handle_shell_result = function(shell, meta_lib=null, exploit_array=null)
 		print("3. Upload decipher and decipher Mail.txt")
 		print("4. Remove uploaded files and clear traces")
 		print("5. Bounce to an internal IP")
+		print("6. Copy scan_lib to this shell and scan an IP")
 		print("b. Back to exploit menu")
 		choice = user_input("Shell option: ")
 		if choice == null then
@@ -397,8 +561,11 @@ handle_shell_result = function(shell, meta_lib=null, exploit_array=null)
 		// Option 5 pivots to another machine on the target's internal network.
 		else if choice == "5" then
 			bounce_to_internal_ip(shell, meta_lib, exploit_array)
+		// Option 6 runs the scanner from the target shell so network calls originate there.
+		else if choice == "6" then
+			run_scanner_on_shell(shell)
 		else
-			print("Choose 1, 2, 3, 4, 5, or b.")
+			print("Choose 1, 2, 3, 4, 5, 6, or b.")
 		end if
 	end while
 end function
