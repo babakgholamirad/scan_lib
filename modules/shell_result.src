@@ -133,7 +133,71 @@ prepare_log_tool = function(shell, app_name, uploaded_files)
 	return remote_app_path
 end function
 
-handle_shell_result = function(shell)
+// Try a router bounce exploit, then fall back to an SSH connection from this shell.
+bounce_to_internal_ip = function(shell, meta_lib, exploit_array)
+	// The internal address is the only value a bounce exploit needs.
+	answer = user_input("Internal IP to bounce to (b to cancel): ")
+	if answer == null then return
+	answer = answer.trim()
+	if answer.lower() == "b" then return
+	if not is_valid_target_ip(answer) then
+		print("Invalid IP address: " + answer)
+		return
+	end if
+	if not is_lan_ip(answer) then
+		print("Warning: " + answer + " is not a LAN address. Bounce exploits expect an internal IP.")
+	end if
+
+	// A bounce exploit runs against a router library and receives a LAN IP as its extra value.
+	if meta_lib != null and exploit_array != null and meta_lib.lib_name == "kernel_router.so" then
+		print("Trying router bounce exploits for " + answer + "...")
+		for item in exploit_array
+			for exploit in item.exploits
+				result = meta_lib.overflow(item.memory, exploit.keyword, answer)
+				if result == null then continue
+				result_type = typeof(result)
+				if result_type == "computer" then
+					// Verify the returned computer is the requested LAN target when the game reports it.
+					if result.local_ip != null and result.local_ip != answer then
+						print("Bounce returned a computer at " + result.local_ip + " instead of " + answer + ".")
+						continue
+					end if
+					print("Bounce succeeded with " + exploit.keyword + " at " + item.memory + ".")
+					handle_computer_result(result)
+					return
+				else if result_type == "shell" then
+					print("Bounce succeeded with " + exploit.keyword + " at " + item.memory + ".")
+					handle_shell_result(result)
+					return
+				end if
+			end for
+		end for
+		print("No router bounce exploit reached " + answer + ".")
+	else
+		// A non-router library cannot provide the bounce payload.
+		if meta_lib != null then
+			print("The scanned library is " + meta_lib.lib_name + ", not kernel_router.so.")
+		else
+			print("No router library is available for a bounce exploit.")
+		end if
+	end if
+
+	// Fall back to an SSH shell from the current machine so the connection still leaves from here.
+	print("Falling back to an SSH bounce from this shell...")
+	ssh_user = user_input("SSH username (blank to cancel): ")
+	if ssh_user == null or ssh_user.trim() == "" then return
+	ssh_password = user_input("SSH password: ")
+	if ssh_password == null then return
+	remote = shell.connect_service(answer, 22, ssh_user.trim(), ssh_password)
+	if typeof(remote) == "shell" or typeof(remote) == "ftpshell" then
+		print("SSH bounce succeeded.")
+		handle_shell_result(remote)
+	else
+		print("SSH bounce failed: " + remote)
+	end if
+end function
+
+handle_shell_result = function(shell, meta_lib=null, exploit_array=null)
 	// Track session uploads so option 4 can remove these files after use.
 	uploaded_files = []
 	while true
@@ -143,6 +207,7 @@ handle_shell_result = function(shell)
 		print("2. Open FileExplorer")
 		print("3. Upload decipher and decipher Mail.txt")
 		print("4. Remove uploaded files and clear traces")
+		print("5. Bounce to an internal IP")
 		print("b. Back to exploit menu")
 		choice = user_input("Shell option: ")
 		if choice == null then
@@ -260,8 +325,11 @@ handle_shell_result = function(shell)
 			else
 				print("Could not prepare or launch both log applications. Review the errors above and try again.")
 			end if
+		// Option 5 pivots to another machine on the target's internal network.
+		else if choice == "5" then
+			bounce_to_internal_ip(shell, meta_lib, exploit_array)
 		else
-			print("Choose 1, 2, 3, 4, or b.")
+			print("Choose 1, 2, 3, 4, 5, or b.")
 		end if
 	end while
 end function

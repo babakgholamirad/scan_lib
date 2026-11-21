@@ -225,7 +225,8 @@ while true
 			result_type = typeof(result)
 			if result_type == "shell" then
 				print("Exploit returned a shell (user: " + user_color(selected_exploit.result_user) + ").")
-				handle_shell_result(result)
+				// Pass the scanned library and exploit records so the shell menu can attempt a bounce.
+				handle_shell_result(result, meta_lib, exploit_array)
 				continue
 			else if result_type == "computer" then
 				print("Exploit returned a computer object.")
