@@ -14,12 +14,21 @@ article h2 { margin-bottom: .2rem; }
 blockquote { border-left: 4px solid #ccc; margin-left: 0; padding-left: 1rem; color: #444; }
 code, pre { background: #f4f4f4; }
 pre { padding: .8rem; overflow-x: auto; }
+.search-bar { position: sticky; top: 0; z-index: 10; background: #fff; padding: .8rem 0; margin-bottom: .4rem; border-bottom: 1px solid #eee; }
+.search-bar input { width: 100%; box-sizing: border-box; font: inherit; padding: .6rem .8rem; border: 1px solid #bbb; border-radius: 6px; }
+.search-bar input:focus { outline: 2px solid #66a; border-color: #66a; }
+.search-status { color: #666; font-size: .9rem; margin: .4rem 0 0; }
+article[hidden] { display: none; }
 </style>
 </head>
 <body>
 <h1>Grey Hack Developer Announcements</h1>
 <p>Raw announcement archive for Grey Hack (Steam app 605230), covering August 6, 2019 through November 16, 2026. This file was rebuilt from Steam's public news API on 2026-11-21 after the original local export was lost. It contains the same announcement text and links, with Steam BBCode converted to HTML for local reading and searching.</p>
 <p>Announcement cards: 384</p>
+<div class="search-bar">
+<input id="search" type="search" placeholder="Search all patch notes&hellip;" aria-label="Search patch notes" autocomplete="off">
+<p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+</div>
 <article id="gid-1849458702691406">
 <h2>Update 0.9.7392</h2>
 <p class="meta">2026-11-16 21:24 UTC &middot; Kurouzu &middot; <a href="https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1849458702691406">Steam announcement</a></p>
@@ -7887,5 +7896,46 @@ The change in the store page about the macOS support will be reflected when vers
 <li> Performance improvements when connecting to online mode or launching Single Player mode.<br>
 </ul></div>
 </article>
+<script>
+(function () {
+  var input = document.getElementById('search');
+  var status = document.getElementById('search-status');
+  var index = Array.prototype.map.call(document.querySelectorAll('article'), function (article) {
+    return { el: article, text: (article.textContent || '').toLowerCase() };
+  });
+  var total = index.length;
+  var timer = null;
+
+  function applyFilter(raw) {
+    var query = raw.trim();
+    var needle = query.toLowerCase();
+    var shown = 0;
+    for (var i = 0; i < index.length; i++) {
+      var match = needle === '' || index[i].text.indexOf(needle) !== -1;
+      index[i].el.hidden = !match;
+      if (match) shown++;
+    }
+    if (query === '') {
+      status.textContent = '';
+    } else if (shown === 0) {
+      status.textContent = 'No patch notes match \u201c' + query + '\u201d.';
+    } else {
+      status.textContent = shown + ' of ' + total + ' patch notes match \u201c' + query + '\u201d.';
+    }
+  }
+
+  input.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () { applyFilter(input.value); }, 1000);
+  });
+
+  input.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      clearTimeout(timer);
+      applyFilter(input.value);
+    }
+  });
+})();
+</script>
 </body>
 </html>
